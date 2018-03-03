@@ -7,7 +7,7 @@ Documentation: a place for presentation/documentation files, developed in LaTex,
 
 Media: where all media files (logo, screenshots, ...) are stored
 
-src: where source files will be stored
+src: where sour#This file is used only to "upload" an "empty" directory on gitce files will be stored
 
 bin: where binaries (the output) will be stored
 

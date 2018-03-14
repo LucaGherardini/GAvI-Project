@@ -11,8 +11,6 @@ import org.apache.lucene.store.*;
  * This simple piece of code is a test to ensure you have all well configured to work with Lucene
  */
 
-// Questo è il branch di Luca
-
 public class LuceneTest{
 
 	public static void main(String args[]){

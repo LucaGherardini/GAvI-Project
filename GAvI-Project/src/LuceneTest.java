@@ -1,3 +1,5 @@
+package src;
+
 import java.io.IOException;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.standard.*;

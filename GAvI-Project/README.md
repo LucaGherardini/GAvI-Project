@@ -8,7 +8,7 @@
 
 #### media: where all media files (logo, screenshots, ...) are stored
 
-#### src: where sour#This file is used only to "upload" an "empty" directory on gitce files will be stored
+#### src: where source files will be stored
 
 #### other: this folder is intended to contain all that not fit other categories
 

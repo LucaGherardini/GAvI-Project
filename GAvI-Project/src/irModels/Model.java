@@ -1,6 +1,3 @@
-/**
- * 
- */
 package irModels;
 
 import java.util.ArrayList;
@@ -25,16 +22,17 @@ public abstract class Model<E> {
 	
 	/*
 	 * executeQuery
-	 * Given the query string and an ArrayList containing documents on which executing query, this method will
-	 * return an array containing results (which order and number will depend on model)
-	 * In this method we could expect that, for each document, will be provided a relevance value
+	 * Given the query string (parsed) and an ArrayList containing documents on which executing query, this 
+	 * method will returns an array containing results (which order and number will depend on model).
 	 * 
-	 * the ranking function is assumed to be applied in this method (and is a great thing, because, for example,
-	 * boolean model doesn't have ranking functions (weights 0/1) so we don't declare an useless method in this
-	 * way
+	 * the ranking function is assumed to be applied in this method (and it's a great thing, because, for example,
+	 * boolean model doesn't have a ranking function (weights = {0,1}) so we don't declare an useless method in 
+	 * this way
 	 * 
-	 * @param As seen for parseQuery, we could expect that String will not be a suitable type to store a query
-	 * after parsing by the Model. 
+	 * @param As seen for parseQuery, we don't know if String will be a suitable type to store a query
+	 * after parsing by the Model.
+	 * 
+	 * @return A list of ordered documents
 	 */
 	public abstract ArrayList<E> executeQuery(Object query, ArrayList<E> documents);
 
@@ -43,7 +41,7 @@ public abstract class Model<E> {
 	 * This function will be called by executeQuery to compute the similarity (or relevance, or weight) of 
 	 * each document for that specific query. Relevance is declared float, but probably it will be changed to 
 	 * Object type too (boolean model has 0/1 weights, vector could have real number weights, ...) so the
-	 * correct type could be override by sub-classes.
+	 * correct type could be overrided by sub-classes.
 	 */
 	public abstract float computeSimilarity(Object query, Object Document);
 	

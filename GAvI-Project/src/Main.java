@@ -1,6 +1,8 @@
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.benchmark.byTask.tasks.NewLocaleTask;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
@@ -12,6 +14,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 
 import gui.Main_window;
+import textOperation.TextOperations;
 
 public class Main {
 
@@ -34,12 +37,13 @@ public class Main {
         addDoc(w, "The Art of Computer Science", "9900333X");
         w.close();
         
-        
+        tryTextOperations("Two cats are enough under these beds?");
 
-
+        /*
 		Main_window main = new Main_window(analyzer, index);
 		main.setSize(500, 500);
 		main.setVisible(true);
+		*/
         
         }
 
@@ -50,6 +54,19 @@ public class Main {
         doc.add(new TextField("title", title, Field.Store.YES));
         doc.add(new StringField("isbn", isbn, Field.Store.YES));
         w.addDocument(doc);
+    }
+    
+    private static void tryTextOperations(String phrase) {
+    	
+        TextOperations textOperations = new TextOperations();
+        ArrayList<String> tokens = textOperations.tokenization(phrase);
+        ArrayList<String> stop = textOperations.removeStopWords(tokens);
+        ArrayList<String> stem = textOperations.stemming(stop);
+        System.out.println("Frase: "+phrase);
+        System.out.println("Tokens: "+tokens);
+        System.out.println("Removed StopWords: " + stop);
+        System.out.println("Stem: "+stem);
+        
     }
 		
 }

@@ -24,10 +24,6 @@ import org.tartarus.snowball.ext.PorterStemmer;
  */
 public class TextOperations {
 	
-	public TextOperations() {
-		
-	}
-	
 
 	/**
 	 * Tokenization of a text.
@@ -36,7 +32,7 @@ public class TextOperations {
 	 * @param content do tokenization on this
 	 * @return list of tokens
 	 */
-	public ArrayList<String> tokenization(String content) {
+	public static ArrayList<String> tokenization(String content) {
 		
 		ArrayList<String> tokens = new ArrayList<String>(); //List of tokens to return
 		
@@ -70,7 +66,7 @@ public class TextOperations {
 	 * @param content removing stopwords on this
 	 * @return list of tokens without stopwords
 	 */
-	public ArrayList<String> removeStopWords(ArrayList<String> tokens) {
+	public static ArrayList<String> removeStopWords(ArrayList<String> tokens) {
 		
 		ArrayList<String> result = new ArrayList<>();	//Result of removing
 		CharArraySet stopWords = EnglishAnalyzer.getDefaultStopSet();	//Default stop words
@@ -90,7 +86,7 @@ public class TextOperations {
 	 * @param tokens list of tokens
 	 * @return list of stemmed tokens
 	 */
-	public ArrayList<String> stemming(ArrayList<String> tokens) {
+	public static ArrayList<String> stemming(ArrayList<String> tokens) {
 		
 		ArrayList<String> result = new ArrayList<String>();	//Result of stemming
 		PorterStemmer stemmer = new PorterStemmer();

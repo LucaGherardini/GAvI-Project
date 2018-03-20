@@ -58,10 +58,9 @@ public class Main {
     
     private static void tryTextOperations(String phrase) {
     	
-        TextOperations textOperations = new TextOperations();
-        ArrayList<String> tokens = textOperations.tokenization(phrase);
-        ArrayList<String> stop = textOperations.removeStopWords(tokens);
-        ArrayList<String> stem = textOperations.stemming(stop);
+        ArrayList<String> tokens = TextOperations.tokenization(phrase);
+        ArrayList<String> stop = TextOperations.removeStopWords(tokens);
+        ArrayList<String> stem = TextOperations.stemming(stop);
         System.out.println("Frase: "+phrase);
         System.out.println("Tokens: "+tokens);
         System.out.println("Removed StopWords: " + stop);

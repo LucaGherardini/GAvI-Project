@@ -2,7 +2,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.benchmark.byTask.tasks.NewLocaleTask;
+//import org.apache.lucene.benchmark.byTask.tasks.NewLocaleTask;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;

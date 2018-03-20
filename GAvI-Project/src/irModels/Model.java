@@ -2,6 +2,9 @@ package irModels;
 
 import java.util.ArrayList;
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.search.Query;
+
 /**
  * @author luca
  * @param <E> is an abstract type, it will be replaced with the type Document (when it will be defined)
@@ -18,7 +21,7 @@ public abstract class Model<E> {
 	 * keywords, as AND/OR/NOT, then use it to answer to the query). In what the query string will be transformed
 	 * is yet to define (for now, Object is used to represent it)
 	 */
-	public abstract Object parseQuery(String query);
+	public abstract Query parseQuery(Query query);
 	
 	/*
 	 * executeQuery
@@ -34,7 +37,7 @@ public abstract class Model<E> {
 	 * 
 	 * @return A list of ordered documents
 	 */
-	public abstract ArrayList<E> executeQuery(Object query, ArrayList<E> documents);
+	public abstract ArrayList<E> executeQuery(Query query, ArrayList<E> documents);
 
 	/*
 	 * computeSimilarity
@@ -43,7 +46,7 @@ public abstract class Model<E> {
 	 * Object type too (boolean model has 0/1 weights, vector could have real number weights, ...) so the
 	 * correct type could be overrided by sub-classes.
 	 */
-	public abstract float computeSimilarity(Object query, Object Document);
+	public abstract float computeSimilarity(Query query, Document Document);
 	
 	
 	

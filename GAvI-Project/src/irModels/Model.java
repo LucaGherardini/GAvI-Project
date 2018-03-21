@@ -1,6 +1,6 @@
 package irModels;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Query;
@@ -13,7 +13,7 @@ import org.apache.lucene.search.Query;
  * creating an instance of something that doesn't need to have "own properties")
  */
 public abstract class Model{
-	
+
 	/*
 	 * parseQuery
 	 * Given a query, each model has its own way to represent it (a Boolean model could, for example, recognize
@@ -22,7 +22,7 @@ public abstract class Model{
 	 * @param stemming is used to activate "stemming" feature or not
 	 * @param stopWordsRemoving is used to activate "stop words removing" feature or not
 	 */
-	public abstract Query parseQuery(String query,boolean stemming, boolean stopWordsRemoving);
+	protected abstract Query parseQuery(String query,boolean stemming, boolean stopWordsRemoving);
 	
 	/*
 	 * executeQuery
@@ -35,7 +35,7 @@ public abstract class Model{
 	 * 
 	 * @return List of resulting documents
 	 */
-	public abstract ArrayList<Document> executeQuery(Query query, ArrayList<Document> documents);
+	protected abstract LinkedList<Document> executeQuery(Query query, LinkedList<Document> documents);
 
 	/*
 	 * computeSimilarity
@@ -44,7 +44,7 @@ public abstract class Model{
 	 * to compute similarity, for example boolean model has 0/1 weights, vector could have real 
 	 * number weights, ...) so the correct type could be override by sub-classes.
 	 */
-	public abstract Object computeSimilarity(Query query, Document Document);
+	protected abstract Object computeSimilarity(Query query, Document Document);
 	
 	
 	

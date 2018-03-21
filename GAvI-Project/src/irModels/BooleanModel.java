@@ -34,10 +34,10 @@ public class BooleanModel extends Model{
 		// distance admittable to accept a boolean query
 		
 		/*
-		 * Create the PhraseQuery with list of Terms to search, with a generic field (for now) and without
+		 * Create the PhraseQuery with list of Terms to search, with a generic field (for now) and with a generic
 		 * slop value (for now) (slop = jumps between words admitted)
 		 */
-		PhraseQuery pq = new PhraseQuery("title", queryParsed.toString());
+		PhraseQuery pq = new PhraseQuery(0, "title", queryParsed.toString());
 		
 		/*
 		 * Create a Builder, add query to it and build a BooleanQuery

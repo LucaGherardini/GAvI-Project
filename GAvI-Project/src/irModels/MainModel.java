@@ -17,19 +17,18 @@ public class MainModel {
 		LinkedList<Document> documentiProva = new LinkedList<Document>();
 
 		Document doc = new Document();
-		String title = "Io sono un titolo";
-		doc.add(new TextField("Ciao", title, Field.Store.YES));
+		String title = "title";
+		doc.add(new TextField("title", title, Field.Store.YES));
 		documentiProva.add(doc);
 	
-		String query = "Ciao";
+		String query = "title";
 		LinkedList<Document> risultati;
 		
 		BooleanModel bm = new BooleanModel();
-		Query q = bm.parseQuery(query, true, true);
+		
+		Query q = bm.parseQuery(query, false, false);
 		risultati = bm.executeQuery(q, documentiProva);
-		
-		
-		System.out.println("Risultati per query " + query + ": \n" + risultati.toString() );
+		System.out.println("Risultati per query " + query + ": \n" + risultati.toString());
 	}
 
 }

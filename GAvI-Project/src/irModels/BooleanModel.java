@@ -14,8 +14,9 @@ import org.apache.lucene.search.TermQuery;
 
 public class BooleanModel extends Model{
 	
-	public BooleanModel() {
-		
+	public LinkedList<String> query(String query, boolean stemming, boolean stopWordsRemoving, LinkedList<String> documents){
+		Query q = parseQuery(query, stemming, stopWordsRemoving);		
+		return executeQuery(q, stemming, stopWordsRemoving, documents);
 	}
 	
 	@Override
@@ -36,7 +37,6 @@ public class BooleanModel extends Model{
 		 * Create the PhraseQuery with list of Terms to search, with a generic field (for now) and without
 		 * slop value (for now) (slop = jumps between words admitted)
 		 */
-		System.out.println("queryParsed: " + queryParsed.toString());
 		PhraseQuery pq = new PhraseQuery("title", queryParsed.toString());
 		
 		/*
@@ -50,29 +50,29 @@ public class BooleanModel extends Model{
 	}
 	
 	@Override
-	protected LinkedList<Document> executeQuery(Query query, LinkedList<Document> documents){
-		LinkedList<Document> results = new LinkedList<Document>();
+	protected LinkedList<String> executeQuery(Query query, boolean stemming, boolean stopWordsRemoving, LinkedList<String> documents){
+		LinkedList<String> results = new LinkedList<String>();
+		Query q = null;
 		
 		/*
 		 * For each document, compute the similarity using the booleanQuery in computeSimilarity, adding it to
 		 * the list of results if similar to the query
 		 */
-		for (Document d : documents) {
-			if(computeSimilarity(query, d)) {
+		for (String d : documents) {
+			q = parseQuery(d, stemming, stopWordsRemoving);
+			if(computeSimilarity(query, q)) {
 				results.add(d);
 			}
 		}
 		return results;
 	}
 	
+	
 	@Override
-	// TODO maybe document should be represented in another way, to be similar to query form
-	protected Boolean computeSimilarity(Query booleanQuery, Document document) {
+	protected Boolean computeSimilarity(Query booleanQuery, Query textDocument) {
 		BooleanQuery bq = (BooleanQuery) booleanQuery;
-		String value = document.get("title");
-		System.out.println("document: " + document.getField("title"));
-		System.out.println("value: " + value);
-		System.out.println("boolean query: " + bq.toString());
-		return bq.equals(document.getValues("title"));
+		
+		BooleanQuery parsedText = (BooleanQuery) textDocument;
+		return bq.equals(parsedText);
 	}
 }

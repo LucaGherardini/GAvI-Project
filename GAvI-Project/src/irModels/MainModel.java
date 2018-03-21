@@ -2,10 +2,6 @@ package irModels;
 
 import java.io.IOException;
 import java.util.LinkedList;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.TextField;
-import org.apache.lucene.search.Query;
 
 /*
  * Testing class for models
@@ -14,20 +10,26 @@ import org.apache.lucene.search.Query;
 public class MainModel {
 
 	public static void main(String[] args) throws IOException {
-		LinkedList<Document> documentiProva = new LinkedList<Document>();
+		LinkedList<String> documentiProva = new LinkedList<String>();
 
-		Document doc = new Document();
-		String title = "title";
-		doc.add(new TextField("title", title, Field.Store.YES));
-		documentiProva.add(doc);
-	
+		String textDocument = "title";
+		String newTry = "different title";
+		String lastTry = "title is different";
+		String lastLastTry = "title";
+		//String title = "title";
+		//doc.add(new TextField("title", title, Field.Store.YES));
+		documentiProva.add(textDocument);
+		documentiProva.add(newTry);
+		documentiProva.add(lastTry);
+		documentiProva.add(lastLastTry);
+		
 		String query = "title";
-		LinkedList<Document> risultati;
+		LinkedList<String> risultati;
 		
-		BooleanModel bm = new BooleanModel();
+		Model m = new BooleanModel();
 		
-		Query q = bm.parseQuery(query, false, false);
-		risultati = bm.executeQuery(q, documentiProva);
+		risultati = m.query("title", false, true, documentiProva);
+		
 		System.out.println("Risultati per query " + query + ": \n" + risultati.toString());
 	}
 

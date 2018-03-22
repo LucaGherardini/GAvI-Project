@@ -25,7 +25,7 @@ public class MainModel {
 		documentiProva.add(lastTry);
 		documentiProva.add(lastLastTry);
 		
-		String query = "title is different";
+		String query = "title AND NOT(is)";
 		LinkedList<String> risultati;
 		
 		Model m = new BooleanModel();

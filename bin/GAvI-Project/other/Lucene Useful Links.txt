@@ -1,0 +1,11 @@
+https://lucene.apache.org/core/7_2_1/index.html
+
+All about methods of Lucene, in particular:
+
+	https://lucene.apache.org/core/7_2_1/core/index.html				For Core Documentation
+	
+	https://lucene.apache.org/core/7_2_1/analyzers-common/index.html	For (common) Analyzer Documentation
+	
+	https://lucene.apache.org/core/7_2_1/queryparser/index.html			For QueryParser Documentation
+	
+	https://lucene.apache.org/core/7_2_1/demo/index.html				Some example code

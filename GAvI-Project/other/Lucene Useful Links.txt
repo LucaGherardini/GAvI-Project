@@ -9,12 +9,9 @@ All about methods of Lucene, in particular:
 	https://lucene.apache.org/core/7_2_1/queryparser/index.html			For QueryParser Documentation
 	
 	https://lucene.apache.org/core/7_2_1/demo/index.html				Some example code
-	
-	
 
-How to build an index (inverted index by default) with Lucene (keep reading forward through pages to have full procedure)
-	https://www.tutorialspoint.com/lucene/lucene_indexing_process.htm
-	
 
-Some notions about Searching Classes
-	https://www.tutorialspoint.com/lucene/lucene_searching_classes.htm
+	
+Something about indexing in Lucene
+
+	http://lucene.apache.org/core/7_2_1/demo/overview-summary.html#Indexing_Files

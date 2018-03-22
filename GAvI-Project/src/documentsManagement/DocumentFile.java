@@ -33,6 +33,8 @@ public class DocumentFile {
 	
 	private Document createDocument(String name, String path) {
 		
+		Document doc = new Document();
+		
 		/*
 		 * Creation of a BufferedReader to read document
 		 */
@@ -44,7 +46,8 @@ public class DocumentFile {
 		}
 		
 		/*
-		 * Reading of document and storing in content String
+		 * Reading of document and storing it in content String, using line String to check 
+		 * consistency of each line read by BufferedReader
 		 */
 		String content = "";
 		String line;
@@ -55,18 +58,11 @@ public class DocumentFile {
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println("Content read from "+ path + name + ":\n" + content);
-		Document doc = new Document();
 		
-		/*
-		StandardAnalyzer analyzer = new StandardAnalyzer();
-		Directory index = new RAMDirectory();
-		IndexWriterConfig config = new IndexWriterConfig(analyzer);
-		IndexWriter w = new IndexWriter(index, config);
-		*/
+		System.out.println("***Content read from "+ path + name + ": \n\n" + content + "\n");
 		
-		doc.add(new TextField("title", name, Field.Store.YES));
-		doc.add(new TextField("body", content, Field.Store.YES));
+		doc.add(new TextField("name", name, Field.Store.YES));
+		doc.add(new TextField("content", content, Field.Store.YES));
 		
 		return doc;
 	}

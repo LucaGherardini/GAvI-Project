@@ -1,6 +1,14 @@
 package documentsManagement;
 
+import java.io.IOException;
 import java.util.LinkedList;
+
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.RAMDirectory;
 
 /*
  * This class creates a Document Set, composed by our Document type. We choosen to make it a singleton class to allow
@@ -14,6 +22,10 @@ import java.util.LinkedList;
 public class DocumentSet {
 	protected static DocumentSet ds = null;
 	protected static LinkedList<DocumentFile> documentFiles = null;
+	protected static StandardAnalyzer stdAnalyzer = null; 
+	protected static Directory dirIndex = null;
+	protected static IndexWriterConfig iwConfig = null; 
+	protected static IndexWriter indexW = null; 
 	
 	private DocumentSet() {
 		
@@ -36,6 +48,23 @@ public class DocumentSet {
 	 */
 	public static void resetSet() {
 		documentFiles = new LinkedList<DocumentFile>();
+		
+		stdAnalyzer.close();
+		try {
+			dirIndex.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
+
+		stdAnalyzer = new StandardAnalyzer();
+		dirIndex = new RAMDirectory();
+		iwConfig = new IndexWriterConfig(stdAnalyzer);
+		try {
+			indexW = new IndexWriter(dirIndex, iwConfig);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	/* addDocument
@@ -43,6 +72,12 @@ public class DocumentSet {
 	 */
 	public void addDocumentFile(DocumentFile doc) {
 		documentFiles.add(doc);
+		
+		try {
+			indexW.addDocument(doc.getDocument());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/* getDocument
@@ -57,6 +92,7 @@ public class DocumentSet {
 	 */
 	public void removeDocumentFile(int index) {
 		documentFiles.remove(index);
+		//TODO add method to remove specific document to index
 	}
 	
 	/* getSize()

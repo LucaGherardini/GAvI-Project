@@ -2,15 +2,13 @@ package irModels;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-
 import textOperation.TextOperations;
-import org.apache.lucene.document.Document;
+
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
 
 public class BooleanModel extends Model{
 	

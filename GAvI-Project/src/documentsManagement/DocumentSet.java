@@ -13,7 +13,7 @@ import java.util.LinkedList;
  */
 public class DocumentSet {
 	protected static DocumentSet ds = null;
-	protected LinkedList<Document> documents = null;
+	protected static LinkedList<DocumentFile> documentFiles = null;
 	
 	private DocumentSet() {
 		
@@ -23,7 +23,7 @@ public class DocumentSet {
 	 * This method is used to generate the unique instance of the class or to return it if it exists
 	 * @return ds, the pointer to the only allowed class instance
 	 */
-	public DocumentSet getDocumentSet() {
+	public static DocumentSet getDocumentSet() {
 		if(ds == null) {
 			ds = new DocumentSet();
 			resetSet();
@@ -34,36 +34,36 @@ public class DocumentSet {
 	/* resetSet
 	 * Erase documents allocating a new LinkedList
 	 */
-	public void resetSet() {
-		documents = new LinkedList<Document>();
+	public static void resetSet() {
+		documentFiles = new LinkedList<DocumentFile>();
 	}
 	
 	/* addDocument
 	 * This method is used to add a document to the list, document refers to our Document type
 	 */
-	public void addDocument(Document doc) {
-		documents.add(doc);
+	public void addDocumentFile(DocumentFile doc) {
+		documentFiles.add(doc);
 	}
 	
 	/* getDocument
 	 * Returns a document giving corresponding index
 	 */
-	public Document getDocument(int index) {
-		return documents.get(index);
+	public DocumentFile getDocumentFile(int index) {
+		return documentFiles.get(index);
 	}
 	
 	/* removeDocument
 	 * This method removes a document from LinkedList, given its index
 	 */
-	public void removeDocument(int index) {
-		documents.remove(index);
+	public void removeDocumentFile(int index) {
+		documentFiles.remove(index);
 	}
 	
 	/* getSize()
 	 * returns number of documents stored in the LinkedList
 	 */
 	public int getSize() {
-		return documents.size();
+		return documentFiles.size();
 	}
 	
 }

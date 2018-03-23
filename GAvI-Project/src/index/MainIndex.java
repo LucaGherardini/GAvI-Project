@@ -33,20 +33,28 @@ public class MainIndex {
 		}
 		
 		
-		// This returns twice the same document, one for hit on "ciao", one for hit on "prova.txt"
-		String query = "name:prova.txt OR content:test";
+		String query = "name:prova.txt OR name:README.md OR name:Lucene OR content:ciao";
 		BooleanModel bm = new BooleanModel();
-		//bm.query(query, false, true);
+		
 		
 		/*
-		 * Fields on which query will work
+		 * Fields on which query will work, passed to inform index in which fields it must search
 		 */
-		String[] fields = {"name", "content"};
+		LinkedList<String> fields = new LinkedList<String>();// = {"name", "content"};
+		
+		if(query.contains("name")) {
+			fields.add("name");
+		}
+		
+		if(query.contains("content")) {
+			fields.add("content");
+		}
+		
+		if(fields.size() == 0) {
+			fields.add("name");
+			fields.add("content");
+		}
 
-		// QUESTO RENDE I MODELLI IMPLEMENTATI DA BUTTARE!
-		/* TODO Maybe another field to submitQuery, called "Model" could let a query parsing suitable to Model 
-		 * wanted
-		 */
 		generalIndex.submitQuery(query, fields, bm);
 		
 	}

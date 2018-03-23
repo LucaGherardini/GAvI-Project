@@ -21,12 +21,17 @@ import org.apache.lucene.search.TermQuery;
 
 public class BooleanModel extends Model{
 	
-	public void query(String query, boolean stemming, boolean stopWordsRemoving){
-		//Query q = parser(query, stemming, stopWordsRemoving);		
-		//executeQuery(q, stemming, stopWordsRemoving);
+	public void query(String query, boolean stemming, boolean stopWordsRemoving, LinkedList<String> fields){
+		Index i = Index.getIndex();
+		i.submitQuery(query, fields, this);
 	}
 	
-	public ArrayList<String> parser(String query, boolean stemming, boolean stopWordsRemoving){
+	public Query getQueryParsed(Query q) {
+		BooleanQuery bq = (BooleanQuery) q;
+		return bq;
+	}
+	
+	/*public ArrayList<String> parser(String query, boolean stemming, boolean stopWordsRemoving){
 		ArrayList<String> queryParsed = TextOperations.tokenization(query);
 		if (stemming) {
 			queryParsed = TextOperations.stemming(queryParsed);
@@ -36,22 +41,23 @@ public class BooleanModel extends Model{
 		}
 		return queryParsed;
 	}
+	*/
 	
-	@Override
+	/*@Override
 	public LinkedList<Query> parseQuery(String query, boolean stemming, boolean stopWordsRemoving, String[] fields, Analyzer stdAnalyzer) {
 		
 		//ArrayList<String> queryParsed = parser(query, stemming, stopWordsRemoving);
 		LinkedList<Query> pQueries = new LinkedList<Query>();
 		
 		
-		/*for (String field : fields) {
+		for (String field : fields) {
 		parser = new QueryParser(field, stdAnalyzer);
 		try {
 			queries.add(parser.parse(query));
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		}
-	}*/
+	}
 		
 		PhraseQuery pq = null;
 		Builder booleanQueryBuilder = null; 
@@ -64,48 +70,37 @@ public class BooleanModel extends Model{
 		}
 		
 		//BooleanQuery booleanQuery = booleanQueryBuilder.build();
-			/*try {
+			try {
 				queries.add(parser.parse(query));
 			} catch (ParseException e1) {
 				e1.printStackTrace();
-			}*/
+			}
 		
 		// TODO create a class "EditDistance" with a method called getDistance() that returns the number of
 		// distance admittable to accept a boolean query
 		
-		/*
-		 * Create the PhraseQuery with list of Terms to search, with a generic
-		 * slop value (for now) (slop = jumps between words admitted)
-		 */
 		//for (String field : fields)
 		//= new PhraseQuery(0, "name", queryParsed.toString());
 		//MultiPhraseQuery mpQ;
-		
-		/*
-		 * Create a Builder, add query to it and build a BooleanQuery
-		 */
-		/*Builder booleanQueryBuilder = new BooleanQuery.Builder();
+
+		Builder booleanQueryBuilder = new BooleanQuery.Builder();
 			    booleanQueryBuilder.add(pq, BooleanClause.Occur.MUST);
-		BooleanQuery booleanQuery = booleanQueryBuilder.build();*/
+		BooleanQuery booleanQuery = booleanQueryBuilder.build();
 		
 		return pQueries;
 	}
+	*/
 	
-	@Override
+	/*@Override
 	protected LinkedList<Document> executeQuery(Query query, boolean stemming, boolean stopWordsRemoving){
 		LinkedList<Document> results;
 		Query q = null;
-		
-		/*
-		 * For each document, compute the similarity using the booleanQuery in computeSimilarity, adding it to
-		 * the list of results if similar to the query
-		 */
-		/*for (String d : documents) {
+
+		for (String d : documents) {
 			q = parseQuery(d, stemming, stopWordsRemoving);
 			if(computeSimilarity(query, q)) {
 				results.add(d);
 			}
-		}*/
 		
 		Index generalIndex = Index.getIndex();
 		//generalIndex.submitQuery(q);
@@ -113,13 +108,15 @@ public class BooleanModel extends Model{
 		
 		return null;
 	}
+	*/
 	
 	
-	@Override
+	/*@Override
 	protected Boolean computeSimilarity(Query booleanQuery, Query textDocument) {
 		BooleanQuery bq = (BooleanQuery) booleanQuery;
 		
 		BooleanQuery parsedText = (BooleanQuery) textDocument;
 		return bq.equals(parsedText);
 	}
+	*/
 }

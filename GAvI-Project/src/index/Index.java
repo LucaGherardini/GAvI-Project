@@ -3,8 +3,6 @@ package index;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -18,16 +16,16 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.BooleanQuery;
+
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 
 import irModels.Model;
@@ -201,7 +199,6 @@ public class Index {
 		 */
 		try {
 			inReader = DirectoryReader.openIfChanged((DirectoryReader) inReader);
-			inSearcher = new IndexSearcher(inReader);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -228,7 +225,6 @@ public class Index {
 		try {
 			inWriter.tryDeleteDocument(inReader, index);
 			inReader = DirectoryReader.openIfChanged((DirectoryReader)inReader);
-			inSearcher = new IndexSearcher(inReader);
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -241,7 +237,7 @@ public class Index {
 		return inWriter.numDocs();
 	}
 	
-	public void submitQuery(String query, String[] fields, Model m) {
+	public void submitQuery(String query, LinkedList<String> fields, Model m) {
 
 		QueryParser parser = null;
 		LinkedList<Query> queries = new LinkedList<Query>();
@@ -249,7 +245,7 @@ public class Index {
 		for (String field : fields) {
 			parser = new QueryParser(field, stdAnalyzer);
 			try {
-				queries.add(parser.parse(query));
+				queries.add(m.getQueryParsed(parser.parse(query)));
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
@@ -266,11 +262,12 @@ public class Index {
 			System.out.println("Document " + i + ": " + getDocument(i).get("name"));
 		}
 		
-		/*try {
+		// Updating of IndexSearcher only if a request is submitted
+		try {
 			inSearcher = new IndexSearcher(inReader);
 		}catch(Exception e) {
 			e.printStackTrace();
-		}*/
+		}
 		
 		int totalHits = 0;
 		
@@ -292,12 +289,10 @@ public class Index {
 				for ( int i = 0; i<k.length ; i++) {
 					doc = inSearcher.doc(k[i].doc);
 					System.out.println("Document " + doc.get("path") + doc.get("name"));
-					//Document doc = searcher.doc(hits[i].doc);
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//return null;
 	}
 }

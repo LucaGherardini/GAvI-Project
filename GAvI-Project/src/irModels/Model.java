@@ -10,23 +10,20 @@ import org.apache.lucene.search.Query;
 /**
  * @author luca
  *
- *
- * @subclasses will be static classes, which could be used directly, without creating an instance (is useless 
- * creating an instance of something that doesn't need to have "own properties")
+ * This class is the common ancestor of all Models implemented. The 
  */
 public abstract class Model{
 	
 	/*
 	 * query
-	 * This method is the "engine" that make a Model working: it call parsing function on query string, using the
-	 * same parameters (stemming and stopWordsRemoving) both for query parsing that for document text parsing, to
-	 * ensure the same results, starting from the same text
+	 * This method is the "engine" that make a Model working: it call 
 	 * @return a list of the results
 	 */
-	public abstract /*LinkedList<Document>*/ void query(String query, boolean stemming, boolean stopWordsRemoving);
+	public abstract void query(String query, boolean stemming, boolean stopWordsRemoving, LinkedList<String> fields);
 	
+	public abstract Query getQueryParsed(Query q);
 	
-	public abstract ArrayList<String> parser(String query, boolean stemming, boolean stopWordsRemoving);
+	//public abstract ArrayList<String> parser(String query, boolean stemming, boolean stopWordsRemoving);
 	
 	/*
 	 * parseQuery
@@ -36,7 +33,7 @@ public abstract class Model{
 	 * @param stemming is used to activate "stemming" feature or not
 	 * @param stopWordsRemoving is used to activate "stop words removing" feature or not
 	 */
-	public abstract LinkedList<Query> parseQuery(String query, boolean stemming, boolean stopWordsRemoving, String[] fields, Analyzer stdAnalyzer);
+	//public abstract LinkedList<Query> parseQuery(String query, boolean stemming, boolean stopWordsRemoving, String[] fields, Analyzer stdAnalyzer);
 	
 	/*
 	 * executeQuery
@@ -52,7 +49,7 @@ public abstract class Model{
 	 * 
 	 * @return List of resulting documents
 	 */
-	protected abstract LinkedList<Document> executeQuery(Query query, boolean stemming, boolean stopWordsRemoving);
+	//protected abstract LinkedList<Document> executeQuery(Query query, boolean stemming, boolean stopWordsRemoving);
 
 	/*
 	 * computeSimilarity
@@ -65,8 +62,6 @@ public abstract class Model{
 	 * executeQuery to reduce parameters required by this method (on other side, textDocument would be a String
 	 * and stemming and stopWordsRemoving boolean variables would be needed)
 	 */
-	protected abstract Object computeSimilarity(Query query, Query textDocument);
-	
-	
+	//protected abstract Object computeSimilarity(Query query, Query textDocument);
 	
 }

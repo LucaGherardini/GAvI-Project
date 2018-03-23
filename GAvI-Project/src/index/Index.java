@@ -50,7 +50,7 @@ public class Index {
 	 * A singleton to have an unique index, reachable by each part of the program and equals for 
 	 * everybody
 	 */
-	protected static Index uniqueIndex = null;
+	private static Index uniqueIndex = null;
 	
 	/*
 	 * The "tools"
@@ -84,7 +84,7 @@ public class Index {
 	 * Then it makes uniqueIndex to being a new Index, reallocating new tools
 	 * This is the fastest and easiest way to "clear" totally an index from its entries
 	 */
-	public void eraseIndex() {
+	protected void eraseIndex() {
 		resetIndex();
 		startIndex();
 		//uniqueIndex = new Index();

@@ -22,7 +22,7 @@ public abstract class Model{
 	 * ensure the same results, starting from the same text
 	 * @return a list of the results
 	 */
-	public abstract LinkedList<String> query(String query, boolean stemming, boolean stopWordsRemoving, LinkedList<String> documents);
+	public abstract /*LinkedList<Document>*/ void query(String query, boolean stemming, boolean stopWordsRemoving);
 	
 	/*
 	 * parseQuery
@@ -32,7 +32,7 @@ public abstract class Model{
 	 * @param stemming is used to activate "stemming" feature or not
 	 * @param stopWordsRemoving is used to activate "stop words removing" feature or not
 	 */
-	protected abstract Query parseQuery(String query, boolean stemming, boolean stopWordsRemoving);
+	public abstract Query parseQuery(String query, boolean stemming, boolean stopWordsRemoving);
 	
 	/*
 	 * executeQuery
@@ -48,7 +48,7 @@ public abstract class Model{
 	 * 
 	 * @return List of resulting documents
 	 */
-	protected abstract LinkedList<String> executeQuery(Query query, boolean stemming, boolean stopWordsRemoving, LinkedList<String> documents);
+	protected abstract LinkedList<Document> executeQuery(Query query, boolean stemming, boolean stopWordsRemoving);
 
 	/*
 	 * computeSimilarity

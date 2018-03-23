@@ -3,15 +3,27 @@ package index;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.LinkedList;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.demo.SearchFiles;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.CompositeReader;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.search.Collector;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Collector;
+import org.apache.lucene.search.LeafCollector;
+import org.apache.lucene.search.SimpleCollector;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 
@@ -58,9 +70,10 @@ public class Index {
 	private static StandardAnalyzer stdAnalyzer = null; 
 	private static Directory dirIndex = null;
 	private static IndexWriterConfig iwConfig = null; 
-	private static IndexWriter indexW = null; 
-	private static CompositeReader comReader = null;
-	
+	private static IndexWriter inWriter = null; 
+	private static IndexReader inReader = null;
+	private static IndexSearcher inSearcher = null;
+
 	/*
 	 * This is what makes a singleton... single!
 	 */
@@ -104,16 +117,9 @@ public class Index {
 				e.printStackTrace();
 			}
 		}
-		if(indexW != null) {
+		if(inWriter != null) {
 			try {
-				indexW.deleteAll();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		if(comReader != null) {
-			try {
-				comReader.close();
+				inWriter.deleteAll();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -129,13 +135,14 @@ public class Index {
 		iwConfig = new IndexWriterConfig(stdAnalyzer);
 		
 		try {
-			indexW = new IndexWriter(dirIndex, iwConfig);
+			inWriter = new IndexWriter(dirIndex, iwConfig);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
 		try {
-			comReader = DirectoryReader.open(indexW);
+			inReader = DirectoryReader.open(inWriter);
+			inSearcher = new IndexSearcher(inReader);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -174,9 +181,6 @@ public class Index {
 	public void addDocument(String path, String name) {
 		Document doc = new Document();
 		
-		/*
-		 * Creation of a BufferedReader to read document
-		 */
 		BufferedReader buffer = null;
 		try{
 			buffer = new BufferedReader(new FileReader(path+name));
@@ -198,7 +202,7 @@ public class Index {
 			e.printStackTrace();
 		}
 		
-		System.out.println("***Content read from "+ path + name + ": \n\n" + content + "\n");
+		//System.out.println("***Content read from "+ path + name + ": \n\n" + content + "\n");
 		
 		/*
 		 * Document properties are stored into Document type.
@@ -209,7 +213,7 @@ public class Index {
 		doc.add(new TextField("content", content, Field.Store.YES));
 		
 		try {
-			indexW.addDocument(doc);
+			inWriter.addDocument(doc);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -218,7 +222,8 @@ public class Index {
 		 * This updates comReader if index was modified (in this case, yes, because a new document is added)
 		 */
 		try {
-			comReader = DirectoryReader.openIfChanged((DirectoryReader) comReader);
+			inReader = DirectoryReader.openIfChanged((DirectoryReader) inReader);
+			inSearcher = new IndexSearcher(inReader);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -231,7 +236,7 @@ public class Index {
 	public Document getDocument(int index) {
 		Document doc = null;
 		try {
-			doc = comReader.document(index);
+			doc = inReader.document(index);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -243,8 +248,9 @@ public class Index {
 	 */
 	public void removeDocument(int index) {
 		try {
-			indexW.tryDeleteDocument(comReader, index);
-			comReader = DirectoryReader.openIfChanged((DirectoryReader)comReader);
+			inWriter.tryDeleteDocument(inReader, index);
+			inReader = DirectoryReader.openIfChanged((DirectoryReader)inReader);
+			inSearcher = new IndexSearcher(inReader);
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -254,7 +260,35 @@ public class Index {
 	 * returns number of documents stored in the index
 	 */
 	public int getSize() {
-		return indexW.numDocs();
+		return inWriter.numDocs();
+	}
+	
+	public void submitQuery(Query Q) {
+		TopDocs results = null;
+		ScoreDoc[] hits = null; 
+		
+		try {
+			results = inSearcher.search(Q, 5);
+			hits = results.scoreDocs;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println(results.totalHits + " total matching documents");
+		
+		Document doc;
+		try {
+			for (int k=0; k<hits.length; k++) {
+			
+				doc = inSearcher.doc(hits[k].doc);
+				System.out.println("Document " + doc.get("path") + doc.get("name"));
+				//Document doc = searcher.doc(hits[i].doc);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		//return null;
 	}
 	
 }

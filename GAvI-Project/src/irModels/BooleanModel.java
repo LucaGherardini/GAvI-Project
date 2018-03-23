@@ -4,21 +4,25 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import textOperation.TextOperations;
 
+import org.apache.lucene.document.Document;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
+
+import index.Index;
+
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 
 public class BooleanModel extends Model{
 	
-	public LinkedList<String> query(String query, boolean stemming, boolean stopWordsRemoving, LinkedList<String> documents){
+	public void query(String query, boolean stemming, boolean stopWordsRemoving){
 		Query q = parseQuery(query, stemming, stopWordsRemoving);		
-		return executeQuery(q, stemming, stopWordsRemoving, documents);
+		executeQuery(q, stemming, stopWordsRemoving);
 	}
 	
 	@Override
-	protected Query parseQuery(String query, boolean stemming, boolean stopWordsRemoving) {
+	public Query parseQuery(String query, boolean stemming, boolean stopWordsRemoving) {
 		
 		ArrayList<String> queryParsed = TextOperations.tokenization(query);
 		if (stemming) {
@@ -32,10 +36,11 @@ public class BooleanModel extends Model{
 		// distance admittable to accept a boolean query
 		
 		/*
-		 * Create the PhraseQuery with list of Terms to search, with a generic field (for now) and with a generic
+		 * Create the PhraseQuery with list of Terms to search, with a generic
 		 * slop value (for now) (slop = jumps between words admitted)
 		 */
-		PhraseQuery pq = new PhraseQuery(0, "title", queryParsed.toString());
+		PhraseQuery pq = new PhraseQuery(10, "content", queryParsed.toString());
+
 		
 		/*
 		 * Create a Builder, add query to it and build a BooleanQuery
@@ -48,21 +53,26 @@ public class BooleanModel extends Model{
 	}
 	
 	@Override
-	protected LinkedList<String> executeQuery(Query query, boolean stemming, boolean stopWordsRemoving, LinkedList<String> documents){
-		LinkedList<String> results = new LinkedList<String>();
+	protected LinkedList<Document> executeQuery(Query query, boolean stemming, boolean stopWordsRemoving){
+		LinkedList<Document> results;
 		Query q = null;
 		
 		/*
 		 * For each document, compute the similarity using the booleanQuery in computeSimilarity, adding it to
 		 * the list of results if similar to the query
 		 */
-		for (String d : documents) {
+		/*for (String d : documents) {
 			q = parseQuery(d, stemming, stopWordsRemoving);
 			if(computeSimilarity(query, q)) {
 				results.add(d);
 			}
-		}
-		return results;
+		}*/
+		
+		Index generalIndex = Index.getIndex();
+		generalIndex.submitQuery(q);
+		//results = generalIndex.submitQuery(q);
+		
+		return null;
 	}
 	
 	

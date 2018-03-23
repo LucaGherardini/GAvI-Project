@@ -8,6 +8,8 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.CompositeReader;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
@@ -48,7 +50,7 @@ public class Index {
 	 * A singleton to have an unique index, reachable by each part of the program and equals for 
 	 * everybody
 	 */
-	//public static Index uniqueIndex = null;
+	protected static Index uniqueIndex = null;
 	
 	/*
 	 * The "tools"
@@ -57,41 +59,32 @@ public class Index {
 	private static Directory dirIndex = null;
 	private static IndexWriterConfig iwConfig = null; 
 	private static IndexWriter indexW = null; 
+	private static CompositeReader comReader = null;
 	
 	/*
 	 * This is what makes a singleton... single!
 	 */
 	private Index() {
-		//startTools();
-	}
-	
-	/*
-	 * This method check that all tools are initialized ( != null), and does nothing if all is ok,
-	 * else start tools itself
-	 */
-	public static void checkIndex() {
-		if(stdAnalyzer == null || dirIndex == null || iwConfig == null || indexW == null) {
-			startIndex();
-		}
+		startIndex();
 	}
 	
 	/* getIndex
 	 * This method makes the Index class a singleton, allocating uniqueIndex as the only instance of
 	 * this class, and returning it
 	 */
-	/*public static Index getIndex() {
+	public static Index getIndex() {
 		if(uniqueIndex == null) {
 			uniqueIndex = new Index();
 		}
 		return uniqueIndex;
-	}*/
+	}
 	
 	/* eraseIndex
 	 * This method remove references to the previous uniqueIndex and close tools. 
 	 * Then it makes uniqueIndex to being a new Index, reallocating new tools
 	 * This is the fastest and easiest way to "clear" totally an index from its entries
 	 */
-	public static void eraseIndex() {
+	public void eraseIndex() {
 		resetIndex();
 		startIndex();
 		//uniqueIndex = new Index();
@@ -100,7 +93,7 @@ public class Index {
 	/* resetIndex
 	 * This method close tools that are closable (analyzer and directory)
 	 */
-	private static void resetIndex() {
+	private void resetIndex() {
 		if(stdAnalyzer != null){
 			stdAnalyzer.close();
 		}
@@ -111,17 +104,38 @@ public class Index {
 				e.printStackTrace();
 			}
 		}
+		if(indexW != null) {
+			try {
+				indexW.deleteAll();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if(comReader != null) {
+			try {
+				comReader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/* startIndex
 	 * A method used to allocate all tools of the Index
 	 */
-	private static void startIndex() {
+	private void startIndex() {
 		stdAnalyzer = new StandardAnalyzer();
 		dirIndex = new RAMDirectory();
 		iwConfig = new IndexWriterConfig(stdAnalyzer);
+		
 		try {
 			indexW = new IndexWriter(dirIndex, iwConfig);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			comReader = DirectoryReader.open(indexW);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -133,21 +147,31 @@ public class Index {
 	 * else all the "tools" are not initialized, and the index could not be get
 	 * 
 	 */
-	public static void addDocument(String path, String name) {
+	//public static void addDocument(String path, String name) {
 		//if(uniqueIndex == null) {
 		//	uniqueIndex = getIndex();
 		//}
-		checkIndex();
-		addDocumentToIndex(path, name);
-	}
+		//addDocumentToIndex(path, name);
+	//}
 	
 	/* createDocument
 	 * @param given a path and a name of a file, this method build a document that contains these
 	 * three fields: path/title/content, corresponding respectively to 
 	 * "Path to file"/"Name of file"/"Text read from file"
 	 */
-	private static Document createDocument(String path, String name) {
+	//private static Document createDocument(String path, String name) {
 		
+		
+	//}
+	
+	/* addDocument
+	 * This method is used to create and to add a document to the index
+	 * @param path is the string containing path to the file
+	 * @param name is the string containing name of the file
+	 * path+name gives position of the file on filesystem, they are submitted separately to allow
+	 * a slimmer creation of the Document
+	 */
+	public void addDocument(String path, String name) {
 		Document doc = new Document();
 		
 		/*
@@ -184,48 +208,52 @@ public class Index {
 		doc.add(new TextField("name", name, Field.Store.YES));
 		doc.add(new TextField("content", content, Field.Store.YES));
 		
-		return doc;
-	}
-	
-	/* addDocument
-	 * This method is used to create and to add a document to the index
-	 * @param path is the string containing path to the file
-	 * @param name is the string containing name of the file
-	 * path+name gives position of the file on filesystem, they are submitted separately to allow
-	 * a slimmer creation of the Document
-	 */
-	private static void addDocumentToIndex(String path, String name) {
-		Document doc = createDocument(path, name);
-		
 		try {
 			indexW.addDocument(doc);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		/*
+		 * This updates comReader if index was modified (in this case, yes, because a new document is added)
+		 */
+		try {
+			comReader = DirectoryReader.openIfChanged((DirectoryReader) comReader);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	/* getDocument
 	 * Returns a document giving corresponding index
 	 */
-	public static Document getDocument(int index) {
-		checkIndex();
-		// TODO create an IndexReader to return a document
-		return null;
+	public Document getDocument(int index) {
+		Document doc = null;
+		try {
+			doc = comReader.document(index);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return doc;
 	}
 	
 	/* removeDocument
-	 * This method removes a document from the index, given its index
+	 * This method removes a document from the index, given its position into the index
 	 */
-	public static void removeDocument(int index) {
-		checkIndex();
-		//TODO add method to remove specific document to index
+	public void removeDocument(int index) {
+		try {
+			indexW.tryDeleteDocument(comReader, index);
+			comReader = DirectoryReader.openIfChanged((DirectoryReader)comReader);
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/* getSize()
 	 * returns number of documents stored in the index
 	 */
-	public static int getSize() {
-		checkIndex();
+	public int getSize() {
 		return indexW.numDocs();
 	}
 	

@@ -22,6 +22,7 @@ public class MainIndex {
 		generalIndex.addDocument("", "README.md");
 		generalIndex.addDocument("other/", "Lucene Useful Links.txt");
 		generalIndex.addDocument("doc/", "prova.txt");
+		generalIndex.addDocument("doc/", "test.txt");
 		
 		Document d;
 		for (int i=0; i<generalIndex.getSize(); i++) {
@@ -31,12 +32,22 @@ public class MainIndex {
 			//System.out.println("Content of document n° " + i + ": " + d.get("content"));
 		}
 		
-		String query = "Ciao";
+		
+		// This returns twice the same document, one for hit on "ciao", one for hit on "prova.txt"
+		String query = "name:prova.txt OR content:test";
 		BooleanModel bm = new BooleanModel();
 		//bm.query(query, false, true);
-		 
+		
+		/*
+		 * Fields on which query will work
+		 */
+		String[] fields = {"name", "content"};
 
-		generalIndex.submitQuery(bm.parseQuery(query, false, false));
+		// QUESTO RENDE I MODELLI IMPLEMENTATI DA BUTTARE!
+		/* TODO Maybe another field to submitQuery, called "Model" could let a query parsing suitable to Model 
+		 * wanted
+		 */
+		generalIndex.submitQuery(query, fields, bm);
 		
 	}
 }

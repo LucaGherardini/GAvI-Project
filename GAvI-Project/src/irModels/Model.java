@@ -3,6 +3,7 @@ package irModels;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Query;
 
@@ -24,6 +25,9 @@ public abstract class Model{
 	 */
 	public abstract /*LinkedList<Document>*/ void query(String query, boolean stemming, boolean stopWordsRemoving);
 	
+	
+	public abstract ArrayList<String> parser(String query, boolean stemming, boolean stopWordsRemoving);
+	
 	/*
 	 * parseQuery
 	 * Given a query, each model has its own way to represent it (a Boolean model could, for example, recognize
@@ -32,7 +36,7 @@ public abstract class Model{
 	 * @param stemming is used to activate "stemming" feature or not
 	 * @param stopWordsRemoving is used to activate "stop words removing" feature or not
 	 */
-	public abstract Query parseQuery(String query, boolean stemming, boolean stopWordsRemoving);
+	public abstract LinkedList<Query> parseQuery(String query, boolean stemming, boolean stopWordsRemoving, String[] fields, Analyzer stdAnalyzer);
 	
 	/*
 	 * executeQuery

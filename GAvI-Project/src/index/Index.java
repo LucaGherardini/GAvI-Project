@@ -3,29 +3,34 @@ package index;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.demo.SearchFiles;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.CompositeReader;
+
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.search.Collector;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Collector;
-import org.apache.lucene.search.LeafCollector;
-import org.apache.lucene.search.SimpleCollector;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.TopFieldDocs;
+
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
+
+import irModels.Model;
 
 /*
  * This class implements an Index. This Index allows to being manipulated by user, 
@@ -64,10 +69,7 @@ public class Index {
 	 */
 	private static Index uniqueIndex = null;
 	
-	/*
-	 * The "tools"
-	 */
-	private static StandardAnalyzer stdAnalyzer = null; 
+	private static Analyzer stdAnalyzer = null; 
 	private static Directory dirIndex = null;
 	private static IndexWriterConfig iwConfig = null; 
 	private static IndexWriter inWriter = null; 
@@ -100,7 +102,6 @@ public class Index {
 	protected void eraseIndex() {
 		resetIndex();
 		startIndex();
-		//uniqueIndex = new Index();
 	}
 	
 	/* resetIndex
@@ -147,29 +148,6 @@ public class Index {
 			e.printStackTrace();
 		}
 	}
-	
-	/* addDocumentToIndex
-	 * This method create and add a document to the index using the private method addDocument
-	 * To allow a document to be added, this method check that uniqueIndex is initialized before,
-	 * else all the "tools" are not initialized, and the index could not be get
-	 * 
-	 */
-	//public static void addDocument(String path, String name) {
-		//if(uniqueIndex == null) {
-		//	uniqueIndex = getIndex();
-		//}
-		//addDocumentToIndex(path, name);
-	//}
-	
-	/* createDocument
-	 * @param given a path and a name of a file, this method build a document that contains these
-	 * three fields: path/title/content, corresponding respectively to 
-	 * "Path to file"/"Name of file"/"Text read from file"
-	 */
-	//private static Document createDocument(String path, String name) {
-		
-		
-	//}
 	
 	/* addDocument
 	 * This method is used to create and to add a document to the index
@@ -263,32 +241,63 @@ public class Index {
 		return inWriter.numDocs();
 	}
 	
-	public void submitQuery(Query Q) {
-		TopDocs results = null;
-		ScoreDoc[] hits = null; 
+	public void submitQuery(String query, String[] fields, Model m) {
+
+		QueryParser parser = null;
+		LinkedList<Query> queries = new LinkedList<Query>();
 		
-		try {
-			results = inSearcher.search(Q, 5);
-			hits = results.scoreDocs;
-		} catch (IOException e) {
-			e.printStackTrace();
+		for (String field : fields) {
+			parser = new QueryParser(field, stdAnalyzer);
+			try {
+				queries.add(parser.parse(query));
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
 		}
 		
-		System.out.println(results.totalHits + " total matching documents");
+		
+		LinkedList<TopDocs> results = new LinkedList<TopDocs>();
+		LinkedList<ScoreDoc[]> hits = new LinkedList<ScoreDoc[]>();
+		
+		System.out.println("Printing query: " + queries.toString() + "\n");
+		
+		System.out.println("Printing documents in index: ");
+		for (int i = 0; i < getSize(); i++) {
+			System.out.println("Document " + i + ": " + getDocument(i).get("name"));
+		}
+		
+		/*try {
+			inSearcher = new IndexSearcher(inReader);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}*/
+		
+		int totalHits = 0;
+		
+		for (Query q : queries) {
+			try {
+				results.add(inSearcher.search(q, 5));
+				hits.add(results.get(results.size()-1).scoreDocs);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			totalHits += results.get(results.size()-1).totalHits;
+		}
+		
+		System.out.println(totalHits + " total matching documents");
 		
 		Document doc;
 		try {
-			for (int k=0; k<hits.length; k++) {
-			
-				doc = inSearcher.doc(hits[k].doc);
-				System.out.println("Document " + doc.get("path") + doc.get("name"));
-				//Document doc = searcher.doc(hits[i].doc);
+			for (ScoreDoc[] k : hits) {
+				for ( int i = 0; i<k.length ; i++) {
+					doc = inSearcher.doc(k[i].doc);
+					System.out.println("Document " + doc.get("path") + doc.get("name"));
+					//Document doc = searcher.doc(hits[i].doc);
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 		//return null;
 	}
-	
 }

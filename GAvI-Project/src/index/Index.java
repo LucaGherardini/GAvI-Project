@@ -3,6 +3,7 @@ package index;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.LinkedList;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -38,6 +39,9 @@ import irModels.Model;
  * directories, each of them has a path, that is the same for all documents of that directory
  * erasing a "Directory" means erasing all documents with a specific pattern in their path field
  * 
+ * TODO Function Load and Save, to saving physically an index on disk and to re-loading it at next starting 
+ * (we could memorize the position of the last saving to reloading it automatically at starting)
+ * 
  * TODO and if Index wouldn't be a static class but it contains a List of Index instances? So, 
  * managing directories would be easier (no need to recognize path of all documents)
  * 
@@ -59,8 +63,13 @@ import irModels.Model;
  *		stored dinamically on RAM!)
  * 
  */
-public class Index {
+public class Index implements Serializable{
 	
+	/**
+	 * SerialVersion auto-generated, used for Serializable function
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/*
 	 * A singleton to have an unique index, reachable by each part of the program and equals for 
 	 * everybody

@@ -22,8 +22,10 @@ public class MainIndex {
 		 */
 		generalIndex.addDocument("", "README.md");
 		generalIndex.addDocument("other/", "Lucene Useful Links.txt");
-		generalIndex.addDocument("doc/", "prova.txt");
-		generalIndex.addDocument("doc/", "test.txt");
+		generalIndex.addDocument("other/", "prova.txt");
+		generalIndex.addDocument("other/", "test.txt");
+		generalIndex.addDocument("other/", "GenericTextFile.txt");
+		generalIndex.addDocument("other/", "USA.txt");
 		
 		Document d;
 		for (int i=0; i<generalIndex.getSize(); i++) {
@@ -61,7 +63,10 @@ public class MainIndex {
 		
 		System.out.println("************************************************");
 		
-		query = "name:test.t~2 OR Lucene~2 OR GAvI~2 content:ciao";
+		/*
+		 * Try query "United States Park" and query "United States": same results, different ranking!
+		 */
+		query = "United States Park";
 		
 		fields = new LinkedList<String>();// = {"name", "content"};
 		

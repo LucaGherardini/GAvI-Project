@@ -1,6 +1,7 @@
 package index;
 
 import irModels.BooleanModel;
+import irModels.FuzzyModel;
 import textOperation.TextOperations;
 
 import java.util.LinkedList;
@@ -33,7 +34,7 @@ public class MainIndex {
 		}
 		
 		
-		String query = "name:prova.txt OR name:README.md OR name:Lucene OR content:ciao";
+		String query = "name:test.txt OR content:Lucene";
 		BooleanModel bm = new BooleanModel();
 		
 		
@@ -41,6 +42,7 @@ public class MainIndex {
 		 * Fields on which query will work, passed to inform index in which fields it must search
 		 */
 		LinkedList<String> fields = new LinkedList<String>();// = {"name", "content"};
+		
 		
 		if(query.contains("name")) {
 			fields.add("name");
@@ -57,5 +59,27 @@ public class MainIndex {
 
 		generalIndex.submitQuery(query, fields, bm);
 		
+		System.out.println("************************************************");
+		
+		query = "name:test.t~2 OR Lucene~2 OR GAvI~2 content:ciao";
+		
+		fields = new LinkedList<String>();// = {"name", "content"};
+		
+		if(query.contains("name")) {
+			fields.add("name");
+		}
+		
+		if(query.contains("content")) {
+			fields.add("content");
+		}
+		
+		if(fields.size() == 0) {
+			fields.add("name");
+			fields.add("content");
+		}
+		
+		FuzzyModel fm = new FuzzyModel();
+		
+		generalIndex.submitQuery(query, fields, fm);
 	}
 }

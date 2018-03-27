@@ -20,7 +20,8 @@ import org.apache.lucene.index.IndexWriterConfig;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-
+import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
+import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -76,7 +77,7 @@ public class Index implements Serializable{
 	 */
 	private static Index uniqueIndex = null;
 	
-	private static Analyzer stdAnalyzer = null; 
+	private static StandardAnalyzer stdAnalyzer = null; 
 	private static Directory dirIndex = null;
 	private static IndexWriterConfig iwConfig = null; 
 	private static IndexWriter inWriter = null; 
@@ -248,23 +249,32 @@ public class Index implements Serializable{
 	
 	public void submitQuery(String query, LinkedList<String> fields, Model m) {
 
-		QueryParser parser = null;
+	// TODO Removing comments and casting LinkedLists to single vars
+		
+		/*StandardQueryParser parser = null;
 		LinkedList<Query> queries = new LinkedList<Query>();
 		
-		for (String field : fields) {
-			parser = new QueryParser(field, stdAnalyzer);
+		//for (String field : fields) {
+			parser = new StandardQueryParser();
 			try {
-				queries.add(m.getQueryParsed(parser.parse(query)));
-			} catch (ParseException e1) {
-				e1.printStackTrace();
-			}
-		}
-		
+					queries.add(m.getQueryParsed(parser.parse(query, "name")));
+				} catch (QueryNodeException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		//}
+		*/
+		Query q = m.getQueryParsed(query, fields, stdAnalyzer);
 		
 		LinkedList<TopDocs> results = new LinkedList<TopDocs>();
 		LinkedList<ScoreDoc[]> hits = new LinkedList<ScoreDoc[]>();
 		
-		System.out.println("Printing query: " + queries.toString() + "\n");
+		
+		//TopDocs results = null;
+		//ScoreDoc[] hits = null;
+		
+		
+		System.out.println("Printing query: " + q.toString() + "\n");
 		
 		System.out.println("Printing documents in index: ");
 		for (int i = 0; i < getSize(); i++) {
@@ -280,7 +290,7 @@ public class Index implements Serializable{
 		
 		int totalHits = 0;
 		
-		for (Query q : queries) {
+		//for (Query q : queries) {
 			try {
 				results.add(inSearcher.search(q, 5));
 				hits.add(results.get(results.size()-1).scoreDocs);
@@ -288,7 +298,7 @@ public class Index implements Serializable{
 				e.printStackTrace();
 			}
 			totalHits += results.get(results.size()-1).totalHits;
-		}
+		//}
 		
 		System.out.println(totalHits + " total matching documents");
 		

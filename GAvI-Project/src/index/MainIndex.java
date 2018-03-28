@@ -66,7 +66,7 @@ public class MainIndex {
 		/*
 		 * Try query "United States Park" and query "United States": same results, different ranking!
 		 */
-		query = "United States Park";
+		query = "United States";
 		
 		fields = new LinkedList<String>();// = {"name", "content"};
 		

@@ -16,6 +16,8 @@ import org.apache.lucene.store.RAMDirectory;
 import gui.Main_window;
 import textOperation.TextOperations;
 
+// Un salutone
+
 public class Main {
 
 	public static void main(String[] args) throws IOException, ParseException {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Query;
 
@@ -21,7 +22,7 @@ public abstract class Model{
 	 */
 	public abstract void query(String query, boolean stemming, boolean stopWordsRemoving, LinkedList<String> fields);
 	
-	public abstract Query getQueryParsed(Query q);
+	public abstract Query getQueryParsed(String query, LinkedList<String> fields, StandardAnalyzer analyzer);
 	
 	//public abstract ArrayList<String> parser(String query, boolean stemming, boolean stopWordsRemoving);
 	

@@ -5,9 +5,14 @@ import java.util.LinkedList;
 import textOperation.TextOperations;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
+import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
+import org.apache.lucene.queryparser.xml.builders.BooleanQueryBuilder;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
@@ -18,6 +23,7 @@ import index.Index;
 import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.util.Version;
 
 public class BooleanModel extends Model{
 	
@@ -26,9 +32,29 @@ public class BooleanModel extends Model{
 		i.submitQuery(query, fields, this);
 	}
 	
-	public Query getQueryParsed(Query q) {
-		BooleanQuery bq = (BooleanQuery) q;
-		return bq;
+	public Query getQueryParsed(String query, LinkedList<String> fields, StandardAnalyzer analyzer) {
+		
+		StandardQueryParser queryParser = null;
+		Query q = null;
+		Builder finalQuery = new BooleanQuery.Builder();
+		
+		for(String field : fields) {
+			queryParser = new StandardQueryParser(analyzer);
+			try {
+				q = queryParser.parse(query, field);
+			} catch (QueryNodeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			/*
+			 * Using all "MUST" occurs is equivalent to "AND" operator. Using SHOULD is equivalent to "OR" 
+			 * operator between queries
+			 */			
+			finalQuery.add(q, BooleanClause.Occur.SHOULD); 
+		}
+		
+		return finalQuery.build();
 	}
 	
 	/*public ArrayList<String> parser(String query, boolean stemming, boolean stopWordsRemoving){

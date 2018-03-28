@@ -1,6 +1,7 @@
 package index;
 
 import irModels.BooleanModel;
+import irModels.FuzzyModel;
 import textOperation.TextOperations;
 
 import java.util.LinkedList;
@@ -21,8 +22,10 @@ public class MainIndex {
 		 */
 		generalIndex.addDocument("", "README.md");
 		generalIndex.addDocument("other/", "Lucene Useful Links.txt");
-		generalIndex.addDocument("doc/", "prova.txt");
-		generalIndex.addDocument("doc/", "test.txt");
+		generalIndex.addDocument("other/", "prova.txt");
+		generalIndex.addDocument("other/", "test.txt");
+		generalIndex.addDocument("other/", "GenericTextFile.txt");
+		generalIndex.addDocument("other/", "USA.txt");
 		
 		Document d;
 		for (int i=0; i<generalIndex.getSize(); i++) {
@@ -33,7 +36,7 @@ public class MainIndex {
 		}
 		
 		
-		String query = "name:prova.txt OR name:README.md OR name:Lucene OR content:ciao";
+		String query = "name:test.txt OR content:Lucene";
 		BooleanModel bm = new BooleanModel();
 		
 		
@@ -41,6 +44,7 @@ public class MainIndex {
 		 * Fields on which query will work, passed to inform index in which fields it must search
 		 */
 		LinkedList<String> fields = new LinkedList<String>();// = {"name", "content"};
+		
 		
 		if(query.contains("name")) {
 			fields.add("name");
@@ -57,5 +61,30 @@ public class MainIndex {
 
 		generalIndex.submitQuery(query, fields, bm);
 		
+		System.out.println("************************************************");
+		
+		/*
+		 * Try query "United States Park" and query "United States": same results, different ranking!
+		 */
+		query = "United States";
+		
+		fields = new LinkedList<String>();// = {"name", "content"};
+		
+		if(query.contains("name")) {
+			fields.add("name");
+		}
+		
+		if(query.contains("content")) {
+			fields.add("content");
+		}
+		
+		if(fields.size() == 0) {
+			fields.add("name");
+			fields.add("content");
+		}
+		
+		FuzzyModel fm = new FuzzyModel();
+		
+		generalIndex.submitQuery(query, fields, fm);
 	}
 }

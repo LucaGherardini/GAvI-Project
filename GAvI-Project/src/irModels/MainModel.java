@@ -16,10 +16,10 @@ public class MainModel {
 		//String title = "title";
 		//doc.add(new TextField("title", title, Field.Store.YES));
 		
-		String query = "title AND NOT(is)";
-		LinkedList<String> risultati;
+		//String query = "title AND NOT(is)";
+		//LinkedList<String> risultati;
 		
-		Model m = new BooleanModel();
+		//Model m = new BooleanModel();
 		
 		//risultati = m.query(query, false, true, documentiProva);
 		

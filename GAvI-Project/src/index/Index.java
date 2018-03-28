@@ -20,7 +20,8 @@ import org.apache.lucene.index.IndexWriterConfig;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-
+import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
+import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -76,7 +77,7 @@ public class Index implements Serializable{
 	 */
 	private static Index uniqueIndex = null;
 	
-	private static Analyzer stdAnalyzer = null; 
+	private static StandardAnalyzer stdAnalyzer = null; 
 	private static Directory dirIndex = null;
 	private static IndexWriterConfig iwConfig = null; 
 	private static IndexWriter inWriter = null; 
@@ -247,58 +248,52 @@ public class Index implements Serializable{
 	}
 	
 	public void submitQuery(String query, LinkedList<String> fields, Model m) {
-
-		QueryParser parser = null;
-		LinkedList<Query> queries = new LinkedList<Query>();
 		
-		for (String field : fields) {
-			parser = new QueryParser(field, stdAnalyzer);
-			try {
-				queries.add(m.getQueryParsed(parser.parse(query)));
-			} catch (ParseException e1) {
-				e1.printStackTrace();
-			}
+		if(getSize() == 0) {
+			System.err.println("No documents in index!");
+			return ;
 		}
 		
+		Query q = m.getQueryParsed(query, fields, stdAnalyzer);
 		
-		LinkedList<TopDocs> results = new LinkedList<TopDocs>();
-		LinkedList<ScoreDoc[]> hits = new LinkedList<ScoreDoc[]>();
+		TopDocs results = null;
+		ScoreDoc[] hits = null;
 		
-		System.out.println("Printing query: " + queries.toString() + "\n");
+		System.out.println("Printing query: " + q.toString() + "\n");
 		
 		System.out.println("Printing documents in index: ");
 		for (int i = 0; i < getSize(); i++) {
-			System.out.println("Document " + i + ": " + getDocument(i).get("name"));
+			System.out.println("Document " + i + ": " + getDocument(i).get("path") + getDocument(i).get("name"));
 		}
+		System.out.println("\n");
 		
-		// Updating of IndexSearcher only if a request is submitted
+		/* Updating of IndexSearcher only if a request is submitted. The only way to updating a searcher, is to
+		 * creating a new searcher bounded to current reader. This is cheap if we already have a reader
+		 * available
+		 */		
 		try {
 			inSearcher = new IndexSearcher(inReader);
 		}catch(Exception e) {
 			e.printStackTrace();
+			System.err.println("\nError updating IndexSearcher. Trying to continue...");
 		}
 		
-		int totalHits = 0;
-		
-		for (Query q : queries) {
-			try {
-				results.add(inSearcher.search(q, 5));
-				hits.add(results.get(results.size()-1).scoreDocs);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			totalHits += results.get(results.size()-1).totalHits;
-		}
-		
-		System.out.println(totalHits + " total matching documents");
-		
-		Document doc;
 		try {
-			for (ScoreDoc[] k : hits) {
-				for ( int i = 0; i<k.length ; i++) {
-					doc = inSearcher.doc(k[i].doc);
+			results = inSearcher.search(q, getSize());
+			hits = results.scoreDocs;
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.err.println("\nSomething goes wrong with your query... Quitting...");
+			return ;
+		}
+		
+		System.out.println(results.totalHits + " total matching documents");
+		
+		Document doc = null;
+		try {
+			for (int k=0 ; k < hits.length ; k++) {
+					doc = inSearcher.doc(hits[k].doc);
 					System.out.println("Document " + doc.get("path") + doc.get("name"));
-				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

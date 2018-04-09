@@ -1,8 +1,11 @@
 package index;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.LinkedList;
 
@@ -41,35 +44,13 @@ import irModels.Model;
  * erasing a "Directory" means erasing all documents with a specific pattern in their path field
  * 
  * TODO Function Load and Save, to saving physically an index on disk and to re-loading it at next starting 
- * (we could memorize the position of the last saving to reloading it automatically at starting)
- * 
- * TODO and if Index wouldn't be a static class but it contains a List of Index instances? So, 
- * managing directories would be easier (no need to recognize path of all documents)
- * 
- * Static approach:
- * 	- Intuitive and easy to represent (a static index)
- * 	- Maybe more complex procedures to remove directories (recognize of a path between all documents)
- * 
- * List approach:
- * 	- Easy to remove directories (an entry of the List is an index on a specific directory) but the
- * 		instance remains pending (removing an instance to the List doesn't deallocate it, the pointer
- * 		could be still there! Risk of working with indexes not contained in the general index)
- * 
- * 	- More tricky procedure to scan index (List contains indexes, for each index we must get document,
- * 		look for something, going to the next index in the List...)
- * 
- * 	- The "lone" instance after removing an Index from the list could allow a faster readding of the
- * 		index to the general index (but only if NOTHING has changed!), but this strategy requires
- * 		great attention to indexes that we are using and memory leak is possible (indexes are 
- *		stored dinamically on RAM!)
+ * (we could memorize the position of the last saving to reloading it automatically at starting). Problem: 
+ * variables of Lucene are not serializable, so:
+ * 	- Serialize it in another way
+ * 	- Save only some info's (like a list of the documents indexed) to rebuilt the index on these files
  * 
  */
-public class Index implements Serializable{
-	
-	/**
-	 * SerialVersion auto-generated, used for Serializable function
-	 */
-	private static final long serialVersionUID = 1L;
+public class Index{
 
 	/*
 	 * A singleton to have an unique index, reachable by each part of the program and equals for 
@@ -102,20 +83,20 @@ public class Index implements Serializable{
 		return uniqueIndex;
 	}
 	
-	/* eraseIndex
+	/* resetIndex
 	 * This method remove references to the previous uniqueIndex and close tools. 
 	 * Then it makes uniqueIndex to being a new Index, reallocating new tools
 	 * This is the fastest and easiest way to "clear" totally an index from its entries
 	 */
-	protected void eraseIndex() {
-		resetIndex();
+	protected void resetIndex() {
+		eraseIndex();
 		startIndex();
 	}
 	
-	/* resetIndex
-	 * This method close tools that are closable (analyzer and directory)
+	/* eraseIndex
+	 * This method close tools that are closable
 	 */
-	private void resetIndex() {
+	private void eraseIndex() {
 		if(stdAnalyzer != null){
 			stdAnalyzer.close();
 		}
@@ -157,19 +138,73 @@ public class Index implements Serializable{
 		}
 	}
 	
+	/* saveIndex 
+	 * This method write all documents path to the target file, as clear text
+	 */
+	public void saveIndex(String saveFile) {
+		if (getSize() == 0) {
+			System.err.println("This index is empty, saving it is useless");
+			return ;
+		}
+		
+		PrintWriter fileWriter = null;
+		
+		try {
+			fileWriter = new PrintWriter(saveFile);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			System.err.println("File " + saveFile + " doesn't exist");
+		}
+		
+		for (int k = 0 ; k < this.getSize() ; k++) {
+			fileWriter.println(getDocument(k).get("path") + getDocument(k).get("name"));
+		}
+		
+		fileWriter.close();
+		System.out.println("Saving successful to " + saveFile + "!");
+	}
+	
+	public void loadIndex(String saveFile) {
+		BufferedReader reader = null;
+		
+		try {
+			reader = new BufferedReader(new FileReader(new File(saveFile)));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			System.err.println("File " + saveFile + " doesn't seem to exist, or some else error showed up. Loading aborted.");
+			return ;
+		}
+		
+		System.out.println("Erasing of the previous index...");
+		resetIndex(); 
+		
+		String line = "";
+		try {
+			while ( (line = reader.readLine()) != null) {
+				addDocument(line);
+				System.out.println("Loaded in index " + line);
+			}
+
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return ;
+		}
+		
+		System.out.println("Loading successful from " + saveFile + "!");
+	}
+	
+	
 	/* addDocument
 	 * This method is used to create and to add a document to the index
-	 * @param path is the string containing path to the file
-	 * @param name is the string containing name of the file
-	 * path+name gives position of the file on filesystem, they are submitted separately to allow
-	 * a slimmer creation of the Document
+	 * @param docPath is a concatenation of path and name of a document (for example "doc/Lucene.pdf")
 	 */
-	public void addDocument(String path, String name) {
+	public void addDocument(String docPath) {
 		Document doc = new Document();
 		
 		BufferedReader buffer = null;
 		try{
-			buffer = new BufferedReader(new FileReader(path+name));
+			buffer = new BufferedReader(new FileReader(docPath));
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -189,7 +224,18 @@ public class Index implements Serializable{
 		}
 		
 		//System.out.println("***Content read from "+ path + name + ": \n\n" + content + "\n");
+		int separatorIndex = docPath.lastIndexOf("/");
 		
+		String path = "";
+		
+		/*
+		 * Currently, relative path is used to add documents to index, so the "/" could be missing. In future, using
+		 * gui, absolute path will be always declared, erasing this problem
+		 */
+		if (separatorIndex != -1) {
+			path = docPath.substring(0, separatorIndex+1);
+		}
+		String name = docPath.substring(separatorIndex+1, docPath.length());
 		/*
 		 * Document properties are stored into Document type.
 		 * @warning path field is not intended to be used for queries

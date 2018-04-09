@@ -16,17 +16,21 @@ public class MainIndex {
 
 		Index generalIndex = Index.getIndex();
 		
+		generalIndex.loadIndex("savedIndex.ser");
+		
 		/*
 		 * Creation of a Document referencing to README.md (NOTE: as default, the program
 		 * "is located" at GAvI-Project/ (so, nothing is to being added to reach this file) 
 		 */
-		generalIndex.addDocument("", "README.md");
-		generalIndex.addDocument("other/", "Lucene Useful Links.txt");
-		generalIndex.addDocument("other/", "prova.txt");
-		generalIndex.addDocument("other/", "test.txt");
-		generalIndex.addDocument("other/", "GenericTextFile.txt");
-		generalIndex.addDocument("other/", "USA.txt");
+		/*
+		generalIndex.addDocument("README.md");
+		generalIndex.addDocument("other/Lucene Useful Links.txt");
+		generalIndex.addDocument("other/test.txt");
+		generalIndex.addDocument("other/GenericTextFile.txt");
+		generalIndex.addDocument("other/USA.txt");
 		
+		generalIndex.saveIndex("savedIndex.ser");
+		*/
 		Document d;
 		for (int i=0; i<generalIndex.getSize(); i++) {
 			d = generalIndex.getDocument(i);

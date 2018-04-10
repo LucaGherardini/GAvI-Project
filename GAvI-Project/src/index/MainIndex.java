@@ -40,7 +40,7 @@ public class MainIndex {
 		}
 		
 		
-		String query = "name:test.txt OR content:Lucene";
+		String query = "name:test.txt OR content:test.txt";
 		BooleanModel bm = new BooleanModel();
 		
 		
@@ -70,7 +70,7 @@ public class MainIndex {
 		/*
 		 * Try query "United States Park" and query "United States": same results, different ranking!
 		 */
-		query = "United States";
+		query = "Unit~ States Par~1";
 		
 		fields = new LinkedList<String>();// = {"name", "content"};
 		

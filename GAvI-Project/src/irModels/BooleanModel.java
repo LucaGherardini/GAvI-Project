@@ -43,7 +43,6 @@ public class BooleanModel extends Model{
 			try {
 				q = queryParser.parse(query, field);
 			} catch (QueryNodeException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -66,83 +65,6 @@ public class BooleanModel extends Model{
 			queryParsed = TextOperations.removeStopWords(queryParsed);
 		}
 		return queryParsed;
-	}
-	*/
-	
-	/*@Override
-	public LinkedList<Query> parseQuery(String query, boolean stemming, boolean stopWordsRemoving, String[] fields, Analyzer stdAnalyzer) {
-		
-		//ArrayList<String> queryParsed = parser(query, stemming, stopWordsRemoving);
-		LinkedList<Query> pQueries = new LinkedList<Query>();
-		
-		
-		for (String field : fields) {
-		parser = new QueryParser(field, stdAnalyzer);
-		try {
-			queries.add(parser.parse(query));
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
-	}
-		
-		PhraseQuery pq = null;
-		Builder booleanQueryBuilder = null; 
-		
-		for (String field : fields) {
-			booleanQueryBuilder = new BooleanQuery.Builder();
-			//pq = new PhraseQuery(0, field, query);
-		    booleanQueryBuilder.add(new TermQuery(new Term(field, query)), BooleanClause.Occur.MUST);
-		    pQueries.add(booleanQueryBuilder.build());
-		}
-		
-		//BooleanQuery booleanQuery = booleanQueryBuilder.build();
-			try {
-				queries.add(parser.parse(query));
-			} catch (ParseException e1) {
-				e1.printStackTrace();
-			}
-		
-		// TODO create a class "EditDistance" with a method called getDistance() that returns the number of
-		// distance admittable to accept a boolean query
-		
-		//for (String field : fields)
-		//= new PhraseQuery(0, "name", queryParsed.toString());
-		//MultiPhraseQuery mpQ;
-
-		Builder booleanQueryBuilder = new BooleanQuery.Builder();
-			    booleanQueryBuilder.add(pq, BooleanClause.Occur.MUST);
-		BooleanQuery booleanQuery = booleanQueryBuilder.build();
-		
-		return pQueries;
-	}
-	*/
-	
-	/*@Override
-	protected LinkedList<Document> executeQuery(Query query, boolean stemming, boolean stopWordsRemoving){
-		LinkedList<Document> results;
-		Query q = null;
-
-		for (String d : documents) {
-			q = parseQuery(d, stemming, stopWordsRemoving);
-			if(computeSimilarity(query, q)) {
-				results.add(d);
-			}
-		
-		Index generalIndex = Index.getIndex();
-		//generalIndex.submitQuery(q);
-		//results = generalIndex.submitQuery(q);
-		
-		return null;
-	}
-	*/
-	
-	
-	/*@Override
-	protected Boolean computeSimilarity(Query booleanQuery, Query textDocument) {
-		BooleanQuery bq = (BooleanQuery) booleanQuery;
-		
-		BooleanQuery parsedText = (BooleanQuery) textDocument;
-		return bq.equals(parsedText);
 	}
 	*/
 }

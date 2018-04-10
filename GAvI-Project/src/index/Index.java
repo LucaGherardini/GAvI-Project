@@ -339,7 +339,7 @@ public class Index{
 		try {
 			for (int k=0 ; k < hits.length ; k++) {
 					doc = inSearcher.doc(hits[k].doc);
-					System.out.println("Document " + doc.get("path") + doc.get("name"));
+					System.out.println("Document " + doc.get("path") + doc.get("name") + " with score: " + hits[k].score);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

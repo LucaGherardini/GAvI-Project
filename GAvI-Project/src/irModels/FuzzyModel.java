@@ -6,17 +6,9 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.FuzzyQuery;
-
-import index.Index;
+import org.apache.lucene.search.similarities.Similarity;
 
 public class FuzzyModel extends Model {
-
-	@Override
-	public void query(String query, boolean stemming, boolean stopWordsRemoving, LinkedList<String> fields) {
-		Index i = Index.getIndex();
-		i.submitQuery(query, fields, this);
-	}
 
 	@Override
 	public Query getQueryParsed(String query, LinkedList<String> fields, StandardAnalyzer analyzer) {
@@ -34,6 +26,12 @@ public class FuzzyModel extends Model {
 				e.printStackTrace();
 			}
 		return q;
+	}
+
+	@Override
+	public Similarity getSimilarity() {
+		/* By default, fuzzy and boolean model doesn't change similarity */
+		return null;
 	}
 
 }

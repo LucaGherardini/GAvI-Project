@@ -7,6 +7,9 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.similarities.Similarity;
+
+import index.Index;
 
 /**
  * @author luca
@@ -17,10 +20,12 @@ public abstract class Model{
 	
 	/*
 	 * query
-	 * This method is the "engine" that make a Model working: it call 
-	 * @return a list of the results
+	 * This method is a short call to method submitQuery of Index class. It allows a slim call
 	 */
-	public abstract void query(String query, boolean stemming, boolean stopWordsRemoving, LinkedList<String> fields);
+	public void query(String query, boolean stemming, boolean stopWordsRemoving, LinkedList<String> fields) {
+		Index i = Index.getIndex();
+		i.submitQuery(query, fields, this);
+	}
 	
 	public abstract Query getQueryParsed(String query, LinkedList<String> fields, StandardAnalyzer analyzer);
 	
@@ -52,17 +57,6 @@ public abstract class Model{
 	 */
 	//protected abstract LinkedList<Document> executeQuery(Query query, boolean stemming, boolean stopWordsRemoving);
 
-	/*
-	 * computeSimilarity
-	 * This function will be called by executeQuery to compute the similarity (or relevance, or weight) of 
-	 * each document for that specific query. Relevance is declared Object (because each model has its own way
-	 * to compute similarity, for example boolean model has 0/1 weights, vector could have real 
-	 * number weights, ...) so the correct type could be override by sub-classes.
-	 * @param first Query object is the query parsed and stored in the suitable sub-class of Query
-	 * @param Query textDocument is the document text, parsed and passed as a query to enable. Parsing is made by
-	 * executeQuery to reduce parameters required by this method (on other side, textDocument would be a String
-	 * and stemming and stopWordsRemoving boolean variables would be needed)
-	 */
-	//protected abstract Object computeSimilarity(Query query, Query textDocument);
+	public abstract Similarity getSimilarity();
 	
 }

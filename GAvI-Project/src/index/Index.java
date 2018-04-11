@@ -29,11 +29,14 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-
+import org.apache.lucene.search.similarities.ClassicSimilarity;
+import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 
+import irModels.BM25;
 import irModels.Model;
+import irModels.VectorSpaceModel;
 
 /*
  * This class implements an Index. This Index allows to being manipulated by user, 
@@ -42,12 +45,6 @@ import irModels.Model;
  * @warning documents will be split following their directory, so an index contains abstract
  * directories, each of them has a path, that is the same for all documents of that directory
  * erasing a "Directory" means erasing all documents with a specific pattern in their path field
- * 
- * TODO Function Load and Save, to saving physically an index on disk and to re-loading it at next starting 
- * (we could memorize the position of the last saving to reloading it automatically at starting). Problem: 
- * variables of Lucene are not serializable, so:
- * 	- Serialize it in another way
- * 	- Save only some info's (like a list of the documents indexed) to rebuilt the index on these files
  * 
  */
 public class Index{
@@ -64,12 +61,10 @@ public class Index{
 	private static IndexWriter inWriter = null; 
 	private static IndexReader inReader = null;
 	private static IndexSearcher inSearcher = null;
-
-	/*
-	 * This is what makes a singleton... single!
-	 */
-	private Index() {
-		startIndex();
+	private static Similarity simUsed = null;
+	
+	private Index(Similarity sim) {
+		startIndex(sim);
 	}
 	
 	/* getIndex
@@ -78,9 +73,42 @@ public class Index{
 	 */
 	public static Index getIndex() {
 		if(uniqueIndex == null) {
-			uniqueIndex = new Index();
+			uniqueIndex = new Index(new VectorSpaceModel().getSimilarity());
 		}
 		return uniqueIndex;
+	}
+	
+	public static Index getIndex(Similarity sim) {
+		if(uniqueIndex == null) {
+			uniqueIndex = new Index(sim);
+		}
+		return uniqueIndex;
+	}
+	
+	/* startIndex
+	 * A method used to allocate all tools of the Index
+	 */
+	private void startIndex(Similarity sim) {
+		simUsed = sim;
+		
+		stdAnalyzer = new StandardAnalyzer();
+		dirIndex = new RAMDirectory();
+		iwConfig = new IndexWriterConfig();
+		iwConfig.setSimilarity(simUsed);
+		
+		try {
+			inWriter = new IndexWriter(dirIndex, iwConfig);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			inReader = DirectoryReader.open(inWriter);
+			inSearcher = new IndexSearcher(inReader);
+			inSearcher.setSimilarity(simUsed);			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/* resetIndex
@@ -88,9 +116,14 @@ public class Index{
 	 * Then it makes uniqueIndex to being a new Index, reallocating new tools
 	 * This is the fastest and easiest way to "clear" totally an index from its entries
 	 */
+	protected void resetIndex(Similarity sim) {
+		eraseIndex();
+		startIndex(sim);
+	}
+	
 	protected void resetIndex() {
 		eraseIndex();
-		startIndex();
+		startIndex(simUsed);
 	}
 	
 	/* eraseIndex
@@ -113,28 +146,6 @@ public class Index{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
-	}
-	
-	/* startIndex
-	 * A method used to allocate all tools of the Index
-	 */
-	private void startIndex() {
-		stdAnalyzer = new StandardAnalyzer();
-		dirIndex = new RAMDirectory();
-		iwConfig = new IndexWriterConfig(stdAnalyzer);
-		
-		try {
-			inWriter = new IndexWriter(dirIndex, iwConfig);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		try {
-			inReader = DirectoryReader.open(inWriter);
-			inSearcher = new IndexSearcher(inReader);
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 	
@@ -319,6 +330,7 @@ public class Index{
 		 */		
 		try {
 			inSearcher = new IndexSearcher(inReader);
+			inSearcher.setSimilarity(simUsed);
 		}catch(Exception e) {
 			e.printStackTrace();
 			System.err.println("\nError updating IndexSearcher. Trying to continue...");
@@ -345,4 +357,5 @@ public class Index{
 			e.printStackTrace();
 		}
 	}
+	
 }

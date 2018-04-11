@@ -24,6 +24,7 @@ import org.apache.lucene.search.PhraseQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.similarities.BM25Similarity;
+import org.apache.lucene.search.similarities.BooleanSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.search.similarities.TFIDFSimilarity;
 import org.apache.lucene.util.Version;
@@ -56,8 +57,8 @@ public class BooleanModel extends Model{
 
 	@Override
 	public Similarity getSimilarity() {
-		/* By default, Fuzzy and Boolean Model doesn't change similarity */
-		return null;
+		System.out.println("Creating a Boolean Model Similarity");
+		return new BooleanSimilarity();
 	}
 	
 	/*public ArrayList<String> parser(String query, boolean stemming, boolean stopWordsRemoving){

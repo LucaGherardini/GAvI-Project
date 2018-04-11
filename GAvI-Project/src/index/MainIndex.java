@@ -16,40 +16,22 @@ public class MainIndex {
 
 	public static void main(String[] args) {		
 
-		Index generalIndex = Index.getIndex(new BM25().getSimilarity());
-		System.out.println("Creation of an index with BM25 similarity");
+		Index generalIndex = Index.getIndex();
 		
-		generalIndex.loadIndex("savedIndex.ser");
-		
-		/*
-		 * Creation of a Document referencing to README.md (NOTE: as default, the program
-		 * "is located" at GAvI-Project/ (so, nothing is to being added to reach this file) 
-		 */
 		/*
 		generalIndex.addDocument("README.md");
 		generalIndex.addDocument("other/Lucene Useful Links.txt");
 		generalIndex.addDocument("other/test.txt");
 		generalIndex.addDocument("other/GenericTextFile.txt");
 		generalIndex.addDocument("other/USA.txt");
-		
 		generalIndex.saveIndex("savedIndex.ser");
-		*/
+		*/		
 		
-		/*
-		Document d;
-		for (int i=0; i<generalIndex.getSize(); i++) {
-			d = generalIndex.getDocument(i);
-			System.out.println("Path of document n° " + i + ": " + d.get("path"));
-			System.out.println("Name of document n° " + i + ": " + d.get("name"));
-			System.out.println("Content of document n° " + i + ": " + d.get("content"));
-		}
-		*/
-		
-		
-		String query = "name:test.txt OR content:test.txt";
 		BooleanModel bm = new BooleanModel();
+		generalIndex.setSimilarity(bm.getSimilarity());
+		generalIndex.loadIndex("savedIndex.ser");
 		
-		
+		String query = "United States Park";
 		/*
 		 * Fields on which query will work, passed to inform index in which fields it must search
 		 */
@@ -76,8 +58,8 @@ public class MainIndex {
 		/*
 		 * Try query "United States Park" and query "United States": same results, different ranking!
 		 */
-		query = "Parks in united states";
-		
+		//query = "Parks in united states";
+		/*
 		fields = new LinkedList<String>();// = {"name", "content"};
 		
 		if(query.contains("name")) {
@@ -92,8 +74,11 @@ public class MainIndex {
 			fields.add("name");
 			fields.add("content");
 		}
+		*/
 		
 		FuzzyModel fm = new FuzzyModel();
+		generalIndex.setSimilarity(fm.getSimilarity());
+		generalIndex.loadIndex("savedIndex.ser");
 		
 		generalIndex.submitQuery(query, fields, fm);
 		
@@ -102,10 +87,11 @@ public class MainIndex {
 		System.err.println("Warning, starting with testing of VectorSpaceModel");
 		
 		VectorSpaceModel vsm = new VectorSpaceModel();
+		
 		generalIndex.setSimilarity(vsm.getSimilarity());
 		generalIndex.loadIndex("savedIndex.ser");
 		
-		generalIndex.submitQuery(query, fields, bm);
+		generalIndex.submitQuery(query, fields, vsm);
 		
 		System.out.println("************************************************");
 		
@@ -115,6 +101,6 @@ public class MainIndex {
 		
 		generalIndex.setSimilarity(bm25.getSimilarity());
 		generalIndex.loadIndex("savedIndex.ser");
-		generalIndex.submitQuery(query, fields, fm);
+		generalIndex.submitQuery(query, fields, bm25);
 	}
 }

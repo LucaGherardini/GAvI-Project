@@ -303,6 +303,9 @@ public class Index{
 	}
 	
 	public void submitQuery(String query, LinkedList<String> fields, Model m) {
+		if(m.getSimilarity().equals(simUsed)) {
+			System.out.println("Similarity used recognized");
+		}
 		
 		if(getSize() == 0) {
 			System.err.println("No documents in index!");

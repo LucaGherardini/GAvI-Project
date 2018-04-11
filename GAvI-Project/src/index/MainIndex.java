@@ -75,6 +75,7 @@ public class MainIndex {
 			fields.add("content");
 		}
 		*/
+		//query = "Unit~ Stat~ Par~";
 		
 		FuzzyModel fm = new FuzzyModel();
 		generalIndex.setSimilarity(fm.getSimilarity());

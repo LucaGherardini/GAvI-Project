@@ -102,7 +102,7 @@ public class MainIndex {
 		System.err.println("Warning, starting with testing of VectorSpaceModel");
 		
 		VectorSpaceModel vsm = new VectorSpaceModel();
-		generalIndex.resetIndex(vsm.getSimilarity());
+		generalIndex.setSimilarity(vsm.getSimilarity());
 		generalIndex.loadIndex("savedIndex.ser");
 		
 		generalIndex.submitQuery(query, fields, bm);
@@ -113,7 +113,7 @@ public class MainIndex {
 		
 		BM25 bm25 = new BM25();
 		
-		generalIndex.resetIndex(bm25.getSimilarity());
+		generalIndex.setSimilarity(bm25.getSimilarity());
 		generalIndex.loadIndex("savedIndex.ser");
 		generalIndex.submitQuery(query, fields, fm);
 	}

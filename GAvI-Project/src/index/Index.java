@@ -63,8 +63,8 @@ public class Index{
 	private static IndexSearcher inSearcher = null;
 	private static Similarity simUsed = null;
 	
-	private Index(Similarity sim) {
-		startIndex(sim);
+	private Index() {
+		startIndex();
 	}
 	
 	/* getIndex
@@ -72,15 +72,13 @@ public class Index{
 	 * this class, and returning it
 	 */
 	public static Index getIndex() {
-		if(uniqueIndex == null) {
-			uniqueIndex = new Index(new VectorSpaceModel().getSimilarity());
-		}
-		return uniqueIndex;
+		return getIndex(new VectorSpaceModel().getSimilarity());
 	}
 	
 	public static Index getIndex(Similarity sim) {
 		if(uniqueIndex == null) {
-			uniqueIndex = new Index(sim);
+			simUsed = sim;
+			uniqueIndex = new Index();
 		}
 		return uniqueIndex;
 	}
@@ -88,9 +86,7 @@ public class Index{
 	/* startIndex
 	 * A method used to allocate all tools of the Index
 	 */
-	private void startIndex(Similarity sim) {
-		simUsed = sim;
-		
+	private void startIndex() {
 		stdAnalyzer = new StandardAnalyzer();
 		dirIndex = new RAMDirectory();
 		iwConfig = new IndexWriterConfig();
@@ -111,19 +107,21 @@ public class Index{
 		}
 	}
 	
+	public void setSimilarity(Similarity sim) {
+		// TODO maybe we could auto-save current index, to load it after reset of Index
+		simUsed = sim;
+		resetIndex();
+		// TODO maybe we could auto-load last index saved, to allow a better use of software
+	}
+	
 	/* resetIndex
 	 * This method remove references to the previous uniqueIndex and close tools. 
 	 * Then it makes uniqueIndex to being a new Index, reallocating new tools
 	 * This is the fastest and easiest way to "clear" totally an index from its entries
-	 */
-	protected void resetIndex(Similarity sim) {
-		eraseIndex();
-		startIndex(sim);
-	}
-	
+	 */	
 	protected void resetIndex() {
 		eraseIndex();
-		startIndex(simUsed);
+		startIndex();
 	}
 	
 	/* eraseIndex

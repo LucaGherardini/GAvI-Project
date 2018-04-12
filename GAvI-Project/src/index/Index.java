@@ -267,7 +267,8 @@ public class Index{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+	
+		System.out.println("Added to index " + path + name);
 	}
 	
 	/* getDocument
@@ -302,14 +303,16 @@ public class Index{
 		return inWriter.numDocs();
 	}
 	
-	public void submitQuery(String query, LinkedList<String> fields, Model m) {
-		if(m.getSimilarity().equals(simUsed)) {
-			System.out.println("Similarity used recognized");
+	public LinkedList<Document> submitQuery(String query, LinkedList<String> fields, Model m) {
+		if(!m.getSimilarity().equals(simUsed)) {
+			System.out.println("Similarity change recognized");
 		}
+		
+		LinkedList<Document> queryResults = new LinkedList<Document>();
 		
 		if(getSize() == 0) {
 			System.err.println("No documents in index!");
-			return ;
+			return null;
 		}
 		
 		Query q = m.getQueryParsed(query, fields, stdAnalyzer);
@@ -343,7 +346,7 @@ public class Index{
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.err.println("\nSomething goes wrong with your query... Quitting...");
-			return ;
+			return null;
 		}
 		
 		System.out.println(results.totalHits + " total matching documents");
@@ -352,11 +355,24 @@ public class Index{
 		try {
 			for (int k=0 ; k < hits.length ; k++) {
 					doc = inSearcher.doc(hits[k].doc);
+					queryResults.add(doc);
 					System.out.println("Document " + doc.get("path") + doc.get("name") + " with score: " + hits[k].score);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		LinkedList<String> paths = new LinkedList<String>();
+		
+		for (Document document : queryResults) {
+			if(!paths.contains(document.get("path"))){
+				paths.add(document.get("path"));
+				System.out.println("\n" + paths.getLast());
+			}
+			System.out.println("... " + document.get("name"));
+		}
+		
+		return queryResults;
 	}
 	
 }

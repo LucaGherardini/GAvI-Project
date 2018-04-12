@@ -6,7 +6,9 @@ import irModels.FuzzyModel;
 import irModels.VectorSpaceModel;
 import textOperation.TextOperations;
 
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
@@ -27,11 +29,7 @@ public class MainIndex {
 		generalIndex.saveIndex("savedIndex.ser");
 		*/		
 		
-		BooleanModel bm = new BooleanModel();
-		generalIndex.setSimilarity(bm.getSimilarity());
-		generalIndex.loadIndex("savedIndex.ser");
-		
-		String query = "United States Park";
+		String query = "Lucene";
 		/*
 		 * Fields on which query will work, passed to inform index in which fields it must search
 		 */
@@ -50,8 +48,14 @@ public class MainIndex {
 			fields.add("name");
 			fields.add("content");
 		}
+		
+		
+		BooleanModel bm = new BooleanModel();
+		
+		generalIndex.setSimilarity(bm.getSimilarity());
+		generalIndex.loadIndex("savedIndex.ser");
 
-		generalIndex.submitQuery(query, fields, bm);
+		generalIndex.submitQuery(query, fields, bm);		
 		
 		System.out.println("************************************************");
 		
@@ -75,17 +79,15 @@ public class MainIndex {
 			fields.add("content");
 		}
 		*/
-		//query = "Unit~ Stat~ Par~";
 		
 		FuzzyModel fm = new FuzzyModel();
+		
 		generalIndex.setSimilarity(fm.getSimilarity());
 		generalIndex.loadIndex("savedIndex.ser");
 		
 		generalIndex.submitQuery(query, fields, fm);
 		
 		System.out.println("************************************************");
-		
-		System.err.println("Warning, starting with testing of VectorSpaceModel");
 		
 		VectorSpaceModel vsm = new VectorSpaceModel();
 		
@@ -96,12 +98,11 @@ public class MainIndex {
 		
 		System.out.println("************************************************");
 		
-		System.err.println("Warning, starting with testing of BM25");
-		
 		BM25 bm25 = new BM25();
 		
 		generalIndex.setSimilarity(bm25.getSimilarity());
 		generalIndex.loadIndex("savedIndex.ser");
+		
 		generalIndex.submitQuery(query, fields, bm25);
 	}
 }

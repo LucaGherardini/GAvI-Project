@@ -72,12 +72,15 @@ public class Index{
 	 * this class, and returning it
 	 */
 	public static Index getIndex() {
-		return getIndex(new VectorSpaceModel().getSimilarity());
+		if(uniqueIndex == null) {
+			return getIndex(new VectorSpaceModel().getSimilarity());
+		}
+		return uniqueIndex;
 	}
 	
 	public static Index getIndex(Similarity sim) {
+		simUsed = sim;
 		if(uniqueIndex == null) {
-			simUsed = sim;
 			uniqueIndex = new Index();
 		}
 		return uniqueIndex;
@@ -110,7 +113,9 @@ public class Index{
 	public void setSimilarity(Similarity sim) {
 		// TODO maybe we could auto-save current index, to load it after reset of Index
 		simUsed = sim;
+		saveIndex("tempIndex.ser");
 		resetIndex();
+		loadIndex("tempIndex.ser");
 		// TODO maybe we could auto-load last index saved, to allow a better use of software
 	}
 	

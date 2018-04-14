@@ -7,6 +7,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import index.Hit;
 import index.Index;
 import irModels.BM25;
 import irModels.BooleanModel;
@@ -35,11 +36,11 @@ import javax.swing.JTextArea;
 
 public class Main_Window {
 
-	private JFrame frame;
-	private JTextField textField;
-	private JTable chronology;
-	private JTable fileTable;
-	private JTextField editDistanceText;
+	private JFrame frame = null;
+	private JTextField textField = null;
+	private JTable chronology = null;
+	private JTable fileTable = null;
+	private JTextField editDistanceText = null;
 	private Index generalIndex = null;
 
 	/**
@@ -125,6 +126,9 @@ public class Main_Window {
 
 		chronology = new JTable();
         chronology.setBounds(28, 162, 274, 188);
+        DefaultTableModel resultsModel = (DefaultTableModel) chronology.getModel();
+        resultsModel.addColumn("File");
+        resultsModel.addColumn("Score");
 		frame.getContentPane().add(chronology);
 		
 		fileTable = new JTable(0,0);
@@ -133,9 +137,7 @@ public class Main_Window {
 		DefaultTableModel tableModel=(DefaultTableModel) fileTable.getModel();
 		
 		tableModel.addColumn("FILES");
-		//fileTable.setEnabled(false);
-		
-		
+		//fileTable.setEnabled(false);		
 		frame.getContentPane().add(fileTable);
 		
 		
@@ -175,6 +177,7 @@ public class Main_Window {
 				String queryStr = textField.getText();
 				
 				System.out.println("Query string: " + queryStr);
+				resultsModel.setRowCount(0);
 				
 				Model modelUsed = null;
 				
@@ -212,7 +215,11 @@ public class Main_Window {
 				}
 				
 				generalIndex.setSimilarity(modelUsed.getSimilarity());
-				generalIndex.submitQuery(queryStr, fields, modelUsed);
+				LinkedList<Hit> results = generalIndex.submitQuery(queryStr, fields, modelUsed);
+				
+				for(Hit result : results) {
+					resultsModel.addRow(new Object[] {result.getDocPath()+result.getDocName(), result.getScore()});
+				}
 			}
 		});
 		

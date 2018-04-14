@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -308,12 +309,9 @@ public class Index{
 		return inWriter.numDocs();
 	}
 	
-	public LinkedList<Document> submitQuery(String query, LinkedList<String> fields, Model m) {
-		if(!m.getSimilarity().equals(simUsed)) {
-			System.out.println("Similarity change recognized");
-		}
+	public LinkedList<Hit> submitQuery(String query, LinkedList<String> fields, Model m) {
 		
-		LinkedList<Document> queryResults = new LinkedList<Document>();
+		LinkedList<Hit> queryResults = new LinkedList<Hit>();
 		
 		if(getSize() == 0) {
 			System.err.println("No documents in index!");
@@ -360,7 +358,7 @@ public class Index{
 		try {
 			for (int k=0 ; k < hits.length ; k++) {
 					doc = inSearcher.doc(hits[k].doc);
-					queryResults.add(doc);
+					queryResults.add(new Hit(doc.get("path"), doc.get("name"), hits[k].score));
 					System.out.println("Document " + doc.get("path") + doc.get("name") + " with score: " + hits[k].score);
 			}
 		} catch (IOException e) {
@@ -369,12 +367,12 @@ public class Index{
 		
 		LinkedList<String> paths = new LinkedList<String>();
 		
-		for (Document document : queryResults) {
-			if(!paths.contains(document.get("path"))){
-				paths.add(document.get("path"));
+		for (Hit docHit : queryResults) {
+			if(!paths.contains(docHit.getDocPath())){
+				paths.add(docHit.getDocName());
 				System.out.println("\n" + paths.getLast());
 			}
-			System.out.println("... " + document.get("name"));
+			System.out.println("..." + docHit.getDocPath() + docHit.getDocName());
 		}
 		
 		return queryResults;

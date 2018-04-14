@@ -1,38 +1,36 @@
 package gui;
 
 import java.awt.EventQueue;
-
+import java.awt.Insets;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+
+import com.sun.scenario.effect.Filterable;
+
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JTextArea;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.awt.event.ActionEvent;
-import javax.swing.JEditorPane;
-import java.awt.ScrollPane;
 import java.awt.Color;
-import javax.swing.JPopupMenu;
-import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import javax.swing.JTable;
-import java.awt.Dimension;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JToolBar;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
+import javax.swing.JTextArea;
 
 public class Main_Windos1 {
 
 	private JFrame frame;
 	private JTextField textField;
 	private JTable chronology;
-	private JTable file;
+	private JTable fileTable;
 	private JTextField editDistanceText;
+	private JTable table;
 
 	/**
 	 * Launch the application.
@@ -62,7 +60,7 @@ public class Main_Windos1 {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.getContentPane().setBackground(Color.BLUE);
+		frame.getContentPane().setBackground(Color.CYAN);
 		frame.setBounds(100, 100, 550, 400);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
@@ -81,7 +79,7 @@ public class Main_Windos1 {
 		modelbox.setModel(new DefaultComboBoxModel(new String[] {"Boolean", "Vector Space", "Probabulistic", "Fuzzy"}));
 		modelbox.setSelectedIndex(0);
 		modelbox.setToolTipText("Preferenze");
-		modelbox.setBounds(98, 0, 93, 20);
+		modelbox.setBounds(0, 0, 117, 20);
 		frame.getContentPane().add(modelbox);
 		
 		JButton search = new JButton("Cerca");
@@ -89,30 +87,49 @@ public class Main_Windos1 {
 		search.setBounds(225, 83, 89, 23);
 		frame.getContentPane().add(search);
 		
-		JButton refresh = new JButton("#");
-		refresh.setBounds(493, 143, 41, 23);
-		frame.getContentPane().add(refresh);
+		JButton delete = new JButton();
 		
-		JButton add = new JButton("+");
+		ImageIcon saveicon=new ImageIcon("media/icons/empy_index.png");
+		delete.setIcon(saveicon);
+		delete.setMargin (new Insets (0, 0, 0, 0));
+		delete.setBounds(493, 143, 41, 23);
+		frame.getContentPane().add(delete);
 		
+		
+		JButton add = new JButton();
+        ImageIcon addicon=new ImageIcon("media/icons/add_file.png");
+		add.setIcon(addicon);
+		add.setMargin (new Insets (0, 0, 0, 0));
 		add.setBounds(493, 177, 41, 23);
 		frame.getContentPane().add(add);
 		
-		JButton remove = new JButton("-");
+		JButton remove = new JButton();
+		ImageIcon removeicon=new ImageIcon("media/icons/remove.png");
+		remove.setIcon(removeicon);
+		remove.setMargin (new Insets (0, 0, 0, 0));
 		remove.setBounds(493, 211, 41, 23);
 		frame.getContentPane().add(remove);
 		
 
 		chronology = new JTable();
-        chronology.setBounds(26, 162, 274, 188);
+        chronology.setBounds(28, 162, 274, 188);
 		frame.getContentPane().add(chronology);
 		
-		file = new JTable();
-		file.setBounds(347, 143, 136, 218);
-		frame.getContentPane().add(file);
+		fileTable = new JTable(0,0);
+		fileTable.setBounds(347, 143, 136, 218);
+		
+		DefaultTableModel model=(DefaultTableModel) fileTable.getModel();
+		
+		model.addColumn("FILES");
+		//fileTable.setEnabled(false);
+		
+		
+		frame.getContentPane().add(fileTable);
+		
 		
 				
 		JRadioButton noOtimisation = new JRadioButton("No Otimisation");
+		
 		noOtimisation.setBounds(345, -1, 109, 23);
 		frame.getContentPane().add(noOtimisation);
 		
@@ -128,6 +145,134 @@ public class Main_Windos1 {
 		editDistanceText.setBounds(472, 26, 52, 20);
 		frame.getContentPane().add(editDistanceText);
 		editDistanceText.setColumns(10);
-	}
+		
+		JButton Help = new JButton("HELP");
+		
+		Help.setBounds(177, -1, 89, 23);
+		frame.getContentPane().add(Help);
+		
+			
+		
+		
+	//JradioButton
+		noOtimisation.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(noOtimisation.isSelected()) {
+					editDistance.setSelected(false);
+					qGram.setSelected(false);
+				}
+					
+			}
+		});
+		
+		editDistance.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(editDistance.isSelected()) {
+					noOtimisation.setSelected(false);
+					qGram.setSelected(false);
+				}
+					
+			}
+		});
+		qGram.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(qGram.isSelected()) {
+					editDistance.setSelected(false);
+					noOtimisation.setSelected(false);
+				}
+					
+			}
+		});
+		
+	//Search
+		
+		search.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				System.out.println(textField.getText());
+				
+				if(modelbox.getSelectedItem()=="Boolean") {
+					System.out.println("Boolean");
+				}
+				
+				if(modelbox.getSelectedItem()=="Vector Space") {
+					System.out.println("Vector Space");
+				}
+				
+				if(modelbox.getSelectedItem()=="Probabulistic") {
+					System.out.println("Probabulistic");
+				}
+				
+				if(modelbox.getSelectedItem()=="Fuzzy") {
+					System.out.println("Fuzzy");
+				}		
+			}
+		});
+		
+	// Help **** Inserire gli esampi di stringhe se si possono Parsare*****
+		Help.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				 				    
+				JOptionPane.showMessageDialog(frame,"INSERIRE ESEMPI DI STRINGHE" );
+			}
+		});
+		// Add
+	add.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				JFileChooser file=new JFileChooser();
+				int n=file.showOpenDialog(frame);
+				
+				
+				File f=file.getSelectedFile();
+				
+				//se si vogliono selezionare piu file insieme (difficile implementazione forse non il modo migliore per piu file o directory)
+				//File f[]=file.getSelectedFiles();
+				
+				String nameFile=f.getName().toLowerCase();
+				
+				
+				if(nameFile.endsWith("txt")) {
+				model.setRowCount(model.getRowCount()+1);
+				model.setValueAt(f.getName(), model.getRowCount()-1, 0);
+					
+				
+				}
+							
+			}
+		});
 	
+	//remove
+
+	remove.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent arg0) {
+			
+			
+				model.removeRow(fileTable.getSelectedRow());
+			}
+		
+	});
+		
+	// Delete All Row
+	delete.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent arg0) {
+			
+			
+			if(model.getRowCount() !=1) {
+				for(int i=0;i< model.getRowCount();i++) {
+					model.removeRow(0);
+					
+					
+				}
+				
+				model.removeRow(0);
+			}
+		
+		else
+			model.removeRow(0);
+			}
+	});
+	
+	
+	}
 }

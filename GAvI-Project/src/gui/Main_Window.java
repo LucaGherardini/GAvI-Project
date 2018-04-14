@@ -33,14 +33,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
 
-public class Main_Windos1 {
+public class Main_Window {
 
 	private JFrame frame;
 	private JTextField textField;
 	private JTable chronology;
 	private JTable fileTable;
 	private JTextField editDistanceText;
-	private JTable table;
 	private Index generalIndex = null;
 
 	/**
@@ -50,7 +49,7 @@ public class Main_Windos1 {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Main_Windos1 window = new Main_Windos1();
+					Main_Window window = new Main_Window();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -62,7 +61,7 @@ public class Main_Windos1 {
 	/**
 	 * Create the application.
 	 */
-	public Main_Windos1() {
+	public Main_Window() {
 		initialize();
 	}
 

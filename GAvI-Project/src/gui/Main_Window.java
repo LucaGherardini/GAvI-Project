@@ -78,9 +78,11 @@ public class Main_Window {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
+		
 		JLabel title = new JLabel("NOME");
 		title.setBounds(98, 48, 77, 25);
 		frame.getContentPane().add(title);
+		
 		
 		textField = new JTextField();
 		textField.setBounds(10, 84, 205, 20);

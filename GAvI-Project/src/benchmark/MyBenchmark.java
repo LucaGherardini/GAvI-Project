@@ -1,7 +1,6 @@
 package benchmark;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,7 +10,7 @@ import java.util.LinkedList;
 import org.apache.lucene.document.Document;
 
 import index.Index;
-import irModels.BooleanModel;
+import irModels.BM25;
 import irModels.Model;
 
 public class MyBenchmark {
@@ -19,7 +18,7 @@ public class MyBenchmark {
 	Model model;
 	String fileDocumentsPaths;
 	String queriesPath;
-	ArrayList<LinkedList<Document>> results;
+	ArrayList<LinkedList<String>> results;
 	
 	/**
 	 * This class performs benchmark and save results.
@@ -86,13 +85,18 @@ public class MyBenchmark {
 		 * Every element of arraylist is the query and every element of
 		 * linkedlist is a list of document that are rilevants for that query
 		 * 
-		 * E.g. results.get(3) contains a list of rilevants documents for query number 3
+		 * E.g. results.get(3) contains a list of rilevants documents for query number 4
 		 */
-		results = new ArrayList<LinkedList<Document>>(); 
+		results = new ArrayList<LinkedList<String>>(); 
 		
 		//Execute every query on documents and load results
-		for (String query: queries)
-			results.add(index.submitQuery(query, ll, model));
+		for (String query: queries) {
+			LinkedList<String> docNames = new LinkedList<>();
+			for (Document doc: index.submitQuery(query, ll, model)) {
+				docNames.add(doc.get("name"));
+			}
+				results.add(docNames);
+		}
 	}
 	
 	/**
@@ -123,7 +127,7 @@ public class MyBenchmark {
 			for (int i = 0; i < results.size(); i++) {
 				fw.append("Relevants docs for query "+(i+1)+":\n");
 				for (int j = 0; j < results.get(i).size(); j++) {
-					fw.append(results.get(i).get(j).get("name")+"\n");
+					fw.append(results.get(i).get(j)+"\n");
 				}
 			}
 			fw.close();
@@ -133,12 +137,97 @@ public class MyBenchmark {
 		}
 	}
 	
+	/**
+	 * Create and load a list of expected results.
+	 * It works only for file formatted as LISA.REL
+	 * Don't ask how it works
+	 */
+	public ArrayList<LinkedList<String>> realDocsRelevance(String fileResults) {
+		ArrayList<LinkedList<String>> expected = new ArrayList<LinkedList<String>>();
+		LinkedList<String> rel = new LinkedList<String>();
+		String appo = "";
+		try {
+			File f = new File(fileResults);
+			FileReader fr = new FileReader(f);
+			BufferedReader br = new BufferedReader(fr);
+			String line;
+			int query_num = 1;
+			int prev_num = 1;
+			
+			for (line = br.readLine(); line != null; line = br.readLine()) {
+				if (line.contains("Query")) {
+					query_num = Integer.parseInt(line.substring(line.indexOf(" ")+1, line.length()));
+				}
+				else if (line.contains("Refs"));
+				else if (line.length() > 0) {
+					appo = line.substring(0,line.indexOf(" "));
+					if (prev_num != query_num) {
+						expected.add(rel);
+						rel = new LinkedList<>();
+						prev_num = query_num;
+					}
+					if (!rel.contains(appo))
+						rel.add(appo);
+					String line2 = line.substring(0);
+					while (appo.length() > 0 ) {
+						if (!(line2.indexOf(" ") < 0)) {
+							appo = line2.substring(0,line2.indexOf(" "));
+							line2 = line2.substring(line2.indexOf(" ")+1,line2.length());
+							if (!rel.contains(appo))
+								rel.add(appo);
+						}
+						else if (!line2.equals("-1")) {
+							rel.add(line2);
+							line2 = "-1";
+						}
+						else
+							break;
+					}
+				}
+			}
+			br.close();
+		} catch (Exception e) {
+			// TODO: handle exception
+			System.err.println(e);
+		}
+		return expected;
+	}
+
+	/**
+	 * Get intersection between relevance document from benchmark and 
+	 * results of our system.
+	 * @return
+	 */
+	public ArrayList<LinkedList<String>> getIntersection() {
+		ArrayList<LinkedList<String>> relevants = realDocsRelevance("GAvI-Project/benchmark/lisa/LISA.REL");
+		ArrayList<LinkedList<String>> intersect = new ArrayList<LinkedList<String>>(); 
+		
+		for (int i = 0; i < Math.min(results.size(),relevants.size()); i++) {
+			intersect.add(new LinkedList<String>());
+			for (int j = 0; j < Math.min(results.get(i).size(), relevants.get(i).size()); j++) {
+				if ( results.get(i).size() < relevants.get(i).size()) {
+					if ( relevants.get(i).contains(results.get(i).get(j)))
+						intersect.get(i).add(results.get(i).get(j));
+				}
+				else {
+					if ( results.get(i).contains(relevants.get(i).get(j)))
+						intersect.get(i).add(relevants.get(i).get(j));
+				}	
+			}
+		}
+		
+		return intersect;
+	}
+	
 	public static void main(String[] args) {
 		
 		//Use example
-		MyBenchmark mb = new MyBenchmark(new BooleanModel(),"benchmarkDocs.ser","GAvI-Project/benchmark/lisa/Query/");
+		MyBenchmark mb = new MyBenchmark(new BM25(),"benchmarkDocs.ser","GAvI-Project/benchmark/lisa/Query/");
 		mb.executeBenchmark();
-		mb.saveResults("newRes.save");
+		
+		mb.saveResults("resBM25.save");
+		System.out.println(mb.realDocsRelevance("GAvI-Project/benchmark/lisa/LISA.REL"));
+		System.out.println(mb.getIntersection());
 	}
 	
 }

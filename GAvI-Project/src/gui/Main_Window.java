@@ -102,8 +102,8 @@ public class Main_Window {
 		
 		JButton delete = new JButton();
 		
-		ImageIcon saveIcon = new ImageIcon(new ImageIcon("media/icons/save_index.png").getImage().getScaledInstance(35, 35, 0));
-		delete.setIcon(saveIcon);
+		ImageIcon deleteIcon = new ImageIcon(new ImageIcon("media/icons/empty_index.png").getImage().getScaledInstance(35, 35, 0));
+		delete.setIcon(deleteIcon);
 		delete.setMargin (new Insets (0, 0, 0, 0));
 		delete.setBounds(493, 143, 35, 35);
 		frame.getContentPane().add(delete);

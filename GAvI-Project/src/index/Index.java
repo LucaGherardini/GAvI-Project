@@ -369,10 +369,10 @@ public class Index{
 		
 		for (Hit docHit : queryResults) {
 			if(!paths.contains(docHit.getDocPath())){
-				paths.add(docHit.getDocName());
+				paths.add(docHit.getDocPath());
 				System.out.println("\n" + paths.getLast());
 			}
-			System.out.println("..." + docHit.getDocPath() + docHit.getDocName());
+			System.out.println("..." + docHit.getDocName());
 		}
 		
 		return queryResults;

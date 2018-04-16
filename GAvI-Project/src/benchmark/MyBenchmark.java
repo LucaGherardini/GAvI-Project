@@ -141,6 +141,7 @@ public class MyBenchmark {
 	 * Create and load a list of expected results.
 	 * It works only for file formatted as LISA.REL
 	 * Don't ask how it works
+	 * @param fileResults file of expected results.
 	 */
 	public ArrayList<LinkedList<String>> realDocsRelevance(String fileResults) {
 		ArrayList<LinkedList<String>> expected = new ArrayList<LinkedList<String>>();
@@ -196,7 +197,7 @@ public class MyBenchmark {
 	/**
 	 * Get intersection between relevance document from benchmark and 
 	 * results of our system.
-	 * @return
+	 * @return intersection between relevance document from benchmark and results of our system.
 	 */
 	public ArrayList<LinkedList<String>> getIntersection() {
 		ArrayList<LinkedList<String>> relevants = realDocsRelevance("GAvI-Project/benchmark/lisa/LISA.REL");

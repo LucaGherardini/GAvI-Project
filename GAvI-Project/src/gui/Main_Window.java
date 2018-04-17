@@ -19,22 +19,21 @@ import irModels.VectorSpaceModel;
 
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.swing.AbstractButton;
+
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
+import java.awt.Component;
+
 import javax.swing.JTable;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
-import javax.swing.JTextArea;
-import javax.swing.border.BevelBorder;
 import javax.swing.SwingConstants;
 
 public class Main_Window {
@@ -47,7 +46,7 @@ public class Main_Window {
 	private JTextField editDistanceText = null;
 	private Index generalIndex = null;
 	private JTable chronologyTable=null;
-	private LinkedList chronology=new LinkedList();
+	private LinkedList<String> chronology=new LinkedList<String>();
 	/**
 	 * Launch the application.
 	 */
@@ -189,21 +188,26 @@ public class Main_Window {
 		btnChronology.setBounds(584, 83, 136, 23);
 		frame.getContentPane().add(btnChronology);
 		
-		JButton btnClose = new JButton("X");
-		btnClose.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				frame.remove(chronologyTable);
-				frame.repaint();
-				
-			}
-		});
+		JButton btnClose = new JButton();
+		
+		ImageIcon deleteChro = new ImageIcon(new ImageIcon("media/icons/empy_index.png").getImage().getScaledInstance(39, 23, 0));
+		btnClose.setIcon(deleteChro);
+		btnClose.setMargin (new Insets (0, 0, 0, 0));
 		btnClose.setHorizontalAlignment(SwingConstants.LEADING);
 		btnClose.setBounds(730, 83, 39, 23);
 		frame.getContentPane().add(btnClose);
 		
-		/*chronologyTable = new JTable();
-		chronologyTable.setBounds(569, 143, 176, 207);
-		frame.getContentPane().add(chronologyTable);*/
+		btnClose.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Component compo[]=frame.getComponents();
+				if(compo.equals(chronologyTable)==false) {
+				frame.remove(chronologyTable);
+				frame.repaint();
+				if(chronology.isEmpty()==false)
+				chronology.remove();
+			}}
+		});
+		
 		
 		
 	//Search
@@ -213,12 +217,17 @@ public class Main_Window {
 				
 				String queryStr = textField.getText();
 				
-	   /*LinkList to save Chronology*/
+	  
+				if(queryStr.isEmpty()==false) {
+					
+			 /*LinkList to save Chronology*/
+					
 				chronology.addFirst(queryStr);
-				
+				Component compo[]=frame.getComponents();
+				if(compo.equals(chronologyTable)==false) {
 				frame.remove(chronologyTable);
 				frame.repaint();
-				
+				}
 				
 				System.out.println("Query string: " + queryStr);
 				resultsModel.setRowCount(0);
@@ -265,6 +274,7 @@ public class Main_Window {
 					resultsModel.addRow(new Object[] {result.getDocPath()+result.getDocName(), result.getScore()});
 				}
 			}
+				}
 		});
 		
 		Help.addActionListener(new ActionListener() {
@@ -337,10 +347,11 @@ public class Main_Window {
 			chronologyModel.addColumn("Chronology");
 			chronologyModel.setRowCount(10);
 			
-			for(int i=0;i<chronologyModel.getRowCount();i++) {
+			if(chronology.isEmpty()==false && chronology.getFirst()!= "") {
+			for(int i=0;i<chronology.size();i++) {
 				chronologyModel.setValueAt(chronology.get(i), i,0);			
 				}
-		
+			}
 			
 		      frame.repaint();
 	

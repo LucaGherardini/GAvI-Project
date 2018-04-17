@@ -19,6 +19,7 @@ import irModels.VectorSpaceModel;
 
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -33,16 +34,20 @@ import javax.swing.JTable;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
+import javax.swing.border.BevelBorder;
+import javax.swing.SwingConstants;
 
 public class Main_Window {
 
 	private JFrame frame = null;
 	private JTextField textField = null;
-	private JTable chronology = null;
+	//private JTable chronology = null;
+	private JTable resultsTable;
 	private JTable fileTable = null;
 	private JTextField editDistanceText = null;
 	private Index generalIndex = null;
-
+	private JTable chronologyTable=null;
+	private LinkedList chronology=new LinkedList();
 	/**
 	 * Launch the application.
 	 */
@@ -74,7 +79,7 @@ public class Main_Window {
 		
 		frame = new JFrame();
 		frame.getContentPane().setBackground(Color.CYAN);
-		frame.setBounds(100, 100, 550, 400);
+		frame.setBounds(100, 100, 800, 420);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -126,19 +131,19 @@ public class Main_Window {
 		frame.getContentPane().add(remove);
 		
 
-		chronology = new JTable();
-        chronology.setBounds(28, 162, 274, 188);
-        DefaultTableModel resultsModel = (DefaultTableModel) chronology.getModel();
+		resultsTable = new JTable();
+        resultsTable.setBounds(28, 162, 274, 188);
+        DefaultTableModel resultsModel = (DefaultTableModel) resultsTable.getModel();
         resultsModel.addColumn("File");
         resultsModel.addColumn("Score");
-		frame.getContentPane().add(chronology);
+		frame.getContentPane().add(resultsTable);
 		
 		fileTable = new JTable(0,0);
 		fileTable.setBounds(347, 143, 136, 218);
 		
 		DefaultTableModel tableModel=(DefaultTableModel) fileTable.getModel();
 		
-		tableModel.addColumn("FILES");
+		tableModel.addColumn("Files");
 		//fileTable.setEnabled(false);		
 		frame.getContentPane().add(fileTable);
 		
@@ -171,12 +176,49 @@ public class Main_Window {
 		Help.setBounds(177, -1, 89, 23);
 		frame.getContentPane().add(Help);
 		
+		JLabel lblResults = new JLabel("RESULTS");
+		lblResults.setBounds(142, 129, 108, 14);
+		frame.getContentPane().add(lblResults);
+		
+		JLabel lblDocumnets = new JLabel("Documnets");
+		lblDocumnets.setBounds(347, 107, 94, 25);
+		frame.getContentPane().add(lblDocumnets);
+		
+		JButton btnChronology = new JButton("Chronology");
+		
+		btnChronology.setBounds(584, 83, 136, 23);
+		frame.getContentPane().add(btnChronology);
+		
+		JButton btnClose = new JButton("X");
+		btnClose.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.remove(chronologyTable);
+				frame.repaint();
+				
+			}
+		});
+		btnClose.setHorizontalAlignment(SwingConstants.LEADING);
+		btnClose.setBounds(730, 83, 39, 23);
+		frame.getContentPane().add(btnClose);
+		
+		/*chronologyTable = new JTable();
+		chronologyTable.setBounds(569, 143, 176, 207);
+		frame.getContentPane().add(chronologyTable);*/
+		
+		
 	//Search
 		
 		search.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
 				String queryStr = textField.getText();
+				
+	   /*LinkList to save Chronology*/
+				chronology.addFirst(queryStr);
+				
+				frame.remove(chronologyTable);
+				frame.repaint();
+				
 				
 				System.out.println("Query string: " + queryStr);
 				resultsModel.setRowCount(0);
@@ -282,5 +324,27 @@ public class Main_Window {
 			}
 		}
 		});
+	
+	//Chronology
+	btnChronology.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent arg0) {
+			chronologyTable = new JTable();
+			chronologyTable.setBounds(569, 143, 176, 160);
+			frame.getContentPane().add(chronologyTable);
+			
+			DefaultTableModel chronologyModel=(DefaultTableModel) chronologyTable.getModel();
+			
+			chronologyModel.addColumn("Chronology");
+			chronologyModel.setRowCount(10);
+			
+			for(int i=0;i<chronologyModel.getRowCount();i++) {
+				chronologyModel.setValueAt(chronology.get(i), i,0);			
+				}
+		
+			
+		      frame.repaint();
+	
+		}
+	});
 	}
 }

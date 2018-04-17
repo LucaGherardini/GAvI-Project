@@ -15,6 +15,7 @@ import irModels.Model;
 
 public class MyBenchmark {
 
+	//ciao
 	Model model;
 	String fileDocumentsPaths;
 	String queriesPath;

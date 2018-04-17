@@ -79,10 +79,11 @@ public class Main_Window {
 		
 		frame = new JFrame();
 		frame.getContentPane().setBackground(Color.CYAN);
-		frame.setBounds(100, 100, 850, 500);
+		frame.setBounds(800, 600, 850, 500);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		frame.setTitle("GaVi Project");
+		frame.setResizable(false);
 		
 		JLabel title = new JLabel("NOME");
 		title.setBounds(91, 50, 77, 25);
@@ -99,7 +100,7 @@ public class Main_Window {
 		modelbox.setModel(new DefaultComboBoxModel<String>(new String[] {"Boolean Model", "Vector Space Model", "Probabilistic(BM25) Model", "Fuzzy Model"}));
 		modelbox.setSelectedIndex(0);
 		modelbox.setToolTipText("Preferenze");
-		modelbox.setBounds(0, 0, 136, 20);
+		modelbox.setBounds(0, 0, 156, 20);
 		frame.getContentPane().add(modelbox);
 		
 		JButton search = new JButton("Cerca");
@@ -151,29 +152,29 @@ public class Main_Window {
 		ButtonGroup opGroup = new ButtonGroup();		
 		
 		JRadioButton noOptimizations = new JRadioButton("No Optimizations");
-		noOptimizations.setBounds(345, -1, 170, 23);
+		noOptimizations.setBounds(367, -1, 170, 23);
 		noOptimizations.setSelected(true);
 		opGroup.add(noOptimizations);
 		frame.getContentPane().add(noOptimizations);
 		
 		JRadioButton editDistance = new JRadioButton("Edit Distance");
-		editDistance.setBounds(345, 25, 170, 23);
+		editDistance.setBounds(367, 25, 170, 23);
 		opGroup.add(editDistance);
 		frame.getContentPane().add(editDistance);
 		
 		JRadioButton qGram = new JRadioButton("Q-Gram Overlap");
-		qGram.setBounds(345, 51, 170, 23);
+		qGram.setBounds(367, 51, 170, 23);
 		opGroup.add(qGram);
 		frame.getContentPane().add(qGram);
 		
 		editDistanceText = new JTextField();
-		editDistanceText.setBounds(520, 26, 39, 20);
+		editDistanceText.setBounds(543, 26, 39, 20);
 		frame.getContentPane().add(editDistanceText);
 		editDistanceText.setColumns(10);
 		
 		JButton Help = new JButton("HELP");
 		
-		Help.setBounds(191, -1, 89, 23);
+		Help.setBounds(218, -1, 89, 23);
 		frame.getContentPane().add(Help);
 		
 		JLabel lblResults = new JLabel("RESULTS");

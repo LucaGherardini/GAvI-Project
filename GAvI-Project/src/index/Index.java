@@ -171,21 +171,26 @@ public class Index{
 			System.err.println("File " + saveFile + " doesn't exist");
 		}
 		
+		/*
 		for (int k = 0 ; k < this.getSize() ; k++) {
 			fileWriter.println(getDocument(k).get("path") + getDocument(k).get("name"));
 		}
+		*/
 		
 		fileWriter.close();
 		System.out.println("Saving successful to " + saveFile + "!");
 	}
 	
 	public void loadIndex(String saveFile) {
+		System.out.println("Loading from " + saveFile);
 		BufferedReader reader = null;
 		
 		try {
 			reader = new BufferedReader(new FileReader(new File(saveFile)));
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			if(!saveFile.equals("tempIndex.ser")) {
+				e.printStackTrace();
+			}
 			System.err.println("File " + saveFile + " doesn't seem to exist, or some else error showed up. Loading aborted.");
 			return ;
 		}
@@ -197,7 +202,7 @@ public class Index{
 		try {
 			while ( (line = reader.readLine()) != null) {
 				addDocument(line);
-				System.out.println("Loaded in index " + line);
+				//System.out.println("Loaded in index " + line);
 			}
 
 			reader.close();
@@ -274,7 +279,7 @@ public class Index{
 			e.printStackTrace();
 		}
 	
-		System.out.println("Added to index " + path + name);
+		//System.out.println("Added to index " + path + name);
 	}
 	
 	/* getDocument
@@ -325,11 +330,13 @@ public class Index{
 		
 		System.out.println("Printing query: " + q.toString() + "\n");
 		
+		/* ONLY FOR DEBUG PURPOSES 
 		System.out.println("Printing documents in index: ");
 		for (int i = 0; i < getSize(); i++) {
 			System.out.println("Document " + i + ": " + getDocument(i).get("path") + getDocument(i).get("name"));
 		}
 		System.out.println("\n");
+		*/
 		
 		/* Updating of IndexSearcher only if a request is submitted. The only way to updating a searcher, is to
 		 * creating a new searcher bounded to current reader. This is cheap if we already have a reader
@@ -354,17 +361,19 @@ public class Index{
 		
 		System.out.println(results.totalHits + " total matching documents");
 		
+		
 		Document doc = null;
 		try {
 			for (int k=0 ; k < hits.length ; k++) {
 					doc = inSearcher.doc(hits[k].doc);
 					queryResults.add(new Hit(doc.get("path"), doc.get("name"), hits[k].score));
-					System.out.println("Document " + doc.get("path") + doc.get("name") + " with score: " + hits[k].score);
+					//System.out.println("Document " + doc.get("path") + doc.get("name") + " with score: " + hits[k].score);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
+		/*
 		LinkedList<String> paths = new LinkedList<String>();
 		
 		for (Hit docHit : queryResults) {
@@ -374,6 +383,7 @@ public class Index{
 			}
 			System.out.println("..." + docHit.getDocName());
 		}
+	)	*/
 		
 		return queryResults;
 	}

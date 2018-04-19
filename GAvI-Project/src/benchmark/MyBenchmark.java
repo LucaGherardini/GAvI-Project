@@ -9,13 +9,13 @@ import java.util.LinkedList;
 
 import org.apache.lucene.document.Document;
 
+import index.Hit;
 import index.Index;
 import irModels.BM25;
 import irModels.Model;
 
 public class MyBenchmark {
 
-	//
 	Model model;
 	String fileDocumentsPaths;
 	String queriesPath;
@@ -45,7 +45,7 @@ public class MyBenchmark {
 		index.loadIndex(fileDocumentsPaths);
 		
 		//Fields on which query works 
-		LinkedList<String> ll = new LinkedList<>();
+		LinkedList<String> ll = new LinkedList<String>();
 		ll.add("name");
 		ll.add("content");
 		
@@ -56,25 +56,20 @@ public class MyBenchmark {
 		try {			
 			
 			File dir = new File(queriesPath);
-			String[] files = dir.list();
+			String[] files = dir.list(); //TODO use this to create directory loading into index
 			
-			File f;
-			FileReader fr = null;
 			BufferedReader br = null;
 			
 			String line;
 			String s = "";
 			for (int i = 0; i < files.length; i++) {
-				f = new File(queriesPath+files[i]);
-				fr = new FileReader(f);
-				br = new BufferedReader(fr);
+				br = new BufferedReader(new FileReader(new File(queriesPath+files[i])));
 				while ( (line = br.readLine()) != null) {
 					s += line;
 				}
 				queries.add(s);
 				s = "";
 			}
-			fr.close();
 			br.close();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -86,17 +81,21 @@ public class MyBenchmark {
 		 * Every element of arraylist is the query and every element of
 		 * linkedlist is a list of document that are rilevants for that query
 		 * 
-		 * E.g. results.get(3) contains a list of rilevants documents for query number 4
+		 * results is an ArrayList in which each element is a LinkedList of documents returned by index
+		 * 
+		 * E.g. results.get(3) contains a list of relevant documents for query number 4
 		 */
 		results = new ArrayList<LinkedList<String>>(); 
-		
+		System.out.println("Getting results from index");
 		//Execute every query on documents and load results
 		for (String query: queries) {
-			LinkedList<String> docNames = new LinkedList<>();
-			for (Document doc: index.submitQuery(query, ll, model)) {
-				docNames.add(doc.get("name"));
+			LinkedList<String> docNames = new LinkedList<String>();
+			for (Hit result: index.submitQuery(query, ll, model)) {
+				String res = result.getDocName();
+				int point = res.indexOf(".doc");
+				docNames.add(res.substring(0, point-1));
 			}
-				results.add(docNames);
+			results.add(docNames);
 		}
 	}
 	
@@ -113,7 +112,7 @@ public class MyBenchmark {
 		
 		/*
 		 * Save results on a file.
-		 * File will:
+		 * File will be(f.e.):
 		 * "Relevants docs for query 3:
 		 * 	1023.doc
 		 * 	2032.doc
@@ -145,24 +144,51 @@ public class MyBenchmark {
 	 * @param fileResults file of expected results.
 	 */
 	public ArrayList<LinkedList<String>> realDocsRelevance(String fileResults) {
-		ArrayList<LinkedList<String>> expected = new ArrayList<LinkedList<String>>();
-		LinkedList<String> rel = new LinkedList<String>();
+		ArrayList<LinkedList<String>> expected = new ArrayList<LinkedList<String>>();		
 		String appo = "";
+		BufferedReader br = null;		
+		LinkedList<String> rel = null;
+		
 		try {
-			File f = new File(fileResults);
-			FileReader fr = new FileReader(f);
-			BufferedReader br = new BufferedReader(fr);
+			br = new BufferedReader(new FileReader(new File(fileResults)));
 			String line;
 			int query_num = 1;
-			int prev_num = 1;
+			int prev_num = -1;
 			
-			for (line = br.readLine(); line != null; line = br.readLine()) {
+			while( (line=br.readLine()) != null) {
+				rel = new LinkedList<String>();
+				
 				if (line.contains("Query")) {
 					query_num = Integer.parseInt(line.substring(line.indexOf(" ")+1, line.length()));
-				}
-				else if (line.contains("Refs"));
-				else if (line.length() > 0) {
-					appo = line.substring(0,line.indexOf(" "));
+					System.out.println("Reading docs expected for query " + query_num);
+				} else if (!line.contains("Refs") && line.length() > 0) {
+					boolean terminator = false;
+					while( !terminator ){ 
+						String [] docs = line.split(" ");
+						LinkedList<Integer> docNum = new LinkedList<Integer>();
+					
+						for (String doc : docs) {
+							int num = Integer.parseInt(doc);
+							if (num != -1) {
+								docNum.add(num);
+							} else {
+								terminator = true;
+							}
+						}
+					
+						for (Integer k : docNum) {
+							rel.add(k.toString());
+						}
+						if(!terminator) {
+							line = br.readLine();
+						}
+					}
+					
+					expected.add(rel);
+					
+					
+					/*
+					appo = line.substring(0, line.indexOf(" "));
 					if (prev_num != query_num) {
 						expected.add(rel);
 						rel = new LinkedList<>();
@@ -185,27 +211,56 @@ public class MyBenchmark {
 						else
 							break;
 					}
+					*/
 				}
 			}
 			br.close();
 		} catch (Exception e) {
-			// TODO: handle exception
 			System.err.println(e);
 		}
+		
+		/*
+		System.out.println("Checking that \"expected\" is load...");
+		for (int q = 0; q < expected.size(); q++) {
+			System.out.print(q + ": ");
+			for (int r = 0; r < expected.get(q).size(); r++) {
+				System.out.print(expected.get(q).get(r) + " | ");
+			}
+			System.out.println("");
+		}
+		*/
+		
 		return expected;
 	}
 
 	/**
-	 * Get intersection between relevance document from benchmark and 
+	 * Get intersection between expected documents from benchmark and 
 	 * results of our system.
 	 * @return intersection between relevance document from benchmark and results of our system.
 	 */
 	public ArrayList<LinkedList<String>> getIntersection() {
-		ArrayList<LinkedList<String>> relevants = realDocsRelevance("GAvI-Project/benchmark/lisa/LISA.REL");
+		ArrayList<LinkedList<String>> relevants = realDocsRelevance("benchmark/lisa/LISA.REL");
 		ArrayList<LinkedList<String>> intersect = new ArrayList<LinkedList<String>>(); 
 		
-		for (int i = 0; i < Math.min(results.size(),relevants.size()); i++) {
-			intersect.add(new LinkedList<String>());
+		System.out.println("Results size: " + results.size());
+		System.out.println("Relevants size: " + relevants.size());
+		
+		LinkedList<String> intersection = null;
+		
+		for (int query = 0 ; query < results.size(); query++) {
+			System.out.println("Making matching on query " + query);
+			intersection = new LinkedList<String>();
+			System.out.println("res size " + results.get(query).size());
+			for (int i = 0; i < results.get(query).size(); i++) {
+					for (int j = 0; j < relevants.get(query).size(); j++) {
+						if ( relevants.get(query).get(j).equals(results.get(query).get(i))) {
+							intersection.add(relevants.get(query).get(j));
+						}
+					}
+			}
+			intersect.add(intersection);
+		}
+			/*
 			for (int j = 0; j < Math.min(results.get(i).size(), relevants.get(i).size()); j++) {
 				if ( results.get(i).size() < relevants.get(i).size()) {
 					if ( relevants.get(i).contains(results.get(i).get(j)))
@@ -216,7 +271,7 @@ public class MyBenchmark {
 						intersect.get(i).add(relevants.get(i).get(j));
 				}	
 			}
-		}
+			*/
 		
 		return intersect;
 	}
@@ -224,12 +279,25 @@ public class MyBenchmark {
 	public static void main(String[] args) {
 		
 		//Use example
-		MyBenchmark mb = new MyBenchmark(new BM25(),"benchmarkDocs.ser","GAvI-Project/benchmark/lisa/Query/");
+		MyBenchmark mb = new MyBenchmark(new BM25(),"benchmarkDocs.ser","benchmark/lisa/Query/");
 		mb.executeBenchmark();
 		
 		mb.saveResults("resBM25.save");
-		System.out.println(mb.realDocsRelevance("GAvI-Project/benchmark/lisa/LISA.REL"));
-		System.out.println(mb.getIntersection());
+		
+		System.out.println("Printing results for each query...");
+		int queryNum = 1;
+		
+		for (LinkedList<String> queryResult : mb.realDocsRelevance("benchmark/lisa/LISA.REL")) {
+			System.out.println("Query n° " + queryNum + " results: " + queryResult.toString());
+			queryNum++;
+		}
+		
+		queryNum = 1;
+		System.out.println("Printing intersection between retrieved and expected documents...");
+		for (LinkedList<String> intersection : mb.getIntersection()) {
+			System.out.println("For Query " + queryNum + ", intersections: " + intersection.toString());
+			queryNum++;
+		}
 	}
 	
 }

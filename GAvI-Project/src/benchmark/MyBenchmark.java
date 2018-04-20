@@ -209,8 +209,8 @@ public class MyBenchmark {
 	 * results of our system.
 	 * @return intersection between relevance document from benchmark and results of our system.
 	 */
-	public ArrayList<LinkedList<String>> getIntersection() {
-		ArrayList<LinkedList<String>> relevants = realDocsRelevance("benchmark/lisa/LISA.REL");
+	public ArrayList<LinkedList<String>> getIntersection(String relevance) {
+		ArrayList<LinkedList<String>> relevants = realDocsRelevance(relevance+"benchmark/lisa/LISA.REL");
 		ArrayList<LinkedList<String>> intersect = new ArrayList<LinkedList<String>>(); 
 		
 		System.out.println("Results size: " + results.size());
@@ -238,10 +238,40 @@ public class MyBenchmark {
 		return intersect;
 	}
 	
+	public ArrayList<Double> getRecall(ArrayList<LinkedList<String>> intersection, ArrayList<LinkedList<String>> relevants) {
+		ArrayList<Double> recall = new ArrayList<Double>();
+		//List of size of each intersection for each query
+		for (LinkedList<String> inter: intersection)
+			recall.add(inter.size()+0.0);
+		//For each query get intersection.size / relevants.size
+			//recall = |intersect|/|relevants|
+		for (int i = 0; i < relevants.size(); i++)
+			recall.set(i, recall.get(i)/relevants.get(i).size());
+		
+		return recall;
+	}
+	
+	public ArrayList<Double> getPrecision(ArrayList<LinkedList<String>> intersection) {
+		ArrayList<Double> precision = new ArrayList<Double>();
+		//List of size of each intersection for each query
+		for (LinkedList<String> inter: intersection) {
+			precision.add(inter.size()+0.0);
+		}
+		//For each query get intersection.size / relevants.size
+			//precision = |intersect|/|result|
+		for (int i = 0; i < results.size(); i++)
+			precision.set(i, precision.get(i)/results.get(i).size());
+		
+		return precision;
+	}
+	
 	public static void main(String[] args) {
 		
+		String simone = "";
+		simone = "GAvI-Project/";
+		
 		//Use example
-		MyBenchmark mb = new MyBenchmark(new BM25(),"benchmarkDocs.ser","benchmark/lisa/Query/");
+		MyBenchmark mb = new MyBenchmark(new BM25(),"benchmarkDocs.ser",simone+"benchmark/lisa/Query/");
 		mb.executeBenchmark();
 		
 		mb.saveResults("resVSM.save");
@@ -249,17 +279,27 @@ public class MyBenchmark {
 		System.out.println("Printing results for each query...");
 		int queryNum = 1;
 		
-		for (LinkedList<String> queryResult : mb.realDocsRelevance("benchmark/lisa/LISA.REL")) {
+		ArrayList<LinkedList<String>> relevants = mb.realDocsRelevance(simone+"benchmark/lisa/LISA.REL");
+		for (LinkedList<String> queryResult : relevants) {
 			System.out.println("Query n° " + queryNum + " results: " + queryResult.toString());
 			queryNum++;
 		}
 		
 		queryNum = 1;
 		System.out.println("Printing intersection between retrieved and expected documents...");
-		for (LinkedList<String> intersection : mb.getIntersection()) {
+		ArrayList<LinkedList<String>> intersect = mb.getIntersection(simone);
+		for (LinkedList<String> intersection : intersect) {
 			System.out.println("For Query " + queryNum + ", intersections: " + intersection.toString());
 			queryNum++;
 		}
+		
+		int i=0;
+		for (Double rec: mb.getRecall(intersect, relevants))
+			System.out.println("Recall query "+(++i)+": " + rec);
+		
+		i=0;
+		for (Double rec: mb.getPrecision(intersect))
+			System.out.println("Precision query "+(++i)+": " + rec);
 	}
 	
 }

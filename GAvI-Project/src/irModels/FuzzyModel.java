@@ -30,16 +30,20 @@ public class FuzzyModel extends Model {
 		 * formulation (for example, specific multi fields on which search)
 		 */
 		MultiFieldQueryParser queryParser = new MultiFieldQueryParser(fields.toArray(new String[fields.size()]), analyzer);
-		queryParser.setDefaultOperator(QueryParser.Operator.AND);	
+		//queryParser.setDefaultOperator(QueryParser.Operator.AND);	
 		
-		String[] terms = query.split(" ");
-        for (String term : terms){
+		//String[] terms = query.split(" ");
+        //for (String term : terms){
             try {
-				b.add(queryParser.parse(term.replaceAll("~", "") + "~"), BooleanClause.Occur.MUST);
+            	/*if(!term.equals("AND") && !term.equals("OR") && !term.equals("NOT")) {
+            		b.add(queryParser.parse(term.replaceAll("~", "") + "~"), BooleanClause.Occur.MUST);
+            	}*/
+            	//b.add(queryParser.parse(term), BooleanClause.Occur.MUST);
+            	q = queryParser.parse(query);
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
-        }
+        //}
         
 		/*
 		String processedQuery = "";
@@ -56,10 +60,10 @@ public class FuzzyModel extends Model {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+		*/
 		
 		return q;
-		*/
-        return b.build();
+        //return b.build();
 	}
 
 	@Override

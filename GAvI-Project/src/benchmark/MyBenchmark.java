@@ -12,7 +12,10 @@ import org.apache.lucene.document.Document;
 import index.Hit;
 import index.Index;
 import irModels.BM25;
+import irModels.BooleanModel;
+import irModels.FuzzyModel;
 import irModels.Model;
+import irModels.VectorSpaceModel;
 
 public class MyBenchmark {
 
@@ -72,7 +75,6 @@ public class MyBenchmark {
 			}
 			br.close();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -132,7 +134,6 @@ public class MyBenchmark {
 			}
 			fw.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -144,8 +145,7 @@ public class MyBenchmark {
 	 * @param fileResults file of expected results.
 	 */
 	public ArrayList<LinkedList<String>> realDocsRelevance(String fileResults) {
-		ArrayList<LinkedList<String>> expected = new ArrayList<LinkedList<String>>();		
-		String appo = "";
+		ArrayList<LinkedList<String>> expected = new ArrayList<LinkedList<String>>();	
 		BufferedReader br = null;		
 		LinkedList<String> rel = null;
 		
@@ -153,7 +153,6 @@ public class MyBenchmark {
 			br = new BufferedReader(new FileReader(new File(fileResults)));
 			String line;
 			int query_num = 1;
-			int prev_num = -1;
 			
 			while( (line=br.readLine()) != null) {
 				rel = new LinkedList<String>();
@@ -183,35 +182,7 @@ public class MyBenchmark {
 							line = br.readLine();
 						}
 					}
-					
 					expected.add(rel);
-					
-					
-					/*
-					appo = line.substring(0, line.indexOf(" "));
-					if (prev_num != query_num) {
-						expected.add(rel);
-						rel = new LinkedList<>();
-						prev_num = query_num;
-					}
-					if (!rel.contains(appo))
-						rel.add(appo);
-					String line2 = line.substring(0);
-					while (appo.length() > 0 ) {
-						if (!(line2.indexOf(" ") < 0)) {
-							appo = line2.substring(0,line2.indexOf(" "));
-							line2 = line2.substring(line2.indexOf(" ")+1,line2.length());
-							if (!rel.contains(appo))
-								rel.add(appo);
-						}
-						else if (!line2.equals("-1")) {
-							rel.add(line2);
-							line2 = "-1";
-						}
-						else
-							break;
-					}
-					*/
 				}
 			}
 			br.close();
@@ -254,25 +225,16 @@ public class MyBenchmark {
 			for (int i = 0; i < results.get(query).size(); i++) {
 					for (int j = 0; j < relevants.get(query).size(); j++) {
 						if ( relevants.get(query).get(j).equals(results.get(query).get(i))) {
-							intersection.add(relevants.get(query).get(j));
+							if (!intersection.contains(relevants.get(query).get(j))){
+								intersection.add(relevants.get(query).get(j));
+							}
+							relevants.get(query).remove(relevants.get(query).get(j));
+							results.get(query).remove(results.get(query).get(i));
 						}
 					}
 			}
 			intersect.add(intersection);
 		}
-			/*
-			for (int j = 0; j < Math.min(results.get(i).size(), relevants.get(i).size()); j++) {
-				if ( results.get(i).size() < relevants.get(i).size()) {
-					if ( relevants.get(i).contains(results.get(i).get(j)))
-						intersect.get(i).add(results.get(i).get(j));
-				}
-				else {
-					if ( results.get(i).contains(relevants.get(i).get(j)))
-						intersect.get(i).add(relevants.get(i).get(j));
-				}	
-			}
-			*/
-		
 		return intersect;
 	}
 	
@@ -282,7 +244,7 @@ public class MyBenchmark {
 		MyBenchmark mb = new MyBenchmark(new BM25(),"benchmarkDocs.ser","benchmark/lisa/Query/");
 		mb.executeBenchmark();
 		
-		mb.saveResults("resBM25.save");
+		mb.saveResults("resVSM.save");
 		
 		System.out.println("Printing results for each query...");
 		int queryNum = 1;

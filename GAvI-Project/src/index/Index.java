@@ -171,11 +171,9 @@ public class Index{
 			System.err.println("File " + saveFile + " doesn't exist");
 		}
 		
-		/*
 		for (int k = 0 ; k < this.getSize() ; k++) {
 			fileWriter.println(getDocument(k).get("path") + getDocument(k).get("name"));
 		}
-		*/
 		
 		fileWriter.close();
 		System.out.println("Saving successful to " + saveFile + "!");
@@ -330,13 +328,15 @@ public class Index{
 		
 		System.out.println("Printing query: " + q.toString() + "\n");
 		
-		/* ONLY FOR DEBUG PURPOSES 
+		/* ONLY FOR DEBUG PURPOSES */
+		/*
 		System.out.println("Printing documents in index: ");
 		for (int i = 0; i < getSize(); i++) {
 			System.out.println("Document " + i + ": " + getDocument(i).get("path") + getDocument(i).get("name"));
 		}
 		System.out.println("\n");
 		*/
+		
 		
 		/* Updating of IndexSearcher only if a request is submitted. The only way to updating a searcher, is to
 		 * creating a new searcher bounded to current reader. This is cheap if we already have a reader
@@ -374,8 +374,7 @@ public class Index{
 		}
 		
 		/*
-		LinkedList<String> paths = new LinkedList<String>();
-		
+		LinkedList<String> paths = new LinkedList<String>();		
 		for (Hit docHit : queryResults) {
 			if(!paths.contains(docHit.getDocPath())){
 				paths.add(docHit.getDocPath());
@@ -383,7 +382,7 @@ public class Index{
 			}
 			System.out.println("..." + docHit.getDocName());
 		}
-	)	*/
+		*/
 		
 		return queryResults;
 	}

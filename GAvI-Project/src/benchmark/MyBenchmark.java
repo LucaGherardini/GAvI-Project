@@ -268,7 +268,7 @@ public class MyBenchmark {
 	public static void main(String[] args) {
 		
 		String simone = "";
-		simone = "GAvI-Project/";
+		//simone = "GAvI-Project/";
 		
 		//Use example
 		MyBenchmark mb = new MyBenchmark(new BM25(),"benchmarkDocs.ser",simone+"benchmark/lisa/Query/");

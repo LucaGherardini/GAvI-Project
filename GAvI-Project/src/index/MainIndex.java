@@ -32,7 +32,7 @@ public class MainIndex {
 		generalIndex.saveIndex("savedIndex.ser");
 		*/
 		
-		String query = "Lucene OR documentation";
+		String query = "Lucene AND documentation";
 		/*
 		 * Fields on which query will work, passed to inform index in which fields it must search
 		 */

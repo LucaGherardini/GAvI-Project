@@ -271,11 +271,8 @@ public class MyBenchmark {
 		//simone = "GAvI-Project/";
 		
 		//Use example
-<<<<<<< HEAD
 		MyBenchmark mb = new MyBenchmark(new FuzzyModel(),"benchmarkDocs.ser","benchmark/lisa/Query/");
-=======
-		MyBenchmark mb = new MyBenchmark(new BM25(),"benchmarkDocs.ser",simone+"benchmark/lisa/Query/");
->>>>>>> branch 'master' of https://github.com/LucaGherardini/GAvI-Project
+		mb = new MyBenchmark(new BM25(),"benchmarkDocs.ser",simone+"benchmark/lisa/Query/");
 		mb.executeBenchmark();
 		
 		mb.saveResults("resFuz.save");

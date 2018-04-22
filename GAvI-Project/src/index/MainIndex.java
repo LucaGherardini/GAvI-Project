@@ -32,7 +32,7 @@ public class MainIndex {
 		generalIndex.saveIndex("savedIndex.ser");
 		*/
 		
-		String query = "Lucene";
+		String query = "Lucene OR documentation";
 		/*
 		 * Fields on which query will work, passed to inform index in which fields it must search
 		 */
@@ -83,7 +83,7 @@ public class MainIndex {
 		
 		FuzzyModel fm = new FuzzyModel();
 		
-		generalIndex.setSimilarity(fm.getSimilarity());
+		generalIndex.setSimilarity(fm.getSimilarity(), true);
 		
 		results = generalIndex.submitQuery(query, fields, fm);
 		
@@ -95,7 +95,7 @@ public class MainIndex {
 		
 		VectorSpaceModel vsm = new VectorSpaceModel();
 		
-		generalIndex.setSimilarity(vsm.getSimilarity());
+		generalIndex.setSimilarity(vsm.getSimilarity(), true);
 		
 		results = generalIndex.submitQuery(query, fields, vsm);
 		
@@ -107,7 +107,7 @@ public class MainIndex {
 		
 		BM25 bm25 = new BM25();
 		
-		generalIndex.setSimilarity(bm25.getSimilarity());
+		generalIndex.setSimilarity(bm25.getSimilarity(), true);
 		
 		results = generalIndex.submitQuery(query, fields, bm25);
 		

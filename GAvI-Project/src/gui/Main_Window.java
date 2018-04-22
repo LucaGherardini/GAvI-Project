@@ -216,7 +216,7 @@ public class Main_Window {
 					fields.add("content");
 				}
 				
-				generalIndex.setSimilarity(modelUsed.getSimilarity());
+				generalIndex.setSimilarity(modelUsed.getSimilarity(), true);
 				LinkedList<Hit> results = generalIndex.submitQuery(queryStr, fields, modelUsed);
 				
 				for(Hit result : results) {

@@ -44,7 +44,7 @@ public class MyBenchmark {
 		
 		//Create index
 		Index index = Index.getIndex();
-		index.setSimilarity(model.getSimilarity());
+		index.setSimilarity(model.getSimilarity(), false);
 		index.loadIndex(fileDocumentsPaths);
 		
 		//Fields on which query works 
@@ -241,10 +241,10 @@ public class MyBenchmark {
 	public static void main(String[] args) {
 		
 		//Use example
-		MyBenchmark mb = new MyBenchmark(new BM25(),"benchmarkDocs.ser","benchmark/lisa/Query/");
+		MyBenchmark mb = new MyBenchmark(new FuzzyModel(),"benchmarkDocs.ser","benchmark/lisa/Query/");
 		mb.executeBenchmark();
 		
-		mb.saveResults("resVSM.save");
+		mb.saveResults("resFuz.save");
 		
 		System.out.println("Printing results for each query...");
 		int queryNum = 1;

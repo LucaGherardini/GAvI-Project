@@ -111,12 +111,16 @@ public class Index{
 		}
 	}
 	
-	public void setSimilarity(Similarity sim) {
+	public void setSimilarity(Similarity sim, boolean reload) {
 		// TODO maybe we could auto-save current index, to load it after reset of Index
 		simUsed = sim;
+		if(reload) {
 		saveIndex("tempIndex.ser");
+		}
 		resetIndex();
+		if(reload) {
 		loadIndex("tempIndex.ser");
+		}
 		// TODO maybe we could auto-load last index saved, to allow a better use of software
 	}
 	
@@ -125,7 +129,7 @@ public class Index{
 	 * Then it makes uniqueIndex to being a new Index, reallocating new tools
 	 * This is the fastest and easiest way to "clear" totally an index from its entries
 	 */	
-	protected void resetIndex() {
+	public void resetIndex() {
 		eraseIndex();
 		startIndex();
 	}
@@ -193,8 +197,9 @@ public class Index{
 			return ;
 		}
 		
-		System.out.println("Erasing of the previous index...");
-		resetIndex(); 
+		//System.out.println("Erasing of the previous index...");
+		//resetIndex();
+		// Call explicitly resetIndex() when loading by GUI
 		
 		String line = "";
 		try {

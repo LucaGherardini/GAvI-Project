@@ -1,7 +1,6 @@
 package irModels;
 
 import java.io.IOException;
-import java.util.LinkedList;
 
 /*
  * Testing class for models

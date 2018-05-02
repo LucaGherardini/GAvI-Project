@@ -4,15 +4,7 @@ import irModels.BM25;
 import irModels.BooleanModel;
 import irModels.FuzzyModel;
 import irModels.VectorSpaceModel;
-import textOperation.TextOperations;
-
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexableField;
-import org.apache.lucene.search.Query;
 
 public class MainIndex {
 

@@ -6,36 +6,22 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.LinkedList;
-
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
-
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
-import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-
-import irModels.BM25;
 import irModels.Model;
 import irModels.VectorSpaceModel;
 
@@ -112,7 +98,6 @@ public class Index{
 	}
 	
 	public void setSimilarity(Similarity sim, boolean reload) {
-		// TODO maybe we could auto-save current index, to load it after reset of Index
 		simUsed = sim;
 		if(reload) {
 		saveIndex("tempIndex.ser");
@@ -121,7 +106,6 @@ public class Index{
 		if(reload) {
 		loadIndex("tempIndex.ser");
 		}
-		// TODO maybe we could auto-load last index saved, to allow a better use of software
 	}
 	
 	/* resetIndex
@@ -183,6 +167,9 @@ public class Index{
 		System.out.println("Saving successful to " + saveFile + "!");
 	}
 	
+	/* loadIndex
+	 * this method, specularly to saveIndex, load documents in Index by a save file that contains a list
+	 */
 	public void loadIndex(String saveFile) {
 		System.out.println("Loading from " + saveFile);
 		BufferedReader reader = null;
@@ -310,13 +297,17 @@ public class Index{
 		}
 	}
 	
-	/* getSize()
+	/* getSize
 	 * returns number of documents stored in the index
 	 */
 	public int getSize() {
 		return inWriter.numDocs();
 	}
 	
+	/* submitQuery
+	 * this method requires a string representing user query, a LinkedList of Strings containing fields
+	 * in which searching, and the Model instance used to ranking results
+	 */
 	public LinkedList<Hit> submitQuery(String query, LinkedList<String> fields, Model m) {
 		
 		LinkedList<Hit> queryResults = new LinkedList<Hit>();

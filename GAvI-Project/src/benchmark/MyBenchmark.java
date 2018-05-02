@@ -272,7 +272,7 @@ public class MyBenchmark {
 		
 		//Use example
 		MyBenchmark mb = new MyBenchmark(new FuzzyModel(),"benchmarkDocs.ser","benchmark/lisa/Query/");
-		mb = new MyBenchmark(new BM25(),"benchmarkDocs.ser",simone+"benchmark/lisa/Query/");
+		mb = new MyBenchmark(new VectorSpaceModel(),"benchmarkDocs.ser",simone+"benchmark/lisa/Query/");
 		mb.executeBenchmark();
 		
 		mb.saveResults("resFuz.save");

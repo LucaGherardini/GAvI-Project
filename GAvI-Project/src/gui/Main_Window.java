@@ -79,10 +79,11 @@ public class Main_Window {
 		
 		frame = new JFrame();
 		frame.getContentPane().setBackground(Color.CYAN);
-		frame.setBounds(800, 600, 850, 500);
+		frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-		frame.setTitle("GaVi Project");
+		frame.setTitle("GAvI Project");
 		frame.setResizable(false);
 		
 		JLabel title = new JLabel("NOME");
@@ -220,8 +221,8 @@ public class Main_Window {
 				chronology.addFirst(queryStr);
 				Component compo[]=frame.getComponents();
 				if(compo.equals(chronologyTable)==false) {
-				frame.remove(chronologyTable);
-				frame.repaint();
+				//frame.remove(chronologyTable);
+				//frame.repaint();
 				}
 				
 				System.out.println("Query string: " + queryStr);
@@ -262,11 +263,8 @@ public class Main_Window {
 					fields.add("content");
 				}
 				
-<<<<<<< HEAD
 				generalIndex.setSimilarity(modelUsed.getSimilarity(),true);
-=======
 				generalIndex.setSimilarity(modelUsed.getSimilarity(), true);
->>>>>>> master
 				LinkedList<Hit> results = generalIndex.submitQuery(queryStr, fields, modelUsed);
 				
 				for(Hit result : results) {

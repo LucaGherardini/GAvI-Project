@@ -1,11 +1,7 @@
 package irModels;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.similarities.Similarity;
 

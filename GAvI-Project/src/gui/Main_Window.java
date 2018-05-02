@@ -80,7 +80,6 @@ public class Main_Window {
 		frame = new JFrame();
 		frame.getContentPane().setBackground(Color.CYAN);
 		frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		frame.setTitle("GAvI Project");
@@ -221,8 +220,8 @@ public class Main_Window {
 				chronology.addFirst(queryStr);
 				Component compo[]=frame.getComponents();
 				if(compo.equals(chronologyTable)==false) {
-				//frame.remove(chronologyTable);
-				//frame.repaint();
+				frame.remove(chronologyTable);
+				frame.repaint();
 				}
 				
 				System.out.println("Query string: " + queryStr);
@@ -263,7 +262,9 @@ public class Main_Window {
 					fields.add("content");
 				}
 				
+
 				generalIndex.setSimilarity(modelUsed.getSimilarity(),true);
+		generalIndex.setSimilarity(modelUsed.getSimilarity(), true);
 				LinkedList<Hit> results = generalIndex.submitQuery(queryStr, fields, modelUsed);
 				
 				for(Hit result : results) {
@@ -358,8 +359,8 @@ public class Main_Window {
 		public void actionPerformed(ActionEvent e) {
 			Component compo[]=frame.getComponents();
 			if(compo.equals(chronologyTable)==false) {
-			frame.remove(chronologyTable);
-			frame.repaint();
+			//frame.remove(chronologyTable);
+			//frame.repaint();
 			
 			if(chronology.isEmpty()==false)
 			chronology.remove();

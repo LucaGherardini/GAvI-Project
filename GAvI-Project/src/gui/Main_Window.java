@@ -2,6 +2,8 @@ package gui;
 
 import java.awt.EventQueue;
 import java.awt.Insets;
+import java.awt.Toolkit;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -26,6 +28,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
@@ -79,19 +82,24 @@ public class Main_Window {
 		
 		frame = new JFrame();
 		frame.getContentPane().setBackground(Color.CYAN);
-		frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+		frame.setSize(1200, 800);
+		//frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+		/*Toolkit tk = Toolkit.getDefaultToolkit();
+		int xSize = ((int) tk.getScreenSize().getWidth());
+		int ySize = ((int) tk.getScreenSize().getHeight());
+		frame.setSize(xSize,ySize);*/
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		frame.setTitle("GaVi Project");
-		frame.setResizable(false);
+		//frame.setResizable(false);
 		
 		JLabel title = new JLabel("NOME");
-		title.setBounds(91, 50, 77, 25);
+		title.setBounds(266, 113, 77, 25);
 		frame.getContentPane().add(title);
 		
 		
 		textField = new JTextField();
-		textField.setBounds(10, 96, 205, 20);
+		textField.setBounds(70, 149, 418, 20);
 		frame.getContentPane().add(textField);
 		textField.setColumns(10);
 		
@@ -100,12 +108,12 @@ public class Main_Window {
 		modelbox.setModel(new DefaultComboBoxModel<String>(new String[] {"Boolean Model", "Vector Space Model", "Probabilistic(BM25) Model", "Fuzzy Model"}));
 		modelbox.setSelectedIndex(0);
 		modelbox.setToolTipText("Preferenze");
-		modelbox.setBounds(0, 0, 156, 20);
+		modelbox.setBounds(70, 11, 156, 20);
 		frame.getContentPane().add(modelbox);
 		
 		JButton search = new JButton("Cerca");
 		
-		search.setBounds(233, 95, 89, 23);
+		search.setBounds(498, 148, 89, 23);
 		frame.getContentPane().add(search);
 		
 		JButton delete = new JButton();
@@ -113,7 +121,7 @@ public class Main_Window {
 		ImageIcon deleteIcon = new ImageIcon(new ImageIcon("media/icons/empty_index.png").getImage().getScaledInstance(35, 35, 0));
 		delete.setIcon(deleteIcon);
 		delete.setMargin (new Insets (0, 0, 0, 0));
-		delete.setBounds(524, 158, 35, 35);
+		delete.setBounds(1122, 183, 52, 52);
 		frame.getContentPane().add(delete);
 		
 		
@@ -121,26 +129,26 @@ public class Main_Window {
         ImageIcon addIcon = new ImageIcon(new ImageIcon("media/icons/add_file.png").getImage().getScaledInstance(35, 35, 0));
 		add.setIcon(addIcon);
 		add.setMargin (new Insets (0, 0, 0, 0));
-		add.setBounds(524, 204, 35, 35);
+		add.setBounds(1122, 246, 52, 52);
 		frame.getContentPane().add(add);
 		
 		JButton remove = new JButton();
 		ImageIcon removeIcon = new ImageIcon(new ImageIcon("media/icons/remove_file.png").getImage().getScaledInstance(35, 35, 0));
 		remove.setIcon(removeIcon);
 		remove.setMargin (new Insets (0, 0, 0, 0));
-		remove.setBounds(524, 250, 35, 35);
+		remove.setBounds(1122, 309, 52, 52);
 		frame.getContentPane().add(remove);
 		
 
 		resultsTable = new JTable();
-        resultsTable.setBounds(22, 183, 274, 245);
+        resultsTable.setBounds(70, 234, 418, 405);
         DefaultTableModel resultsModel = (DefaultTableModel) resultsTable.getModel();
         resultsModel.addColumn("File");
         resultsModel.addColumn("Score");
 		frame.getContentPane().add(resultsTable);
 		
 		fileTable = new JTable(0,0);
-		fileTable.setBounds(347, 158, 167, 270);
+		fileTable.setBounds(753, 183, 359, 540);
 		
 		DefaultTableModel tableModel=(DefaultTableModel) fileTable.getModel();
 		
@@ -152,52 +160,45 @@ public class Main_Window {
 		ButtonGroup opGroup = new ButtonGroup();		
 		
 		JRadioButton noOptimizations = new JRadioButton("No Optimizations");
-		noOptimizations.setBounds(367, -1, 170, 23);
+		noOptimizations.setBounds(753, 10, 170, 23);
 		noOptimizations.setSelected(true);
 		opGroup.add(noOptimizations);
 		frame.getContentPane().add(noOptimizations);
 		
 		JRadioButton editDistance = new JRadioButton("Edit Distance");
-		editDistance.setBounds(367, 25, 170, 23);
+		editDistance.setBounds(753, 36, 170, 23);
 		opGroup.add(editDistance);
 		frame.getContentPane().add(editDistance);
 		
 		JRadioButton qGram = new JRadioButton("Q-Gram Overlap");
-		qGram.setBounds(367, 51, 170, 23);
+		qGram.setBounds(753, 62, 170, 23);
 		opGroup.add(qGram);
 		frame.getContentPane().add(qGram);
 		
 		editDistanceText = new JTextField();
-		editDistanceText.setBounds(543, 26, 39, 20);
+		editDistanceText.setBounds(929, 37, 39, 20);
 		frame.getContentPane().add(editDistanceText);
 		editDistanceText.setColumns(10);
 		
 		JButton Help = new JButton("HELP");
 		
-		Help.setBounds(218, -1, 89, 23);
+		Help.setBounds(254, 10, 89, 23);
 		frame.getContentPane().add(Help);
 		
 		JLabel lblResults = new JLabel("RESULTS");
-		lblResults.setBounds(121, 158, 108, 14);
+		lblResults.setBounds(70, 204, 108, 14);
 		frame.getContentPane().add(lblResults);
 		
-		JLabel lblDocumnets = new JLabel("Documnets");
-		lblDocumnets.setBounds(347, 122, 94, 25);
+		JLabel lblDocumnets = new JLabel("Documents");
+		lblDocumnets.setBounds(753, 147, 94, 25);
 		frame.getContentPane().add(lblDocumnets);
 		
 		JButton btnChronology = new JButton("Chronology");
 		
-		btnChronology.setBounds(622, 83, 136, 23);
+		btnChronology.setBounds(373, 10, 136, 23);
 		frame.getContentPane().add(btnChronology);
 		
-		JButton btnClose = new JButton();
-		
 		ImageIcon deleteChro = new ImageIcon(new ImageIcon("media/icons/empy_index.png").getImage().getScaledInstance(39, 23, 0));
-		btnClose.setIcon(deleteChro);
-		btnClose.setMargin (new Insets (0, 0, 0, 0));
-		btnClose.setHorizontalAlignment(SwingConstants.LEADING);
-		btnClose.setBounds(768, 83, 39, 23);
-		frame.getContentPane().add(btnClose);
 		
 		/*table = new JTable();
 		table.setBounds(628, 172, 168, 206);
@@ -296,6 +297,26 @@ public class Main_Window {
 				//se si vogliono selezionare piu file insieme (difficile implementazione forse non il modo migliore per piu file o directory)
 				File filesSelected[] = fileC.getSelectedFiles();
 				
+				LinkedList<String> paths = new LinkedList<String>();		
+				for (File doc : filesSelected) {
+					int separatorIndex = doc.getPath().lastIndexOf(File.separator);
+					String path = "";
+					if (separatorIndex != -1) {
+						path = doc.getPath().substring(0, separatorIndex+1);
+					}
+					
+					if(!paths.contains(path)){
+						paths.add(path);
+						tableModel.setRowCount(tableModel.getRowCount()+1);
+						tableModel.setValueAt(path, tableModel.getRowCount()-1, 0);
+						//System.out.println("\n" + paths.getLast());
+						
+					}
+					tableModel.setRowCount(tableModel.getRowCount()+1);
+					tableModel.setValueAt("..." + doc.getPath().substring(separatorIndex+1, doc.getPath().length()), tableModel.getRowCount()-1, 0);
+				}
+				
+				/*
 				for (File f : filesSelected) {
 					String nameFile = f.getAbsolutePath();
 				
@@ -304,7 +325,7 @@ public class Main_Window {
 							tableModel.setValueAt(f.getName(), tableModel.getRowCount()-1, 0);
 							generalIndex.addDocument(nameFile);
 					}
-				}
+				}*/
 							
 			}
 		});
@@ -333,36 +354,8 @@ public class Main_Window {
 	//Chronology
 	btnChronology.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
-			chronologyTable = new JTable();
-			chronologyTable.setBounds(622, 172, 176, 160);
-			frame.getContentPane().add(chronologyTable);
-			
-			DefaultTableModel chronologyModel=(DefaultTableModel) chronologyTable.getModel();
-			
-			chronologyModel.addColumn("Chronology");
-			chronologyModel.setRowCount(10);
-			
-			if(chronology.isEmpty()==false && chronology.getFirst()!= "") {
-			for(int i=0;i<chronology.size();i++) {
-				chronologyModel.setValueAt(chronology.get(i), i,0);			
-				}
-			}
-			
-		      frame.repaint();
+			//TODO fai finestra cronologia
 	
-		}
-	});
-	//Delete Chronology
-	btnClose.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			Component compo[]=frame.getComponents();
-			if(compo.equals(chronologyTable)==false) {
-			//frame.remove(chronologyTable);
-			//frame.repaint();
-			
-			if(chronology.isEmpty()==false)
-			chronology.remove();
-			}
 		}
 	});
 	

@@ -264,7 +264,6 @@ public class Main_Window {
 				}
 				
 				generalIndex.setSimilarity(modelUsed.getSimilarity(),true);
-				generalIndex.setSimilarity(modelUsed.getSimilarity(), true);
 				LinkedList<Hit> results = generalIndex.submitQuery(queryStr, fields, modelUsed);
 				
 				for(Hit result : results) {

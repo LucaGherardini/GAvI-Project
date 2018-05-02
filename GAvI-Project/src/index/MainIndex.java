@@ -16,9 +16,12 @@ import org.apache.lucene.search.Query;
 
 public class MainIndex {
 
-	public static void main(String[] args) {		
-
-		Index generalIndex = Index.getIndex();
+	public static void main(String[] args) {	
+		
+		BooleanModel bm = new BooleanModel();
+		Index generalIndex = Index.getIndex(bm.getSimilarity());
+		LinkedList<Hit> results;
+		generalIndex.loadIndex("tempIndex.ser");
 		
 		/*
 		generalIndex.addDocument("README.md");
@@ -27,9 +30,9 @@ public class MainIndex {
 		generalIndex.addDocument("other/GenericTextFile.txt");
 		generalIndex.addDocument("other/USA.txt");
 		generalIndex.saveIndex("savedIndex.ser");
-		*/		
+		*/
 		
-		String query = "Lucene";
+		String query = "Lucene AND documentation";
 		/*
 		 * Fields on which query will work, passed to inform index in which fields it must search
 		 */
@@ -48,14 +51,12 @@ public class MainIndex {
 			fields.add("name");
 			fields.add("content");
 		}
-		
-		
-		BooleanModel bm = new BooleanModel();
-		
-		generalIndex.setSimilarity(bm.getSimilarity());
-		generalIndex.loadIndex("savedIndex.ser");
 
-		generalIndex.submitQuery(query, fields, bm);		
+		results = generalIndex.submitQuery(query, fields, bm);		
+		
+		for (Hit res : results) {
+			System.out.println(res.getDocPath() + res.getDocName() + ": " + res.getScore());
+		}
 		
 		System.out.println("************************************************");
 		
@@ -82,27 +83,36 @@ public class MainIndex {
 		
 		FuzzyModel fm = new FuzzyModel();
 		
-		generalIndex.setSimilarity(fm.getSimilarity());
-		generalIndex.loadIndex("savedIndex.ser");
+		generalIndex.setSimilarity(fm.getSimilarity(), true);
 		
-		generalIndex.submitQuery(query, fields, fm);
+		results = generalIndex.submitQuery(query, fields, fm);
+		
+		for (Hit res : results) {
+			System.out.println(res.getDocPath() + res.getDocName() + ": " + res.getScore());
+		}
 		
 		System.out.println("************************************************");
 		
 		VectorSpaceModel vsm = new VectorSpaceModel();
 		
-		generalIndex.setSimilarity(vsm.getSimilarity());
-		generalIndex.loadIndex("savedIndex.ser");
+		generalIndex.setSimilarity(vsm.getSimilarity(), true);
 		
-		generalIndex.submitQuery(query, fields, vsm);
+		results = generalIndex.submitQuery(query, fields, vsm);
+		
+		for (Hit res : results) {
+			System.out.println(res.getDocPath() + res.getDocName() + ": " + res.getScore());
+		}
 		
 		System.out.println("************************************************");
 		
 		BM25 bm25 = new BM25();
 		
-		generalIndex.setSimilarity(bm25.getSimilarity());
-		generalIndex.loadIndex("savedIndex.ser");
+		generalIndex.setSimilarity(bm25.getSimilarity(), true);
 		
-		generalIndex.submitQuery(query, fields, bm25);
+		results = generalIndex.submitQuery(query, fields, bm25);
+		
+		for (Hit res : results) {
+			System.out.println(res.getDocPath() + res.getDocName() + ": " + res.getScore());
+		}
 	}
 }

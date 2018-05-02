@@ -111,12 +111,16 @@ public class Index{
 		}
 	}
 	
-	public void setSimilarity(Similarity sim) {
+	public void setSimilarity(Similarity sim, boolean reload) {
 		// TODO maybe we could auto-save current index, to load it after reset of Index
 		simUsed = sim;
+		if(reload) {
 		saveIndex("tempIndex.ser");
+		}
 		resetIndex();
+		if(reload) {
 		loadIndex("tempIndex.ser");
+		}
 		// TODO maybe we could auto-load last index saved, to allow a better use of software
 	}
 	
@@ -125,7 +129,7 @@ public class Index{
 	 * Then it makes uniqueIndex to being a new Index, reallocating new tools
 	 * This is the fastest and easiest way to "clear" totally an index from its entries
 	 */	
-	protected void resetIndex() {
+	public void resetIndex() {
 		eraseIndex();
 		startIndex();
 	}
@@ -180,24 +184,28 @@ public class Index{
 	}
 	
 	public void loadIndex(String saveFile) {
+		System.out.println("Loading from " + saveFile);
 		BufferedReader reader = null;
 		
 		try {
 			reader = new BufferedReader(new FileReader(new File(saveFile)));
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			if(!saveFile.equals("tempIndex.ser")) {
+				e.printStackTrace();
+			}
 			System.err.println("File " + saveFile + " doesn't seem to exist, or some else error showed up. Loading aborted.");
 			return ;
 		}
 		
-		System.out.println("Erasing of the previous index...");
-		resetIndex(); 
+		//System.out.println("Erasing of the previous index...");
+		//resetIndex();
+		// Call explicitly resetIndex() when loading by GUI
 		
 		String line = "";
 		try {
 			while ( (line = reader.readLine()) != null) {
 				addDocument(line);
-				System.out.println("Loaded in index " + line);
+				//System.out.println("Loaded in index " + line);
 			}
 
 			reader.close();
@@ -274,7 +282,7 @@ public class Index{
 			e.printStackTrace();
 		}
 	
-		System.out.println("Added to index " + path + name);
+		//System.out.println("Added to index " + path + name);
 	}
 	
 	/* getDocument
@@ -325,11 +333,15 @@ public class Index{
 		
 		System.out.println("Printing query: " + q.toString() + "\n");
 		
+		/* ONLY FOR DEBUG PURPOSES */
+		/*
 		System.out.println("Printing documents in index: ");
 		for (int i = 0; i < getSize(); i++) {
 			System.out.println("Document " + i + ": " + getDocument(i).get("path") + getDocument(i).get("name"));
 		}
 		System.out.println("\n");
+		*/
+		
 		
 		/* Updating of IndexSearcher only if a request is submitted. The only way to updating a searcher, is to
 		 * creating a new searcher bounded to current reader. This is cheap if we already have a reader
@@ -354,26 +366,28 @@ public class Index{
 		
 		System.out.println(results.totalHits + " total matching documents");
 		
+		
 		Document doc = null;
 		try {
 			for (int k=0 ; k < hits.length ; k++) {
 					doc = inSearcher.doc(hits[k].doc);
 					queryResults.add(new Hit(doc.get("path"), doc.get("name"), hits[k].score));
-					System.out.println("Document " + doc.get("path") + doc.get("name") + " with score: " + hits[k].score);
+					//System.out.println("Document " + doc.get("path") + doc.get("name") + " with score: " + hits[k].score);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		LinkedList<String> paths = new LinkedList<String>();
-		
+		/*
+		LinkedList<String> paths = new LinkedList<String>();		
 		for (Hit docHit : queryResults) {
 			if(!paths.contains(docHit.getDocPath())){
-				paths.add(docHit.getDocName());
+				paths.add(docHit.getDocPath());
 				System.out.println("\n" + paths.getLast());
 			}
-			System.out.println("..." + docHit.getDocPath() + docHit.getDocName());
+			System.out.println("..." + docHit.getDocName());
 		}
+		*/
 		
 		return queryResults;
 	}

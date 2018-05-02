@@ -36,9 +36,9 @@ public class BooleanModel extends Model{
 		StandardQueryParser queryParser = null;
 		Query q = null;
 		Builder finalQuery = new BooleanQuery.Builder();
+		queryParser = new StandardQueryParser(analyzer);
 		
 		for(String field : fields) {
-			queryParser = new StandardQueryParser(analyzer);
 			try {
 				q = queryParser.parse(query, field);
 			} catch (QueryNodeException e) {

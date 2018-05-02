@@ -110,8 +110,8 @@ public class Main_Window {
 		
 		JButton delete = new JButton();
 		
-		ImageIcon saveIcon = new ImageIcon(new ImageIcon("media/icons/save_index.png").getImage().getScaledInstance(35, 35, 0));
-		delete.setIcon(saveIcon);
+		ImageIcon deleteIcon = new ImageIcon(new ImageIcon("media/icons/empty_index.png").getImage().getScaledInstance(35, 35, 0));
+		delete.setIcon(deleteIcon);
 		delete.setMargin (new Insets (0, 0, 0, 0));
 		delete.setBounds(524, 158, 35, 35);
 		frame.getContentPane().add(delete);
@@ -262,7 +262,11 @@ public class Main_Window {
 					fields.add("content");
 				}
 				
+<<<<<<< HEAD
 				generalIndex.setSimilarity(modelUsed.getSimilarity(),true);
+=======
+				generalIndex.setSimilarity(modelUsed.getSimilarity(), true);
+>>>>>>> master
 				LinkedList<Hit> results = generalIndex.submitQuery(queryStr, fields, modelUsed);
 				
 				for(Hit result : results) {

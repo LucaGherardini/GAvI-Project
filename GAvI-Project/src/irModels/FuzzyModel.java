@@ -6,6 +6,8 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
+import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
@@ -23,43 +25,35 @@ public class FuzzyModel extends Model {
 	public Query getQueryParsed(String query, LinkedList<String> fields, StandardAnalyzer analyzer) {
 		
 		Query q = null;
+		int maxEdits = 2; //This will be replaced with something like maxEdits = getEditDistance()
 		
 		Builder b = new BooleanQuery.Builder();
 		/*
 		 * To create a Fuzzy Query, we used a MultiFieldQueryParser, that allows more flexibility on query
 		 * formulation (for example, specific multi fields on which search)
 		 */
-		MultiFieldQueryParser queryParser = new MultiFieldQueryParser(fields.toArray(new String[fields.size()]), analyzer);
-		queryParser.setDefaultOperator(QueryParser.Operator.AND);	
+		//MultiFieldQueryParser queryParser = new MultiFieldQueryParser(fields.toArray(new String[fields.size()]), analyzer);
+		//queryParser.setDefaultOperator(QueryParser.Operator.AND);	
 		
 		String[] terms = query.split(" ");
-        for (String term : terms){
-            try {
-				b.add(queryParser.parse(term.replaceAll("~", "") + "~"), BooleanClause.Occur.MUST);
-			} catch (ParseException e) {
+		query = "";
+		for (String term : terms) {
+			if( !term.contains("AND") && !term.contains("OR") && !term.contains("NOT")) {
+				term = term.replaceAll("~", "") + "~" + maxEdits;
+			}
+			query += term + " ";
+		}
+		
+		StandardQueryParser qp = new StandardQueryParser();
+		for (String field : fields) {
+			try {
+				b.add(qp.parse(query, field), BooleanClause.Occur.SHOULD);
+			} catch (QueryNodeException e) {
 				e.printStackTrace();
 			}
-        }
+		}
         
-		/*
-		String processedQuery = "";
-		String[] terms = query.split(" ");
-		
-		for (String term : terms) {
-			processedQuery += term.replaceAll("~", "") + "~ ";
-		}
-		
-		System.out.println("Processed query: " + processedQuery);
-		
-		try {
-			q = queryParser.parse(processedQuery);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		
-		return q;
-		*/
-        return b.build();
+		return b.build();
 	}
 
 	@Override

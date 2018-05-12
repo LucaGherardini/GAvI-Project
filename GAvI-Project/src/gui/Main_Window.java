@@ -290,20 +290,50 @@ public class Main_Window {
 				
 				JFileChooser fileC=new JFileChooser();
 				fileC.setMultiSelectionEnabled(true);
+				fileC.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 				fileC.showOpenDialog(frame);
 				
-				//File f=file.getSelectedFile();
-				
-				//se si vogliono selezionare piu file insieme (difficile implementazione forse non il modo migliore per piu file o directory)
+							
 				File filesSelected[] = fileC.getSelectedFiles();
+				
+				File files[];
+				
 				
 				LinkedList<String> paths = new LinkedList<String>();		
 				for (File doc : filesSelected) {
+					
+				
+					if(doc.isDirectory()) {
+						files=doc.listFiles();
+						for (File doci : files) {
+							if(doci.getAbsolutePath().endsWith("txt")) {
+								int separatorIndex = doci.getPath().lastIndexOf(File.separator);
+								String path = "";
+								if (separatorIndex != -1) {
+									path = doci.getPath().substring(0, separatorIndex+1);
+									
+							}
+								if(!paths.contains(path)){
+									paths.add(path);
+									tableModel.setRowCount(tableModel.getRowCount()+1);
+									tableModel.setValueAt(path, tableModel.getRowCount()-1, 0);
+									//System.out.println("\n" + paths.getLast());
+									
+								}
+								tableModel.setRowCount(tableModel.getRowCount()+1);
+								tableModel.setValueAt("..." + doci.getPath().substring(separatorIndex+1, doci.getPath().length()), tableModel.getRowCount()-1, 0);
+						}
+						
+					}
+						}
+					
+					if(doc.getAbsolutePath().endsWith("txt")) {
 					int separatorIndex = doc.getPath().lastIndexOf(File.separator);
 					String path = "";
 					if (separatorIndex != -1) {
 						path = doc.getPath().substring(0, separatorIndex+1);
 					}
+					
 					
 					if(!paths.contains(path)){
 						paths.add(path);
@@ -315,7 +345,7 @@ public class Main_Window {
 					tableModel.setRowCount(tableModel.getRowCount()+1);
 					tableModel.setValueAt("..." + doc.getPath().substring(separatorIndex+1, doc.getPath().length()), tableModel.getRowCount()-1, 0);
 				}
-				
+				}
 				/*
 				for (File f : filesSelected) {
 					String nameFile = f.getAbsolutePath();

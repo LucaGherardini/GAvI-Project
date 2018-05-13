@@ -312,20 +312,19 @@ public class Main_Window {
 								if (separatorIndex != -1) {
 									path = doci.getPath().substring(0, separatorIndex+1);
 									
-							}
+									}
 								if(!paths.contains(path)){
 									paths.add(path);
 									tableModel.setRowCount(tableModel.getRowCount()+1);
 									tableModel.setValueAt(path, tableModel.getRowCount()-1, 0);
 									//System.out.println("\n" + paths.getLast());
 									
-								}
+									}
 								tableModel.setRowCount(tableModel.getRowCount()+1);
 								tableModel.setValueAt("..." + doci.getPath().substring(separatorIndex+1, doci.getPath().length()), tableModel.getRowCount()-1, 0);
-						}
-						
+					   }
 					}
-						}
+				 }
 					
 					if(doc.getAbsolutePath().endsWith("txt")) {
 					int separatorIndex = doc.getPath().lastIndexOf(File.separator);
@@ -346,6 +345,7 @@ public class Main_Window {
 					tableModel.setValueAt("..." + doc.getPath().substring(separatorIndex+1, doc.getPath().length()), tableModel.getRowCount()-1, 0);
 				}
 				}
+				
 				/*
 				for (File f : filesSelected) {
 					String nameFile = f.getAbsolutePath();
@@ -371,13 +371,15 @@ public class Main_Window {
 	// Delete All Row
 	delete.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
-			if(tableModel.getRowCount() !=1) {
+			System.out.println(tableModel.getRowCount());
+			tableModel.setRowCount(0);
+	/*if(tableModel.getRowCount() !=1) {
 				for(int i=0 ; i < tableModel.getRowCount() ; i++) {
-					tableModel.removeRow(i);	
+					tableModel.removeRow(tableModel.);	
 				}
 			}else {
 				tableModel.removeRow(0);
-			}
+			}*/
 		}
 		});
 	

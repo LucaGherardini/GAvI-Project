@@ -16,6 +16,7 @@ import irModels.BooleanModel;
 import irModels.FuzzyModel;
 import irModels.Model;
 import irModels.VectorSpaceModel;
+import javafx.scene.control.ScrollBar;
 
 //import com.sun.scenario.effect.Filterable;
 
@@ -38,6 +39,8 @@ import javax.swing.JTable;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 
 public class Main_Window {
 
@@ -145,7 +148,9 @@ public class Main_Window {
         DefaultTableModel resultsModel = (DefaultTableModel) resultsTable.getModel();
         resultsModel.addColumn("File");
         resultsModel.addColumn("Score");
-		frame.getContentPane().add(resultsTable);
+       resultsTable.add(new JScrollPane());
+		//frame.getContentPane().add(resultsTable);
+		frame.getContentPane().add(new JScrollPane(resultsTable));
 		
 		fileTable = new JTable(0,0);
 		fileTable.setBounds(753, 183, 359, 540);
@@ -197,6 +202,8 @@ public class Main_Window {
 		
 		btnChronology.setBounds(373, 10, 136, 23);
 		frame.getContentPane().add(btnChronology);
+		
+		
 		
 		ImageIcon deleteChro = new ImageIcon(new ImageIcon("media/icons/empy_index.png").getImage().getScaledInstance(39, 23, 0));
 		
@@ -371,7 +378,7 @@ public class Main_Window {
 	// Delete All Row
 	delete.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
-			System.out.println(tableModel.getRowCount());
+			
 			tableModel.setRowCount(0);
 	/*if(tableModel.getRowCount() !=1) {
 				for(int i=0 ; i < tableModel.getRowCount() ; i++) {

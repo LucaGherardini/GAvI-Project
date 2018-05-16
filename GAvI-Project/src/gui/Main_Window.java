@@ -2,12 +2,14 @@ package gui;
 
 import java.awt.EventQueue;
 import java.awt.Insets;
-import java.awt.Toolkit;
+
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+
+import com.sun.prism.Image;
 
 import index.Hit;
 import index.Index;
@@ -16,31 +18,32 @@ import irModels.BooleanModel;
 import irModels.FuzzyModel;
 import irModels.Model;
 import irModels.VectorSpaceModel;
-import javafx.scene.control.ScrollBar;
+
 
 //import com.sun.scenario.effect.Filterable;
 
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
+
 import java.util.LinkedList;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 
 import javax.swing.JTable;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
-import javax.swing.SwingConstants;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
+import java.awt.Toolkit;
+
 
 public class Main_Window {
 
@@ -53,7 +56,9 @@ public class Main_Window {
 	private Index generalIndex = null;
 	private JTable chronologyTable=null;
 	private LinkedList<String> chronology=new LinkedList<String>();
-	private JTable table;
+	
+	
+	
 	/**
 	 * Launch the application.
 	 */
@@ -83,10 +88,19 @@ public class Main_Window {
 	private void initialize() {
 		generalIndex = Index.getIndex();
 		
+		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(Color.CYAN);
-		frame.setSize(1200, 800);
-		//frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+		frame.getContentPane().setBackground(Color.BLACK);
+		//frame.setSize(1200, 800);
+		
+		frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+		
+		ImageIcon icon = new ImageIcon("media/icons/background.jpg");
+		frame.setIconImage(icon.getImage().getScaledInstance(frame.getExtendedState(), frame.getExtendedState(),0));
+		
+		
+		//frame.setIconImage(new ImageIcon("media/icons/backgound.jpg").getImage().getScaledInstance(frame.getExtendedState(), frame.getExtendedState(),0));
+		//frame.setContentPane(new JLabel(new ImageIcon("media/icons/background.jpg").getImage().getScaledInstance(frame.getExtendedState(), frame.getExtendedState(),0)));
 		/*Toolkit tk = Toolkit.getDefaultToolkit();
 		int xSize = ((int) tk.getScreenSize().getWidth());
 		int ySize = ((int) tk.getScreenSize().getHeight());
@@ -148,16 +162,16 @@ public class Main_Window {
         DefaultTableModel resultsModel = (DefaultTableModel) resultsTable.getModel();
         resultsModel.addColumn("File");
         resultsModel.addColumn("Score");
-       resultsTable.add(new JScrollPane());
-		//frame.getContentPane().add(resultsTable);
-		frame.getContentPane().add(new JScrollPane(resultsTable));
+       
+		frame.getContentPane().add(resultsTable);
+	
 		
-		fileTable = new JTable(0,0);
+		fileTable = new JTable();
 		fileTable.setBounds(753, 183, 359, 540);
 		
 		DefaultTableModel tableModel=(DefaultTableModel) fileTable.getModel();
 		
-		tableModel.addColumn("Files");
+		//tableModel.addColumn("Files");
 		//fileTable.setEnabled(false);		
 		frame.getContentPane().add(fileTable);
 		
@@ -205,13 +219,19 @@ public class Main_Window {
 		
 		
 		
-		ImageIcon deleteChro = new ImageIcon(new ImageIcon("media/icons/empy_index.png").getImage().getScaledInstance(39, 23, 0));
 		
-		/*table = new JTable();
-		table.setBounds(628, 172, 168, 206);
-		frame.getContentPane().add(table);
-		*/
 		
+		//ImageIcon deleteChro = new ImageIcon(new ImageIcon("media/icons/empy_index.png").getImage().getScaledInstance(39, 23, 0));
+		
+		JFrame ChronoPane=new JFrame("Chronology");
+		ChronoPane.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		
+		chronologyTable= new JTable();
+		DefaultTableModel chronologyTableModel=(DefaultTableModel) chronologyTable.getModel();
+		 chronologyTableModel.setRowCount(10);
+		 chronologyTableModel.setColumnCount(1);
+		 tableModel.addColumn("Search");
+		 
 		
 	//Search
 		
@@ -226,11 +246,7 @@ public class Main_Window {
 			 /*LinkList to save Chronology*/
 					
 				chronology.addFirst(queryStr);
-				Component compo[]=frame.getComponents();
-				if(compo.equals(chronologyTable)==false) {
-				//frame.remove(chronologyTable);
-				//frame.repaint();
-				}
+				
 				
 				System.out.println("Query string: " + queryStr);
 				resultsModel.setRowCount(0);
@@ -390,11 +406,30 @@ public class Main_Window {
 		}
 		});
 	
+	
 	//Chronology
 	btnChronology.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
-			//TODO fai finestra cronologia
-	
+			ChronoPane.setVisible(true);
+			ChronoPane.getContentPane().add(chronologyTable);
+			ChronoPane.setAlwaysOnTop(true);
+			
+			//in the center
+			 Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+			 
+			    int x = (int) ((dimension.getWidth() - 300) / 2);
+			    int y = (int) ((dimension.getHeight() - 200) / 2);
+			    
+			ChronoPane.setBounds(x, y, 300, 200);
+			int i;
+			for(i=0; i< chronologyTableModel.getRowCount();i++) {
+				
+				if(chronology.size()>i)
+				chronologyTableModel.setValueAt(chronology.get(i),i,0);
+				
+			}
+			
+			
 		}
 	});
 	

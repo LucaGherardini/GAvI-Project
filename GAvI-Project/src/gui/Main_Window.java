@@ -9,8 +9,6 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-import com.sun.prism.Image;
-
 import index.Hit;
 import index.Index;
 import irModels.BM25;
@@ -24,10 +22,8 @@ import irModels.VectorSpaceModel;
 
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -36,7 +32,6 @@ import java.io.File;
 import java.util.LinkedList;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 
 import javax.swing.JTable;

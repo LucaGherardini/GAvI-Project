@@ -3,13 +3,10 @@ package gui;
 import java.awt.EventQueue;
 import java.awt.Insets;
 
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-
-import com.sun.prism.Image;
 
 import index.Hit;
 import index.Index;
@@ -18,38 +15,36 @@ import irModels.BooleanModel;
 import irModels.FuzzyModel;
 import irModels.Model;
 import irModels.VectorSpaceModel;
-
-
 //import com.sun.scenario.effect.Filterable;
-
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.File;
-
+import java.io.IOException;
 import java.util.LinkedList;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-
 import javax.swing.JTable;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import java.awt.Toolkit;
+import java.awt.Font;
+import javax.swing.JTextArea;
+import javax.swing.JList;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 
 
 public class Main_Window {
 
 	private JFrame frame = null;
 	private JTextField textField = null;
-	//private JTable chronology = null;
+	JScrollPane scrollPane = null;
 	private JTable resultsTable;
 	private JTable fileTable = null;
 	private JTextField editDistanceText = null;
@@ -59,9 +54,8 @@ public class Main_Window {
 	
 	
 	
-	/**
-	 * Launch the application.
-	 */
+	
+	// Launch the application
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -75,107 +69,103 @@ public class Main_Window {
 		});
 	}
 
-	/**
-	 * Create the application.
-	 */
+	
+	 // Create the application.
+	 
 	public Main_Window() {
 		initialize();
 	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
+	
+	 // Initialize the contents of the frame.
+	 
 	private void initialize() {
 		generalIndex = Index.getIndex();
 		
 		
 		frame = new JFrame();
-		frame.getContentPane().setBackground(Color.BLACK);
-		//frame.setSize(1200, 800);
+		
+		frame.getContentPane().setBackground(Color.gray);
+		
+		
+		frame.setSize(1200, 800);
+		
 		
 		frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		
-		ImageIcon icon = new ImageIcon("media/icons/background.jpg");
-		frame.setIconImage(icon.getImage().getScaledInstance(frame.getExtendedState(), frame.getExtendedState(),0));
 		
-		
-		//frame.setIconImage(new ImageIcon("media/icons/backgound.jpg").getImage().getScaledInstance(frame.getExtendedState(), frame.getExtendedState(),0));
-		//frame.setContentPane(new JLabel(new ImageIcon("media/icons/background.jpg").getImage().getScaledInstance(frame.getExtendedState(), frame.getExtendedState(),0)));
-		/*Toolkit tk = Toolkit.getDefaultToolkit();
-		int xSize = ((int) tk.getScreenSize().getWidth());
-		int ySize = ((int) tk.getScreenSize().getHeight());
-		frame.setSize(xSize,ySize);*/
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setTitle("GaVi Project");	
 		frame.getContentPane().setLayout(null);
-		frame.setTitle("GaVi Project");
-		//frame.setResizable(false);
 		
-		JLabel title = new JLabel("NOME");
+		// label Project's name
+		JLabel title = new JLabel("NAME");
+		title.setFont(new Font("Verdana", Font.BOLD, 17));
 		title.setBounds(266, 113, 77, 25);
 		frame.getContentPane().add(title);
 		
-		
+		//text to search
 		textField = new JTextField();
 		textField.setBounds(70, 149, 418, 20);
 		frame.getContentPane().add(textField);
 		textField.setColumns(10);
 		
+		//box model 
 		JComboBox<String> modelbox = new JComboBox<String>();
+		modelbox.setBounds(70, 11, 156, 20);
 		modelbox.setMaximumRowCount(5);
 		modelbox.setModel(new DefaultComboBoxModel<String>(new String[] {"Boolean Model", "Vector Space Model", "Probabilistic(BM25) Model", "Fuzzy Model"}));
 		modelbox.setSelectedIndex(0);
 		modelbox.setToolTipText("Preferenze");
-		modelbox.setBounds(70, 11, 156, 20);
 		frame.getContentPane().add(modelbox);
 		
-		JButton search = new JButton("Cerca");
-		
+		//button to search
+		JButton search = new JButton("Search");
 		search.setBounds(498, 148, 89, 23);
 		frame.getContentPane().add(search);
 		
+		//button to delete all file add
 		JButton delete = new JButton();
-		
+		delete.setBounds(1122, 183, 52, 52);
 		ImageIcon deleteIcon = new ImageIcon(new ImageIcon("media/icons/empty_index.png").getImage().getScaledInstance(35, 35, 0));
 		delete.setIcon(deleteIcon);
 		delete.setMargin (new Insets (0, 0, 0, 0));
-		delete.setBounds(1122, 183, 52, 52);
 		frame.getContentPane().add(delete);
 		
-		
+		//button to add new files
 		JButton add = new JButton();
+		add.setBounds(1122, 246, 52, 52);
         ImageIcon addIcon = new ImageIcon(new ImageIcon("media/icons/add_file.png").getImage().getScaledInstance(35, 35, 0));
 		add.setIcon(addIcon);
 		add.setMargin (new Insets (0, 0, 0, 0));
-		add.setBounds(1122, 246, 52, 52);
 		frame.getContentPane().add(add);
 		
+		//button to remove all file selecting
 		JButton remove = new JButton();
+		remove.setBounds(1122, 309, 52, 52);
 		ImageIcon removeIcon = new ImageIcon(new ImageIcon("media/icons/remove_file.png").getImage().getScaledInstance(35, 35, 0));
 		remove.setIcon(removeIcon);
 		remove.setMargin (new Insets (0, 0, 0, 0));
-		remove.setBounds(1122, 309, 52, 52);
 		frame.getContentPane().add(remove);
 		
-
+		//table for results 
 		resultsTable = new JTable();
-        resultsTable.setBounds(70, 234, 418, 405);
+		resultsTable.setBounds(70, 234, 418, 405);
         DefaultTableModel resultsModel = (DefaultTableModel) resultsTable.getModel();
         resultsModel.addColumn("File");
         resultsModel.addColumn("Score");
-       
-		frame.getContentPane().add(resultsTable);
+        
+       	frame.getContentPane().add(resultsTable);
 	
-		
+		//table to view files adding
 		fileTable = new JTable();
 		fileTable.setBounds(753, 183, 359, 540);
-		
-		DefaultTableModel tableModel=(DefaultTableModel) fileTable.getModel();
-		
-		//tableModel.addColumn("Files");
-		//fileTable.setEnabled(false);		
+		DefaultTableModel tableModel=(DefaultTableModel) fileTable.getModel();	
+		scrollPane= new JScrollPane(fileTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		fileTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		frame.getContentPane().add(fileTable);
 		
-		
+		//box of button to optimizations
 		ButtonGroup opGroup = new ButtonGroup();		
 		
 		JRadioButton noOptimizations = new JRadioButton("No Optimizations");
@@ -199,30 +189,29 @@ public class Main_Window {
 		frame.getContentPane().add(editDistanceText);
 		editDistanceText.setColumns(10);
 		
+		//button for user helping
 		JButton Help = new JButton("HELP");
-		
 		Help.setBounds(254, 10, 89, 23);
 		frame.getContentPane().add(Help);
 		
+		//some label to define tables
 		JLabel lblResults = new JLabel("RESULTS");
+		lblResults.setFont(new Font("Verdana", Font.BOLD, 17));
 		lblResults.setBounds(70, 204, 108, 14);
 		frame.getContentPane().add(lblResults);
 		
 		JLabel lblDocumnets = new JLabel("Documents");
-		lblDocumnets.setBounds(753, 147, 94, 25);
+		lblDocumnets.setFont(new Font("Verdana", Font.BOLD, 17));
+		lblDocumnets.setBounds(753, 147, 156, 25);
 		frame.getContentPane().add(lblDocumnets);
 		
+		//button chronology
 		JButton btnChronology = new JButton("Chronology");
-		
 		btnChronology.setBounds(373, 10, 136, 23);
 		frame.getContentPane().add(btnChronology);
 		
-		
-		
-		
-		
-		//ImageIcon deleteChro = new ImageIcon(new ImageIcon("media/icons/empy_index.png").getImage().getScaledInstance(39, 23, 0));
-		
+			
+		//frame Chronology
 		JFrame ChronoPane=new JFrame("Chronology");
 		ChronoPane.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		
@@ -233,7 +222,7 @@ public class Main_Window {
 		 tableModel.addColumn("Search");
 		 
 		
-	//Search
+	//Search: searching after press button "Search"
 		
 		search.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -243,9 +232,8 @@ public class Main_Window {
 	  
 				if(queryStr.isEmpty()==false) {
 					
-			 /*LinkList to save Chronology*/
-					
-				chronology.addFirst(queryStr);
+			 //LinkList to save Chronology
+			chronology.addFirst(queryStr);
 				
 				
 				System.out.println("Query string: " + queryStr);
@@ -296,6 +284,7 @@ public class Main_Window {
 				}
 		});
 		
+	// help for users
 		Help.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				 				    
@@ -307,7 +296,8 @@ public class Main_Window {
 			}
 		});
 		
-	// Add
+		
+	// Add new file in the table Documents
 	add.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -317,93 +307,51 @@ public class Main_Window {
 				fileC.showOpenDialog(frame);
 				
 							
-				File filesSelected[] = fileC.getSelectedFiles();
+				File filesSelected[] = fileC.getSelectedFiles();   			
+				LinkedList<String> paths = new LinkedList<String>();
 				
-				File files[];
-				
-				
-				LinkedList<String> paths = new LinkedList<String>();		
 				for (File doc : filesSelected) {
 					
-				
 					if(doc.isDirectory()) {
-						files=doc.listFiles();
-						for (File doci : files) {
-							if(doci.getAbsolutePath().endsWith("txt")) {
-								int separatorIndex = doci.getPath().lastIndexOf(File.separator);
-								String path = "";
-								if (separatorIndex != -1) {
-									path = doci.getPath().substring(0, separatorIndex+1);
-									
-									}
-								if(!paths.contains(path)){
-									paths.add(path);
-									tableModel.setRowCount(tableModel.getRowCount()+1);
-									tableModel.setValueAt(path, tableModel.getRowCount()-1, 0);
-									//System.out.println("\n" + paths.getLast());
-									
-									}
-								tableModel.setRowCount(tableModel.getRowCount()+1);
-								tableModel.setValueAt("..." + doci.getPath().substring(separatorIndex+1, doci.getPath().length()), tableModel.getRowCount()-1, 0);
-					   }
-					}
-				 }
-					
+						subfolders(doc,tableModel);
+				        }
+				        												
 					if(doc.getAbsolutePath().endsWith("txt")) {
 					int separatorIndex = doc.getPath().lastIndexOf(File.separator);
 					String path = "";
 					if (separatorIndex != -1) {
 						path = doc.getPath().substring(0, separatorIndex+1);
 					}
-					
-					
+										
 					if(!paths.contains(path)){
 						paths.add(path);
 						tableModel.setRowCount(tableModel.getRowCount()+1);
 						tableModel.setValueAt(path, tableModel.getRowCount()-1, 0);
-						//System.out.println("\n" + paths.getLast());
+						
 						
 					}
 					tableModel.setRowCount(tableModel.getRowCount()+1);
 					tableModel.setValueAt("..." + doc.getPath().substring(separatorIndex+1, doc.getPath().length()), tableModel.getRowCount()-1, 0);
 				}
+					
 				}
-				
-				/*
-				for (File f : filesSelected) {
-					String nameFile = f.getAbsolutePath();
-				
-					if(nameFile.endsWith(".txt")) {
-							tableModel.setRowCount(tableModel.getRowCount()+1);
-							tableModel.setValueAt(f.getName(), tableModel.getRowCount()-1, 0);
-							generalIndex.addDocument(nameFile);
-					}
-				}*/
-							
 			}
 		});
 	
-	//remove
-
+	
+	//remove files selected 
 	remove.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
 				tableModel.removeRow(fileTable.getSelectedRow());
 			}
 	});
 		
-	// Delete All Row
+	// Delete All Row in the table "Documents"
 	delete.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
 			
 			tableModel.setRowCount(0);
-	/*if(tableModel.getRowCount() !=1) {
-				for(int i=0 ; i < tableModel.getRowCount() ; i++) {
-					tableModel.removeRow(tableModel.);	
-				}
-			}else {
-				tableModel.removeRow(0);
-			}*/
-		}
+			}
 		});
 	
 	
@@ -413,14 +361,14 @@ public class Main_Window {
 			ChronoPane.setVisible(true);
 			ChronoPane.getContentPane().add(chronologyTable);
 			ChronoPane.setAlwaysOnTop(true);
-			
+					
 			//in the center
 			 Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 			 
 			    int x = (int) ((dimension.getWidth() - 300) / 2);
-			    int y = (int) ((dimension.getHeight() - 200) / 2);
+			    int y = (int) ((dimension.getHeight() - 215) / 2);
 			    
-			ChronoPane.setBounds(x, y, 300, 200);
+			ChronoPane.setBounds(x, y, 300, 215);
 			int i;
 			for(i=0; i< chronologyTableModel.getRowCount();i++) {
 				
@@ -428,11 +376,73 @@ public class Main_Window {
 				chronologyTableModel.setValueAt(chronology.get(i),i,0);
 				
 			}
-			
-			
 		}
 	});
 	
 	
+	
+	}
+	
+	
+	
+	// function to decide if add all or some or no subfolders
+	public void subfolders (File Directory,DefaultTableModel tableModel) {
+		
+		File files[];
+		LinkedList<String> paths = new LinkedList<String>();
+								
+		files=Directory.listFiles();
+		
+				for (File f : files) {
+								if(f.isDirectory())	{
+									int reply = JOptionPane.showConfirmDialog(null,"Vuoi aggiungere tutte le sotto cartelle di :  "+ f.getPath(), "Attenzione", JOptionPane.YES_NO_OPTION);
+							        if (reply == JOptionPane.YES_OPTION) {
+							         this.subfolders(f, tableModel);
+							        }
+									
+								}
+					if(f.getAbsolutePath().endsWith("txt")) {
+						int separatorIndex = f.getPath().lastIndexOf(File.separator);
+						String path = "";
+						if (separatorIndex != -1) {
+							path = f.getPath().substring(0, separatorIndex+1);
+							
+							}
+						if(!paths.contains(path)){
+							paths.add(path);
+							tableModel.setRowCount(tableModel.getRowCount()+1);
+							tableModel.setValueAt(path, tableModel.getRowCount()-1, 0);
+							//System.out.println("\n" + paths.getLast());
+							
+							}
+						tableModel.setRowCount(tableModel.getRowCount()+1);
+						tableModel.setValueAt("..." + f.getPath().substring(separatorIndex+1, f.getPath().length()), tableModel.getRowCount()-1, 0);
+			   }
+					
+			}
+					 
+				
+			if(Directory.getAbsolutePath().endsWith("txt")) {
+			int separatorIndex = Directory.getPath().lastIndexOf(File.separator);
+			String path = "";
+			if (separatorIndex != -1) {
+				path = Directory.getPath().substring(0, separatorIndex+1);
+			}
+			
+			
+			if(!paths.contains(path)){
+				paths.add(path);
+				tableModel.setRowCount(tableModel.getRowCount()+1);
+				tableModel.setValueAt(path, tableModel.getRowCount()-1, 0);
+				//System.out.println("\n" + paths.getLast());
+				
+			}
+			tableModel.setRowCount(tableModel.getRowCount()+1);
+			tableModel.setValueAt("..." + Directory.getPath().substring(separatorIndex+1, Directory.getPath().length()), tableModel.getRowCount()-1, 0);
+		}
+		
+		
+		
+		
 	}
 }

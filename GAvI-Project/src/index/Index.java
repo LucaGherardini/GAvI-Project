@@ -125,17 +125,17 @@ public class Index{
 		if(stdAnalyzer != null){
 			stdAnalyzer.close();
 		}
-		if(dirIndex != null) {
-			try {
-				dirIndex.close();
-			}catch(IOException e) {
-				e.printStackTrace();
-			}
-		}
 		if(inWriter != null) {
 			try {
 				inWriter.deleteAll();
 			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if(dirIndex != null) {
+			try {
+				dirIndex.close();
+			}catch(IOException e) {
 				e.printStackTrace();
 			}
 		}

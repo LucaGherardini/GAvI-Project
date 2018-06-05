@@ -24,7 +24,11 @@ public class MainIndex {
 		generalIndex.saveIndex("savedIndex.ser");
 		*/
 		
-		String query = "Lucene AND documentation";
+		/*
+		 * Try query "United States Park" and query "United States": same results, different ranking!
+		 */
+		String query = "Parks in united states";
+		//String query = "American States";
 		/*
 		 * Fields on which query will work, passed to inform index in which fields it must search
 		 */
@@ -52,10 +56,6 @@ public class MainIndex {
 		
 		System.out.println("************************************************");
 		
-		/*
-		 * Try query "United States Park" and query "United States": same results, different ranking!
-		 */
-		//query = "Parks in united states";
 		/*
 		fields = new LinkedList<String>();// = {"name", "content"};
 		

@@ -80,8 +80,8 @@ public class MyBenchmark {
 		
 		/*
 		 * Result of the benchmark.
-		 * Every element of arraylist is the query and every element of
-		 * linkedlist is a list of document that are rilevants for that query
+		 * Each element of arraylist is a query and each element of
+		 * results is a list of documents that are relevant for that query
 		 * 
 		 * results is an ArrayList in which each element is a LinkedList of documents returned by index
 		 * 
@@ -90,13 +90,16 @@ public class MyBenchmark {
 		results = new ArrayList<LinkedList<String>>(); 
 		System.out.println("Getting results from index");
 		//Execute every query on documents and load results
+		int queryNum = 0;
 		for (String query: queries) {
 			LinkedList<String> docNames = new LinkedList<String>();
 			for (Hit result: index.submitQuery(query, ll, model)) {
 				String res = result.getDocName();
-				int point = res.indexOf(".doc");
-				docNames.add(res.substring(0, point-1));
+				//int point = res.indexOf(".doc");
+				//docNames.add(res.substring(0, point-1));
+				docNames.add(res);
 			}
+			System.out.println("Documents obtainet for query " + queryNum + " from Index: " + docNames.toString());
 			results.add(docNames);
 		}
 	}
@@ -144,7 +147,7 @@ public class MyBenchmark {
 	 * Don't ask how it works
 	 * @param fileResults file of expected results.
 	 */
-	public ArrayList<LinkedList<String>> realDocsRelevance(String fileResults) {
+	public ArrayList<LinkedList<String>> expectedDocsRelevance(String fileResults) {
 		ArrayList<LinkedList<String>> expected = new ArrayList<LinkedList<String>>();	
 		BufferedReader br = null;		
 		LinkedList<String> rel = null;
@@ -210,7 +213,7 @@ public class MyBenchmark {
 	 * @return intersection between relevance document from benchmark and results of our system.
 	 */
 	public ArrayList<LinkedList<String>> getIntersection(String relevance) {
-		ArrayList<LinkedList<String>> relevants = realDocsRelevance(relevance+"benchmark/lisa/LISA.REL");
+		ArrayList<LinkedList<String>> relevants = expectedDocsRelevance(relevance+"benchmark/lisa/LISA.REL");
 		ArrayList<LinkedList<String>> intersect = new ArrayList<LinkedList<String>>(); 
 		
 		System.out.println("Results size: " + results.size());
@@ -280,7 +283,7 @@ public class MyBenchmark {
 		System.out.println("Printing results for each query...");
 		int queryNum = 1;
 		
-		ArrayList<LinkedList<String>> relevants = mb.realDocsRelevance(simone+"benchmark/lisa/LISA.REL");
+		ArrayList<LinkedList<String>> relevants = mb.expectedDocsRelevance(simone+"benchmark/lisa/LISA.REL");
 		for (LinkedList<String> queryResult : relevants) {
 			System.out.println("Query n° " + queryNum + " results: " + queryResult.toString());
 			queryNum++;

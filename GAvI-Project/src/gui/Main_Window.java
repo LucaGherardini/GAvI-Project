@@ -51,6 +51,7 @@ public class Main_Window {
 	private Index generalIndex = null;
 	private JTable chronologyTable=null;
 	private LinkedList<String> chronology=new LinkedList<String>();
+	private static int editdistance=0;
 	
 	
 	
@@ -161,8 +162,8 @@ public class Main_Window {
 		fileTable = new JTable();
 		fileTable.setBounds(753, 183, 359, 540);
 		DefaultTableModel tableModel=(DefaultTableModel) fileTable.getModel();	
-		scrollPane= new JScrollPane(fileTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		fileTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		//scrollPane= new JScrollPane(fileTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		//fileTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		frame.getContentPane().add(fileTable);
 		
 		//box of button to optimizations
@@ -210,7 +211,7 @@ public class Main_Window {
 		btnChronology.setBounds(373, 10, 136, 23);
 		frame.getContentPane().add(btnChronology);
 		
-			
+					
 		//frame Chronology
 		JFrame ChronoPane=new JFrame("Chronology");
 		ChronoPane.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
@@ -229,6 +230,11 @@ public class Main_Window {
 				
 				String queryStr = textField.getText();
 				
+				if(editDistance.isSelected()==true) {
+					
+					editdistance=checkeditDistance(editDistanceText.getText());
+					System.out.println(editdistance);
+				}
 	  
 				if(queryStr.isEmpty()==false) {
 					
@@ -380,9 +386,25 @@ public class Main_Window {
 	});
 	
 	
-	
 	}
 	
+	public int checkeditDistance(String text) {
+		int number=0;
+		char n;
+		if(text.length()==1) {
+			n=text.charAt(0);
+			if(Character.isDigit(n)==true)
+			number= Integer.parseInt(String.valueOf(n));
+			else return 0;
+			if(number<5 && number>0)
+				return number;
+			else return 0;
+		}
+				
+		
+			return 0;
+		
+	}
 	
 	
 	// function to decide if add all or some or no subfolders

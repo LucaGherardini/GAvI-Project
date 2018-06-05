@@ -308,7 +308,7 @@ public class Index{
 	 * this method requires a string representing user query, a LinkedList of Strings containing fields
 	 * in which searching, and the Model instance used to ranking results
 	 */
-	public LinkedList<Hit> submitQuery(String query, LinkedList<String> fields, Model m) {
+	public LinkedList<Hit> submitQuery(String query, LinkedList<String> fields, Model m, boolean printQuery) {
 		
 		LinkedList<Hit> queryResults = new LinkedList<Hit>();
 		
@@ -322,7 +322,9 @@ public class Index{
 		TopDocs results = null;
 		ScoreDoc[] hits = null;
 		
-		System.out.println("Printing query: " + q.toString() + "\n");
+		if (printQuery) {
+			System.out.println("Printing query: " + q.toString() + "\n");
+		}
 		
 		/* ONLY FOR DEBUG PURPOSES */
 		/*

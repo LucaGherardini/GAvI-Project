@@ -275,7 +275,7 @@ public class Main_Window {
 				}
 				
 		generalIndex.setSimilarity(modelUsed.getSimilarity(), true);
-				LinkedList<Hit> results = generalIndex.submitQuery(queryStr, fields, modelUsed);
+				LinkedList<Hit> results = generalIndex.submitQuery(queryStr, fields, modelUsed, true);
 				
 				for(Hit result : results) {
 					resultsModel.addRow(new Object[] {result.getDocPath()+result.getDocName(), result.getScore()});

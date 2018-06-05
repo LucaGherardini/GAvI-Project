@@ -20,7 +20,7 @@ public abstract class Model{
 	 */
 	public void query(String query, boolean stemming, boolean stopWordsRemoving, LinkedList<String> fields) {
 		Index i = Index.getIndex();
-		i.submitQuery(query, fields, this);
+		i.submitQuery(query, fields, this, true);
 	}
 	
 	public abstract Query getQueryParsed(String query, LinkedList<String> fields, StandardAnalyzer analyzer);

@@ -48,7 +48,7 @@ public class MainIndex {
 			fields.add("content");
 		}
 
-		results = generalIndex.submitQuery(query, fields, bm);		
+		results = generalIndex.submitQuery(query, fields, bm, true);		
 		
 		for (Hit res : results) {
 			System.out.println(res.getDocPath() + res.getDocName() + ": " + res.getScore());
@@ -77,7 +77,7 @@ public class MainIndex {
 		
 		generalIndex.setSimilarity(fm.getSimilarity(), true);
 		
-		results = generalIndex.submitQuery(query, fields, fm);
+		results = generalIndex.submitQuery(query, fields, fm, true);
 		
 		for (Hit res : results) {
 			System.out.println(res.getDocPath() + res.getDocName() + ": " + res.getScore());
@@ -89,7 +89,7 @@ public class MainIndex {
 		
 		generalIndex.setSimilarity(vsm.getSimilarity(), true);
 		
-		results = generalIndex.submitQuery(query, fields, vsm);
+		results = generalIndex.submitQuery(query, fields, vsm, true);
 		
 		for (Hit res : results) {
 			System.out.println(res.getDocPath() + res.getDocName() + ": " + res.getScore());
@@ -101,7 +101,7 @@ public class MainIndex {
 		
 		generalIndex.setSimilarity(bm25.getSimilarity(), true);
 		
-		results = generalIndex.submitQuery(query, fields, bm25);
+		results = generalIndex.submitQuery(query, fields, bm25, true);
 		
 		for (Hit res : results) {
 			System.out.println(res.getDocPath() + res.getDocName() + ": " + res.getScore());

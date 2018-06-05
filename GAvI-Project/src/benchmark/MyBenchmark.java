@@ -6,13 +6,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
-
-import org.apache.lucene.document.Document;
+import java.util.Scanner;
 
 import index.Hit;
 import index.Index;
-import irModels.BM25;
-import irModels.BooleanModel;
 import irModels.FuzzyModel;
 import irModels.Model;
 import irModels.VectorSpaceModel;
@@ -64,14 +61,16 @@ public class MyBenchmark {
 			BufferedReader br = null;
 			
 			String line;
-			String s = "";
+			int query_num = 1;
 			for (int i = 0; i < files.length; i++) {
+				String s = "";
 				br = new BufferedReader(new FileReader(new File(queriesPath+files[i])));
 				while ( (line = br.readLine()) != null) {
 					s += line;
 				}
 				queries.add(s);
-				s = "";
+				System.out.println("Query collected #" + query_num + ": " + s);
+				query_num++;
 			}
 			br.close();
 		} catch (Exception e) {
@@ -80,26 +79,26 @@ public class MyBenchmark {
 		
 		/*
 		 * Result of the benchmark.
-		 * Each element of arraylist is a query and each element of
-		 * results is a list of documents that are relevant for that query
+		 * Every element of arraylist is the query and every element of
+		 * linkedlist is a list of document that are rilevants for that query
 		 * 
 		 * results is an ArrayList in which each element is a LinkedList of documents returned by index
 		 * 
 		 * E.g. results.get(3) contains a list of relevant documents for query number 4
 		 */
 		results = new ArrayList<LinkedList<String>>(); 
-		System.out.println("Getting results from index");
+		int query_num = 1;
 		//Execute every query on documents and load results
-		int queryNum = 0;
 		for (String query: queries) {
 			LinkedList<String> docNames = new LinkedList<String>();
-			for (Hit result: index.submitQuery(query, ll, model)) {
+			System.out.print("Printing results obtained from index for query " + query_num + ": ");
+			query_num++;
+			for (Hit result: index.submitQuery(query, ll, model, false)) {
 				String res = result.getDocName();
-				//int point = res.indexOf(".doc");
-				//docNames.add(res.substring(0, point-1));
-				docNames.add(res);
+				int point = res.indexOf(".doc");
+				docNames.add(res.substring(0, point-1));
+				System.out.print(res.substring(0, point-1) + " ");
 			}
-			System.out.println("Documents obtainet for query " + queryNum + " from Index: " + docNames.toString());
 			results.add(docNames);
 		}
 	}
@@ -160,10 +159,7 @@ public class MyBenchmark {
 			while( (line=br.readLine()) != null) {
 				rel = new LinkedList<String>();
 				
-				if (line.contains("Query")) {
-					query_num = Integer.parseInt(line.substring(line.indexOf(" ")+1, line.length()));
-					System.out.println("Reading docs expected for query " + query_num);
-				} else if (!line.contains("Refs") && line.length() > 0) {
+				if (!line.contains("Refs") &&  !line.contains("Query") && line.length() > 0) {
 					boolean terminator = false;
 					while( !terminator ){ 
 						String [] docs = line.split(" ");
@@ -175,6 +171,7 @@ public class MyBenchmark {
 								docNum.add(num);
 							} else {
 								terminator = true;
+								break;
 							}
 						}
 					
@@ -185,6 +182,8 @@ public class MyBenchmark {
 							line = br.readLine();
 						}
 					}
+					System.out.println("Documents expected for query " + query_num + ": " + rel.toString());
+					query_num++;
 					expected.add(rel);
 				}
 			}
@@ -249,8 +248,10 @@ public class MyBenchmark {
 		//For each query get intersection.size / relevants.size
 			//recall = |intersect|/|relevants|
 		for (int i = 0; i < relevants.size(); i++)
-			recall.set(i, recall.get(i)/relevants.get(i).size());
-		
+			if (relevants.get(i).size() != 0)
+				recall.set(i, recall.get(i)/relevants.get(i).size());
+			else 
+				recall.set(i, 0.0);
 		return recall;
 	}
 	
@@ -263,9 +264,42 @@ public class MyBenchmark {
 		//For each query get intersection.size / relevants.size
 			//precision = |intersect|/|result|
 		for (int i = 0; i < results.size(); i++)
-			precision.set(i, precision.get(i)/results.get(i).size());
-		
+			if (results.get(i).size() != 0)
+				precision.set(i, precision.get(i)/results.get(i).size());
+			else
+				precision.set(i, 0.0);
 		return precision;
+	}
+		
+	public ArrayList<Double> getFMeasure(ArrayList<Double> precision, ArrayList<Double> recall) {
+		ArrayList<Double> fmeasure = new ArrayList<Double>();
+		for (int i = 0; i < precision.size(); i++)
+			if ( (precision.get(i)+recall.get(i)) != 0 )
+				fmeasure.add(i, ( (2*precision.get(i)*recall.get(i))/(precision.get(i)+recall.get(i)) ) );
+			else
+				fmeasure.add(i,0.0);
+		return fmeasure;
+	}
+	
+	public ArrayList<Double> getEMeasure(ArrayList<Double> precision, ArrayList<Double> recall, double b) {
+		ArrayList<Double> emeasure = new ArrayList<Double>();
+		
+		for (int i = 0; i < precision.size(); i++)
+			emeasure.add(i, ( 1-( (1+Math.pow(b, 2))/( (Math.pow(b, 2)/recall.get(i) + (1/precision.get(i)) ) ))));
+		return emeasure;
+	}
+	
+	public void saveMeasure(ArrayList<Double> measure, String fileName) {
+		try {
+			File f = new File(fileName);
+			FileWriter fw = new FileWriter(f);
+			for (int i = measure.size()-1; i >= 0; i-- )
+				fw.append( measure.get(i).toString()+"\n" );
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+			
 	}
 	
 	public static void main(String[] args) {
@@ -297,13 +331,22 @@ public class MyBenchmark {
 			queryNum++;
 		}
 		
+		ArrayList<Double> precision = mb.getPrecision(intersect);
+		ArrayList<Double> recall = mb.getRecall(intersect, relevants);
+		
 		int i=0;
-		for (Double rec: mb.getRecall(intersect, relevants))
+		for (Double rec: recall)
 			System.out.println("Recall query "+(++i)+": " + rec);
 		
 		i=0;
-		for (Double rec: mb.getPrecision(intersect))
+		for (Double rec: precision)
 			System.out.println("Precision query "+(++i)+": " + rec);
+	
+		mb.saveMeasure(mb.getFMeasure(precision, recall), "fmeasure.txt");
+		mb.saveMeasure(mb.getEMeasure(precision, recall,0.5), "emeasure.txt");
+	
+		mb.saveMeasure(precision, "precision.txt");
+		mb.saveMeasure(recall, "recall.txt");
 	}
 	
 }

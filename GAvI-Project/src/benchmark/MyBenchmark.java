@@ -64,7 +64,7 @@ public class MyBenchmark {
 			int query_num = 1;
 			for (int i = 0; i < files.length; i++) {
 				String s = "";
-				br = new BufferedReader(new FileReader(new File(queriesPath+files[i])));
+				br = new BufferedReader(new FileReader(new File(queriesPath+(i+1)+".que")));
 				while ( (line = br.readLine()) != null) {
 					s += line;
 				}
@@ -91,14 +91,14 @@ public class MyBenchmark {
 		//Execute every query on documents and load results
 		for (String query: queries) {
 			LinkedList<String> docNames = new LinkedList<String>();
-			System.out.print("Printing results obtained from index for query " + query_num + ": ");
-			query_num++;
-			for (Hit result: index.submitQuery(query, ll, model, false)) {
+			for (Hit result: index.submitQuery(query, ll, model, true)) {
 				String res = result.getDocName();
 				int point = res.indexOf(".doc");
 				docNames.add(res.substring(0, point-1));
-				System.out.print(res.substring(0, point-1) + " ");
+				System.out.print(res.substring(0, point-1) + ", ");
 			}
+			System.out.print("Printing results obtained from index for query " + query_num + ": " + docNames);
+			query_num++;
 			results.add(docNames);
 		}
 	}
@@ -143,7 +143,6 @@ public class MyBenchmark {
 	/**
 	 * Create and load a list of expected results.
 	 * It works only for file formatted as LISA.REL
-	 * Don't ask how it works
 	 * @param fileResults file of expected results.
 	 */
 	public ArrayList<LinkedList<String>> expectedDocsRelevance(String fileResults) {
@@ -192,17 +191,6 @@ public class MyBenchmark {
 			System.err.println(e);
 		}
 		
-		/*
-		System.out.println("Checking that \"expected\" is load...");
-		for (int q = 0; q < expected.size(); q++) {
-			System.out.print(q + ": ");
-			for (int r = 0; r < expected.get(q).size(); r++) {
-				System.out.print(expected.get(q).get(r) + " | ");
-			}
-			System.out.println("");
-		}
-		*/
-		
 		return expected;
 	}
 
@@ -223,7 +211,6 @@ public class MyBenchmark {
 		for (int query = 0 ; query < results.size(); query++) {
 			System.out.println("Making matching on query " + query);
 			intersection = new LinkedList<String>();
-			System.out.println("res size " + results.get(query).size());
 			for (int i = 0; i < results.get(query).size(); i++) {
 					for (int j = 0; j < relevants.get(query).size(); j++) {
 						if ( relevants.get(query).get(j).equals(results.get(query).get(i))) {
@@ -308,8 +295,8 @@ public class MyBenchmark {
 		//simone = "GAvI-Project/";
 		
 		//Use example
-		MyBenchmark mb = new MyBenchmark(new FuzzyModel(),"benchmarkDocs.ser","benchmark/lisa/Query/");
-		mb = new MyBenchmark(new VectorSpaceModel(),"benchmarkDocs.ser",simone+"benchmark/lisa/Query/");
+		//MyBenchmark mb = new MyBenchmark(new FuzzyModel(),"benchmarkDocs.ser","benchmark/lisa/Query/");
+		MyBenchmark mb = new MyBenchmark(new VectorSpaceModel(),"benchmarkDocs.ser",simone+"benchmark/lisa/Query/");
 		mb.executeBenchmark();
 		
 		mb.saveResults("resFuz.save");
@@ -318,10 +305,6 @@ public class MyBenchmark {
 		int queryNum = 1;
 		
 		ArrayList<LinkedList<String>> relevants = mb.expectedDocsRelevance(simone+"benchmark/lisa/LISA.REL");
-		for (LinkedList<String> queryResult : relevants) {
-			System.out.println("Query n° " + queryNum + " results: " + queryResult.toString());
-			queryNum++;
-		}
 		
 		queryNum = 1;
 		System.out.println("Printing intersection between retrieved and expected documents...");

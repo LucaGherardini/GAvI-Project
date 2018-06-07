@@ -48,7 +48,7 @@ public class FuzzyModel extends Model {
 			}
 			query += term + " ";
 		}*/
-		
+		//TODO cerca di cambiare questo in un MultiFieldQueryParser
 		StandardQueryParser qp = new StandardQueryParser();
 		for (String field : fields) {
 			try {

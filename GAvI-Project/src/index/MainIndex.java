@@ -12,17 +12,14 @@ public class MainIndex {
 		
 		BooleanModel bm = new BooleanModel();
 		Index generalIndex = Index.getIndex(bm.getSimilarity());
-		LinkedList<Hit> results;
-		generalIndex.loadIndex("tempIndex.ser");
+		LinkedList<Hit> results;		
 		
-		/*
 		generalIndex.addDocument("README.md");
 		generalIndex.addDocument("other/Lucene Useful Links.txt");
 		generalIndex.addDocument("other/test.txt");
 		generalIndex.addDocument("other/GenericTextFile.txt");
 		generalIndex.addDocument("other/USA.txt");
-		generalIndex.saveIndex("savedIndex.ser");
-		*/
+		
 		
 		/*
 		 * Try query "United States Park" and query "United States": same results, different ranking!

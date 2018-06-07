@@ -3,6 +3,8 @@ package irModels;
 import java.util.LinkedList;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.search.BooleanClause;
@@ -30,13 +32,22 @@ public class FuzzyModel extends Model {
 		//queryParser.setDefaultOperator(QueryParser.Operator.AND);	
 		
 		String[] terms = query.split(" ");
-		query = "";
+		
+		StandardQueryParser queryParser = new StandardQueryParser(analyzer);
+		try {
+			query = queryParser.parse(query, "").toString();
+		} catch (Exception e) {
+			
+		}
+		System.out.println("Query parsed: " + query);
+		
+		/*query = "";
 		for (String term : terms) {
 			if( !term.contains("AND") && !term.contains("OR") && !term.contains("NOT")) {
 				term = term.replaceAll("~", "") + "~" + maxEdits;
 			}
 			query += term + " ";
-		}
+		}*/
 		
 		StandardQueryParser qp = new StandardQueryParser();
 		for (String field : fields) {

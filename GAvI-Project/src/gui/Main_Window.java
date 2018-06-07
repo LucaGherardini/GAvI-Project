@@ -401,12 +401,16 @@ public class Main_Window {
 			else return 0;
 		}
 				
-		
 			return 0;
 		
 	}
 	
 	
+	public static int getEditdistance() {
+		return editdistance;
+	}
+
+
 	// function to decide if add all or some or no subfolders
 	public void subfolders (File Directory,DefaultTableModel tableModel) {
 		

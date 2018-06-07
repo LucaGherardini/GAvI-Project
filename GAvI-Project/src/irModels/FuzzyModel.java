@@ -12,12 +12,14 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
 
+import gui.Main_Window;
+
 public class FuzzyModel extends Model {
 
 	@Override
 	public Query getQueryParsed(String query, LinkedList<String> fields, StandardAnalyzer analyzer) {
 		
-		int maxEdits = 2; //This will be replaced with something like maxEdits = getEditDistance()
+		int maxEdits = Main_Window.getEditdistance(); //This will be replaced with something like maxEdits = getEditDistance()
 		
 		Builder b = new BooleanQuery.Builder();
 		/*

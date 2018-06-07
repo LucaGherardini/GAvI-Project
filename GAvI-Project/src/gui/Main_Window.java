@@ -115,7 +115,7 @@ public class Main_Window {
 		JComboBox<String> modelbox = new JComboBox<String>();
 		modelbox.setBounds(70, 11, 156, 20);
 		modelbox.setMaximumRowCount(5);
-		modelbox.setModel(new DefaultComboBoxModel<String>(new String[] {"Boolean Model", "Vector Space Model", "Probabilistic(BM25) Model", "Fuzzy Model"}));
+		modelbox.setModel(new DefaultComboBoxModel<String>(new String[] { "Vector Space Model", "Boolean Model", "Probabilistic(BM25) Model", "Fuzzy Model"}));
 		modelbox.setSelectedIndex(0);
 		modelbox.setToolTipText("Preferenze");
 		frame.getContentPane().add(modelbox);
@@ -280,9 +280,9 @@ public class Main_Window {
 					fields.add("content");
 				}
 				
-		generalIndex.setSimilarity(modelUsed.getSimilarity(), true);
-				LinkedList<Hit> results = generalIndex.submitQuery(queryStr, fields, modelUsed, true);
-				
+		        generalIndex.setSimilarity(modelUsed.getSimilarity(), true);
+				LinkedList<Hit> results = generalIndex.submitQuery(queryStr, fields, modelUsed, false);
+			
 				for(Hit result : results) {
 					resultsModel.addRow(new Object[] {result.getDocPath()+result.getDocName(), result.getScore()});
 				}
@@ -333,12 +333,13 @@ public class Main_Window {
 						paths.add(path);
 						tableModel.setRowCount(tableModel.getRowCount()+1);
 						tableModel.setValueAt(path, tableModel.getRowCount()-1, 0);
-						
+						generalIndex.addDocument(path);
 						
 					}
 					tableModel.setRowCount(tableModel.getRowCount()+1);
 					tableModel.setValueAt("..." + doc.getPath().substring(separatorIndex+1, doc.getPath().length()), tableModel.getRowCount()-1, 0);
-				}
+					generalIndex.addDocument(path);
+					}
 					
 				}
 			}
@@ -393,14 +394,27 @@ public class Main_Window {
 		char n;
 		if(text.length()==1) {
 			n=text.charAt(0);
+			
+				
 			if(Character.isDigit(n)==true)
 			number= Integer.parseInt(String.valueOf(n));
-			else return 0;
+			else {
+				JOptionPane.showMessageDialog(frame,"Error in edit distance text box \n"
+                                                  + "Only numbers from 1 to 4 in are accepted	");
+				return 0;
+				}
 			if(number<5 && number>0)
 				return number;
-			else return 0;
-		}
+			else {
+				JOptionPane.showMessageDialog(frame,"Error in edit distance text box \n"
+                                                   + "Only numbers from 1 to 4 in are accepted	");
 				
+				return 0;
+		}
+			}
+			
+		JOptionPane.showMessageDialog(frame,"Error in edit distance text box \n"
+                                          + "Only numbers from 1 to 4 in are accepted	");
 			return 0;
 		
 	}
@@ -421,13 +435,13 @@ public class Main_Window {
 		
 				for (File f : files) {
 								if(f.isDirectory())	{
-									int reply = JOptionPane.showConfirmDialog(null,"Vuoi aggiungere tutte le sotto cartelle di :  "+ f.getPath(), "Attenzione", JOptionPane.YES_NO_OPTION);
+									int reply = JOptionPane.showConfirmDialog(null,"Do you want add all subfolders of :  "+ f.getPath() + "?", "Attention", JOptionPane.YES_NO_OPTION);
 							        if (reply == JOptionPane.YES_OPTION) {
 							         this.subfolders(f, tableModel);
 							        }
 									
 								}
-					if(f.getAbsolutePath().endsWith("txt")) {
+					if(f.getAbsolutePath().endsWith(".txt")) {
 						int separatorIndex = f.getPath().lastIndexOf(File.separator);
 						String path = "";
 						if (separatorIndex != -1) {
@@ -438,17 +452,19 @@ public class Main_Window {
 							paths.add(path);
 							tableModel.setRowCount(tableModel.getRowCount()+1);
 							tableModel.setValueAt(path, tableModel.getRowCount()-1, 0);
+							generalIndex.addDocument(path);
 							//System.out.println("\n" + paths.getLast());
 							
 							}
 						tableModel.setRowCount(tableModel.getRowCount()+1);
 						tableModel.setValueAt("..." + f.getPath().substring(separatorIndex+1, f.getPath().length()), tableModel.getRowCount()-1, 0);
-			   }
+						generalIndex.addDocument(path);
+					}
 					
 			}
 					 
 				
-			if(Directory.getAbsolutePath().endsWith("txt")) {
+			if(Directory.getAbsolutePath().endsWith(".txt")) {
 			int separatorIndex = Directory.getPath().lastIndexOf(File.separator);
 			String path = "";
 			if (separatorIndex != -1) {
@@ -460,11 +476,13 @@ public class Main_Window {
 				paths.add(path);
 				tableModel.setRowCount(tableModel.getRowCount()+1);
 				tableModel.setValueAt(path, tableModel.getRowCount()-1, 0);
+				generalIndex.addDocument(path);
 				//System.out.println("\n" + paths.getLast());
 				
 			}
 			tableModel.setRowCount(tableModel.getRowCount()+1);
 			tableModel.setValueAt("..." + Directory.getPath().substring(separatorIndex+1, Directory.getPath().length()), tableModel.getRowCount()-1, 0);
+			generalIndex.addDocument(path);
 		}
 		
 		

@@ -145,7 +145,7 @@ public class Index{
 	 * This method write all documents path to the target file, as clear text
 	 */
 	public void saveIndex(String saveFile) {
-		if (getSize() == 0) {
+		if (getSize() == 0 && !saveFile.equals("tempIndex.ser")) {
 			System.err.println("This index is empty, saving it is useless");
 			return ;
 		}

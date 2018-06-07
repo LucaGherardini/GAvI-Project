@@ -279,12 +279,13 @@ public class Main_Window {
 					fields.add("name");
 					fields.add("content");
 				}
-				
+
 		        generalIndex.setSimilarity(modelUsed.getSimilarity(), true);
 				LinkedList<Hit> results = generalIndex.submitQuery(queryStr, fields, modelUsed, false);
-			
-				for(Hit result : results) {
-					resultsModel.addRow(new Object[] {result.getDocPath()+result.getDocName(), result.getScore()});
+				if (results != null) {
+					for(Hit result : results) {
+						resultsModel.addRow(new Object[] {result.getDocPath()+result.getDocName(), result.getScore()});
+					}
 				}
 			}
 				}
@@ -322,7 +323,8 @@ public class Main_Window {
 						subfolders(doc,tableModel);
 				        }
 				        												
-					if(doc.getAbsolutePath().endsWith("txt")) {
+					if(doc.getAbsolutePath().endsWith(".txt")) {
+					generalIndex.addDocument(doc.getAbsolutePath());
 					int separatorIndex = doc.getPath().lastIndexOf(File.separator);
 					String path = "";
 					if (separatorIndex != -1) {
@@ -333,12 +335,12 @@ public class Main_Window {
 						paths.add(path);
 						tableModel.setRowCount(tableModel.getRowCount()+1);
 						tableModel.setValueAt(path, tableModel.getRowCount()-1, 0);
-						generalIndex.addDocument(path);
+						
 						
 					}
 					tableModel.setRowCount(tableModel.getRowCount()+1);
 					tableModel.setValueAt("..." + doc.getPath().substring(separatorIndex+1, doc.getPath().length()), tableModel.getRowCount()-1, 0);
-					generalIndex.addDocument(path);
+					
 					}
 					
 				}
@@ -438,10 +440,11 @@ public class Main_Window {
 									int reply = JOptionPane.showConfirmDialog(null,"Do you want add all subfolders of :  "+ f.getPath() + "?", "Attention", JOptionPane.YES_NO_OPTION);
 							        if (reply == JOptionPane.YES_OPTION) {
 							         this.subfolders(f, tableModel);
-							        }
 									
 								}
+								}
 					if(f.getAbsolutePath().endsWith(".txt")) {
+						generalIndex.addDocument(f.getAbsolutePath());
 						int separatorIndex = f.getPath().lastIndexOf(File.separator);
 						String path = "";
 						if (separatorIndex != -1) {
@@ -452,13 +455,13 @@ public class Main_Window {
 							paths.add(path);
 							tableModel.setRowCount(tableModel.getRowCount()+1);
 							tableModel.setValueAt(path, tableModel.getRowCount()-1, 0);
-							generalIndex.addDocument(path);
+							
 							//System.out.println("\n" + paths.getLast());
 							
 							}
 						tableModel.setRowCount(tableModel.getRowCount()+1);
 						tableModel.setValueAt("..." + f.getPath().substring(separatorIndex+1, f.getPath().length()), tableModel.getRowCount()-1, 0);
-						generalIndex.addDocument(path);
+						
 					}
 					
 			}
@@ -476,13 +479,13 @@ public class Main_Window {
 				paths.add(path);
 				tableModel.setRowCount(tableModel.getRowCount()+1);
 				tableModel.setValueAt(path, tableModel.getRowCount()-1, 0);
-				generalIndex.addDocument(path);
+				
 				//System.out.println("\n" + paths.getLast());
 				
 			}
 			tableModel.setRowCount(tableModel.getRowCount()+1);
 			tableModel.setValueAt("..." + Directory.getPath().substring(separatorIndex+1, Directory.getPath().length()), tableModel.getRowCount()-1, 0);
-			generalIndex.addDocument(path);
+			
 		}
 		
 		

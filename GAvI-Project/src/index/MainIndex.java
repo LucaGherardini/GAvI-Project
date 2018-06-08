@@ -24,7 +24,7 @@ public class MainIndex {
 		/*
 		 * Try query "United States Park" and query "United States": same results, different ranking!
 		 */
-		String query = "Parks in united states";
+		String query = "I'm looking for Parks in united states AND Lucene documents";
 		//String query = "American States";
 		/*
 		 * Fields on which query will work, passed to inform index in which fields it must search

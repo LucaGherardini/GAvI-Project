@@ -22,7 +22,7 @@ public class FuzzyModel extends Model {
 	public Query getQueryParsed(String query, LinkedList<String> fields, StandardAnalyzer analyzer) {
 		
 		int maxEdits = Main_Window.getEditdistance(); //This will be replaced with something like maxEdits = getEditDistance()
-		
+		maxEdits = 2;
 		Builder b = new BooleanQuery.Builder();
 		/*
 		 * To create a Fuzzy Query, we used a MultiFieldQueryParser, that allows more flexibility on query
@@ -31,7 +31,6 @@ public class FuzzyModel extends Model {
 		//MultiFieldQueryParser queryParser = new MultiFieldQueryParser(fields.toArray(new String[fields.size()]), analyzer);
 		//queryParser.setDefaultOperator(QueryParser.Operator.AND);	
 		
-		String[] terms = query.split(" ");
 		
 		StandardQueryParser queryParser = new StandardQueryParser(analyzer);
 		try {
@@ -39,25 +38,32 @@ public class FuzzyModel extends Model {
 		} catch (Exception e) {
 			
 		}
+		query = query.replaceAll("[(),.+-:'-_]", "");
+		query = query.trim().replaceAll(" +", " "); // Removes first and last white spaces, and substitute multiple white spaces with only one white space
 		System.out.println("Query parsed: " + query);
 		
-		/*query = "";
+		String[] terms = query.split(" ");
+		
+		query = "";
 		for (String term : terms) {
-			if( !term.contains("AND") && !term.contains("OR") && !term.contains("NOT")) {
-				term = term.replaceAll("~", "") + "~" + maxEdits;
-			}
+			term = term.replaceAll("~", "") + "~" + maxEdits;
 			query += term + " ";
-		}*/
+		}
+		
 		//TODO cerca di cambiare questo in un MultiFieldQueryParser
-		StandardQueryParser qp = new StandardQueryParser();
+		//MultiFieldQueryParser qp = new MultiFieldQueryParser(fields.toArray(new String[fields.size()]), analyzer);
+		StandardQueryParser qp = new StandardQueryParser(analyzer);
+		Query q = null;
 		for (String field : fields) {
 			try {
 				b.add(qp.parse(query, field), BooleanClause.Occur.SHOULD);
-			} catch (QueryNodeException e) {
+				//q = qp.parse(query);
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
         
+		//return q;
 		return b.build();
 	}
 

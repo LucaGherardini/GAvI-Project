@@ -63,7 +63,7 @@ public class Bm {
 					if(line.endsWith("#")) {
 						query = query.substring(0, query.length()-2);
 						queries.add(query);
-						System.out.println("Query #" + query_num + ": " + query);
+						//System.out.println("Query #" + query_num + ": " + query);
 						query_num++;
 						query = "";
 					}
@@ -141,17 +141,42 @@ public class Bm {
 				System.out.println("Query " + query_num + " is: " + query);
 				indexResults = index.submitQuery(query, ll, model, true);
 				for(Hit indRes : indexResults) {
-					results.add(indRes.getDocName().substring(0, indRes.getDocName().lastIndexOf(".")-1));
+					results.add(indRes.getDocName().substring(0, indRes.getDocName().lastIndexOf(".")));
 				}
 				System.out.println("Results for query " + query_num + ": " + results.toString() + "\n*****");
 				query_num++;
 				documentsRetrieved.add(results);
 			}
+			
+			ArrayList<LinkedList<String>> intersect = new ArrayList<LinkedList<String>>(); 
+			
+			System.out.println("Results size: " + documentsRetrieved.size());
+			System.out.println("Expected size: " + documentsExpected.size());
+			
+			LinkedList<String> intersection = null;
+			
+			for (int query = 0 ; query < queries.size(); query++) {
+				//System.out.println("Making matching on query " + query);
+				intersection = new LinkedList<String>();
+				for (int i = 0; i < documentsRetrieved.get(query).size(); i++) {
+						for (int j = 0; j < documentsExpected.get(query).size(); j++) {
+							if ( documentsExpected.get(query).get(j).equals(documentsRetrieved.get(query).get(i))) {
+								if (!intersection.contains(documentsExpected.get(query).get(j))){
+									intersection.add(documentsExpected.get(query).get(j));
+								}
+								//relevants.get(query).remove(relevants.get(query).get(j));
+								//results.get(query).remove(results.get(query).get(i));
+							}
+						}
+				}
+				System.out.println("Intersection for query " + query + ": " + intersection.toString());
+				intersect.add(intersection);
+			}
 	}
 	
 	public static void main (String[] args) {
 		Index generalIndex = Index.getIndex();
-		Bm bench = new Bm(new BooleanModel(), "benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
+		Bm bench = new Bm(new FuzzyModel(), "benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
 		bench.executeBenchmark();
 	}
 	

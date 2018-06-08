@@ -3,6 +3,8 @@ package irModels;
 import java.util.LinkedList;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.search.BooleanClause;
@@ -19,35 +21,48 @@ public class FuzzyModel extends Model {
 	@Override
 	public Query getQueryParsed(String query, LinkedList<String> fields, StandardAnalyzer analyzer) {
 		
-		int maxEdits = Main_Window.getEditdistance(); //This will be replaced with something like maxEdits = getEditDistance()
+		int maxEdits = Main_Window.getEditdistance();
+		maxEdits = 2;
+		Builder b = new BooleanQuery.Builder();		
 		
-		Builder b = new BooleanQuery.Builder();
 		/*
-		 * To create a Fuzzy Query, we used a MultiFieldQueryParser, that allows more flexibility on query
-		 * formulation (for example, specific multi fields on which search)
+		 * First parsing is to remove stopwords, make stemming, removing digits, ...
 		 */
-		//MultiFieldQueryParser queryParser = new MultiFieldQueryParser(fields.toArray(new String[fields.size()]), analyzer);
-		//queryParser.setDefaultOperator(QueryParser.Operator.AND);	
+		StandardQueryParser queryParser = new StandardQueryParser(analyzer);
+		try {
+			query = queryParser.parse(query, "").toString();
+		} catch (Exception e) {
+			
+		}
+		
+		//From the query parsed, i remove all special letters used by query parsed, and eventual exceeding whitespaces
+		query = query.replaceAll("[()+-:]", "");
+		query = query.trim().replaceAll(" +", " "); // Removes first and last white spaces, and substitute multiple white spaces with only one white space
 		
 		String[] terms = query.split(" ");
+		
 		query = "";
+		//For each "Token", this is followed by a ~ and a value representing maxEdits
 		for (String term : terms) {
-			if( !term.contains("AND") && !term.contains("OR") && !term.contains("NOT")) {
-				term = term.replaceAll("~", "") + "~" + maxEdits;
-			}
+			term = term.replaceAll("~", "") + "~" + maxEdits;
 			query += term + " ";
 		}
 		
-		StandardQueryParser qp = new StandardQueryParser();
-		for (String field : fields) {
+		//Query is re-parsed, this time on each field, and builded using a BooleanQuery.Builder
+		String query_parsed = "";
+		Query q = null;
 			try {
-				b.add(qp.parse(query, field), BooleanClause.Occur.SHOULD);
-			} catch (QueryNodeException e) {
+				for (String field : fields) {
+					//b.add(queryParser.parse(query, field), BooleanClause.Occur.SHOULD);
+					query_parsed += queryParser.parse(query, field).toString() + " ";
+				}
+				q = queryParser.parse(query_parsed, "");
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
         
-		return b.build();
+		return q;
+		//return b.build();
 	}
 
 	@Override

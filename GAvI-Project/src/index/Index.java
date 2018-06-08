@@ -246,9 +246,7 @@ public class Index{
 			path = docPath.substring(0, separatorIndex+1);
 		}
 		
-		int docPosition = docPath.lastIndexOf(".");
-		
-		String name = docPath.substring(separatorIndex+1, docPosition-1);
+		String name = docPath.substring(separatorIndex+1, docPath.length());
 		/*
 		 * Document properties are stored into Document type.
 		 * @warning path field is not intended to be used for queries

@@ -295,8 +295,8 @@ public class MyBenchmark {
 		//simone = "GAvI-Project/";
 		
 		//Use example
-		//MyBenchmark mb = new MyBenchmark(new FuzzyModel(),"benchmarkDocs.ser","benchmark/lisa/Query/");
-		MyBenchmark mb = new MyBenchmark(new VectorSpaceModel(),"benchmarkDocs.ser",simone+"benchmark/lisa/Query/");
+		MyBenchmark mb = new MyBenchmark(new FuzzyModel(),"benchmarkDocs.ser","benchmark/lisa/Query/");
+		//MyBenchmark mb = new MyBenchmark(new VectorSpaceModel(),"benchmarkDocs.ser",simone+"benchmark/lisa/Query/");
 		mb.executeBenchmark();
 		
 		mb.saveResults("resFuz.save");

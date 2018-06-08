@@ -23,8 +23,16 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
@@ -211,6 +219,17 @@ public class Main_Window {
 		btnChronology.setBounds(373, 10, 136, 23);
 		frame.getContentPane().add(btnChronology);
 		
+		JButton btnSaveIndex = new JButton("save");
+		
+		btnSaveIndex .setBounds(1122, 372, 52, 52);
+		frame.getContentPane().add(btnSaveIndex );
+		
+		JButton btnloadIndex = new JButton("load");
+		
+		
+		btnloadIndex.setBounds(1122, 435, 52, 52);
+		frame.getContentPane().add(btnloadIndex);
+		
 					
 		//frame Chronology
 		JFrame ChronoPane=new JFrame("Chronology");
@@ -388,6 +407,69 @@ public class Main_Window {
 		}
 	});
 	
+	//load index
+	btnloadIndex.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent arg0) {
+			FileReader fileReader=null;
+			JFileChooser fileC=new JFileChooser();
+			fileC.setMultiSelectionEnabled(true);
+			fileC.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			fileC.showOpenDialog(frame);
+			fileC.getSelectedFile();
+			BufferedReader buffer = null;
+			
+			int reply =JOptionPane.showConfirmDialog(null,"Do you want load :"+ fileC.getSelectedFile()+ "?", "Attention", JOptionPane.YES_NO_OPTION);
+			//aggiungi il file nella tabella documenti
+			
+			if(reply==JOptionPane.YES_OPTION) {
+			
+				File file[]=fileC.getSelectedFiles();
+				if(file.length==1) {
+			       System.out.println(file[0].getAbsolutePath());
+			       generalIndex.loadIndex(file[0].getAbsolutePath());
+			       
+			       	}		
+				else {
+					JOptionPane.showMessageDialog(frame,"Only one file can be load \n");
+				}
+					
+				}
+				}
+		
+	});
+	
+	//Save index on tempIndex.ser
+	btnSaveIndex.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+			
+			JFileChooser fileSave = new JFileChooser();
+			 fileSave.setDialogTitle("Specify a file to save");   
+			 
+			int userSelection =  fileSave.showSaveDialog(frame);
+			
+			if (userSelection == JFileChooser.APPROVE_OPTION) {
+				
+			    File fileToSave =  fileSave.getSelectedFile();
+			    
+			    try {
+					fileToSave.createNewFile();
+					generalIndex.saveIndex(fileToSave.getAbsolutePath());
+					
+					/*PrintWriter p=new PrintWriter(fileToSave);
+					for(int i=0;tableModel.getRowCount()>i;i++) {
+					p.print(tableModel.getValueAt(i, 0));
+					p.println("\n");}
+					p.close();*/
+					
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			    
+			    System.out.println("Save as file: " + fileToSave.getAbsolutePath());
+			}
+		}
+	});
 	
 	}
 	
@@ -403,7 +485,7 @@ public class Main_Window {
 			else {
 				JOptionPane.showMessageDialog(frame,"Error in edit distance text box \n"
                                                   + "Only numbers from 1 to 4 in are accepted	");
-				return 0;
+				return 2;
 				}
 			if(number<5 && number>0)
 				return number;
@@ -411,13 +493,13 @@ public class Main_Window {
 				JOptionPane.showMessageDialog(frame,"Error in edit distance text box \n"
                                                    + "Only numbers from 1 to 4 in are accepted	");
 				
-				return 0;
+				return 2;
 		}
 			}
 			
 		JOptionPane.showMessageDialog(frame,"Error in edit distance text box \n"
                                           + "Only numbers from 1 to 4 in are accepted	");
-			return 0;
+			return 2;
 		
 	}
 	

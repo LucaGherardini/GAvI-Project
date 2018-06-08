@@ -141,7 +141,7 @@ public class Bm {
 				System.out.println("Query " + query_num + " is: " + query);
 				indexResults = index.submitQuery(query, ll, model, true);
 				for(Hit indRes : indexResults) {
-					results.add(indRes.getDocName().substring(0, indRes.getDocName().lastIndexOf(".")-1));
+					results.add(indRes.getDocName());
 				}
 				System.out.println("Results for query " + query_num + ": " + results.toString() + "\n*****");
 				query_num++;
@@ -155,5 +155,9 @@ public class Bm {
 		bench.executeBenchmark();
 	}
 	
+	
+	 
+	 
+
 
 }

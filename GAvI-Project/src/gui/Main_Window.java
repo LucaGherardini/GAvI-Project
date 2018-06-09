@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -377,7 +378,9 @@ public class Main_Window {
 	// Delete All Row in the table "Documents"
 	delete.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
-			
+			for(int i=0;i<generalIndex.getSize();i++) {
+				generalIndex.removeDocument(i);
+			}
 			tableModel.setRowCount(0);
 			}
 		});
@@ -428,6 +431,32 @@ public class Main_Window {
 			       System.out.println(file[0].getAbsolutePath());
 			       generalIndex.loadIndex(file[0].getAbsolutePath());
 			       
+			       BufferedReader reader = null;
+					
+					try {
+						reader = new BufferedReader(new FileReader(file[0]));
+					} catch (FileNotFoundException e) {
+						
+							e.printStackTrace();
+						
+					}
+					String content = "";
+					String line;
+					
+					int i=0;
+					try {
+						while((line = reader.readLine()) != null) {
+							tableModel.setRowCount(i+1);
+							content = line;
+							System.out.println(content);
+							tableModel.setValueAt(content, i, 0);
+							i++;
+							content="";
+						}
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
+							       
 			       	}		
 				else {
 					JOptionPane.showMessageDialog(frame,"Only one file can be load \n");

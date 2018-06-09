@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import benchmark.Bm;
 import index.Hit;
 import index.Index;
 import irModels.BM25;
@@ -24,16 +25,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Writer;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
@@ -43,10 +39,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import java.awt.Toolkit;
 import java.awt.Font;
-import javax.swing.JTextArea;
-import javax.swing.JList;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+
 
 
 public class Main_Window {
@@ -96,22 +90,16 @@ public class Main_Window {
 		frame = new JFrame();
 		
 		frame.getContentPane().setBackground(Color.gray);
-		
-		
 		frame.setSize(1200, 800);
-		
-		
 		frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-		
-		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setTitle("GaVi Project");	
+		frame.setTitle("GOOD  SEARCH");	
 		frame.getContentPane().setLayout(null);
 		
 		// label Project's name
-		JLabel title = new JLabel("NAME");
-		title.setFont(new Font("Verdana", Font.BOLD, 17));
-		title.setBounds(266, 113, 77, 25);
+		JLabel title = new JLabel("GOOD SEARCH");
+		title.setFont(new Font("Verdana", Font.BOLD, 19));
+		title.setBounds(173, 113, 192, 25);
 		frame.getContentPane().add(title);
 		
 		//text to search
@@ -158,6 +146,22 @@ public class Main_Window {
 		remove.setMargin (new Insets (0, 0, 0, 0));
 		frame.getContentPane().add(remove);
 		
+		//Button to save Index
+		JButton btnSaveIndex = new JButton();
+		btnSaveIndex .setBounds(1122, 372, 52, 52);
+		ImageIcon saveIcon  = new ImageIcon(new ImageIcon("media/icons/save_index.png").getImage().getScaledInstance(35, 35, 0));
+		btnSaveIndex.setIcon(saveIcon);
+		btnSaveIndex.setMargin (new Insets (0, 0, 0, 0));
+		frame.getContentPane().add(btnSaveIndex );
+		
+		//button to load Index
+		JButton btnloadIndex = new JButton();
+		btnloadIndex.setBounds(1122, 435, 52, 52);
+		ImageIcon loadIcon  = new ImageIcon(new ImageIcon("media/icons/load_index.png").getImage().getScaledInstance(35, 35, 0));
+		btnloadIndex.setIcon(loadIcon);
+		btnloadIndex.setMargin (new Insets (0, 0, 0, 0));
+		frame.getContentPane().add(btnloadIndex);
+		
 		//table for results 
 		resultsTable = new JTable();
 		resultsTable.setBounds(70, 234, 418, 405);
@@ -189,11 +193,6 @@ public class Main_Window {
 		opGroup.add(editDistance);
 		frame.getContentPane().add(editDistance);
 		
-		JRadioButton qGram = new JRadioButton("Q-Gram Overlap");
-		qGram.setBounds(753, 62, 170, 23);
-		opGroup.add(qGram);
-		frame.getContentPane().add(qGram);
-		
 		editDistanceText = new JTextField();
 		editDistanceText.setBounds(929, 37, 39, 20);
 		frame.getContentPane().add(editDistanceText);
@@ -220,16 +219,23 @@ public class Main_Window {
 		btnChronology.setBounds(373, 10, 136, 23);
 		frame.getContentPane().add(btnChronology);
 		
-		JButton btnSaveIndex = new JButton("save");
+		JButton btnBenchmark = new JButton("Benchmark");
+		btnBenchmark.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int reply =JOptionPane.showConfirmDialog(null,"Do you want launch Lisa's Benchmark ?", "Attention", JOptionPane.YES_NO_OPTION);
+				//aggiungi il file nella tabella documenti
+				
+				if(reply==JOptionPane.YES_OPTION) {
+					
+					//Bm benchmark=new Bm(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
+				}
+				
+			}
+		});
+		btnBenchmark.setBounds(542, 10, 130, 23);
+		frame.getContentPane().add(btnBenchmark);
 		
-		btnSaveIndex .setBounds(1122, 372, 52, 52);
-		frame.getContentPane().add(btnSaveIndex );
-		
-		JButton btnloadIndex = new JButton("load");
-		
-		
-		btnloadIndex.setBounds(1122, 435, 52, 52);
-		frame.getContentPane().add(btnloadIndex);
+	
 		
 					
 		//frame Chronology
@@ -255,6 +261,9 @@ public class Main_Window {
 					editdistance=checkeditDistance(editDistanceText.getText());
 					System.out.println(editdistance);
 				}
+				else {
+					editdistance=0;
+				}
 	  
 				if(queryStr.isEmpty()==false) {
 					
@@ -265,8 +274,8 @@ public class Main_Window {
 				System.out.println("Query string: " + queryStr);
 				resultsModel.setRowCount(0);
 				
-				Model modelUsed = null;
-				
+				 
+				 Model modelUsed=null; 
 				if(modelbox.getSelectedItem()=="Boolean Model") {
 					System.out.println("Boolean");
 					modelUsed = new BooleanModel();
@@ -500,6 +509,50 @@ public class Main_Window {
 		}
 	});
 	
+	// Benchmark
+	btnBenchmark.addActionListener(new ActionListener() {
+		public void actionPerformed(ActionEvent arg0) {
+			int reply =JOptionPane.showConfirmDialog(null,"Do you want launch Lisa's Benchmark ?", "Attention", JOptionPane.YES_NO_OPTION);
+			//aggiungi il file nella tabella documenti
+			
+			if(reply==JOptionPane.YES_OPTION) {
+				
+				 Model modelUsed=null;
+				 Bm benchmark=null;
+					if(modelbox.getSelectedItem()=="Boolean Model") {
+						System.out.println("Boolean");
+						modelUsed = new BooleanModel();
+						 benchmark=new Bm(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
+						 benchmark.executeBenchmark();
+					}
+					
+					if(modelbox.getSelectedItem()=="Vector Space Model") {
+						System.out.println("Vector Space");
+						modelUsed = new VectorSpaceModel();
+						 benchmark=new Bm(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
+						 benchmark.executeBenchmark();
+					}
+					
+					if(modelbox.getSelectedItem()=="Probabilistic(BM25) Model") {
+						System.out.println("Probabilistic(BM25)");
+						modelUsed = new BM25();
+						 benchmark=new Bm(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
+						 benchmark.executeBenchmark();
+					}
+					
+					if(modelbox.getSelectedItem()=="Fuzzy Model") {
+						System.out.println("Fuzzy");
+						modelUsed = new FuzzyModel();
+						 benchmark=new Bm(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
+						 benchmark.executeBenchmark();
+					}	
+					
+				
+			}
+			
+		}
+	});
+	
 	}
 	
 	public int checkeditDistance(String text) {
@@ -513,21 +566,21 @@ public class Main_Window {
 			number= Integer.parseInt(String.valueOf(n));
 			else {
 				JOptionPane.showMessageDialog(frame,"Error in edit distance text box \n"
-                                                  + "Only numbers from 1 to 4 in are accepted	");
+                                                  + "Only 1 or 2 are accepted ");
 				return 2;
 				}
-			if(number<5 && number>0)
+			if(number<3 && number>0)
 				return number;
 			else {
 				JOptionPane.showMessageDialog(frame,"Error in edit distance text box \n"
-                                                   + "Only numbers from 1 to 4 in are accepted	");
+                                                   + "Only 1 or 2 are accepted ");
 				
 				return 2;
 		}
 			}
 			
 		JOptionPane.showMessageDialog(frame,"Error in edit distance text box \n"
-                                          + "Only numbers from 1 to 4 in are accepted	");
+                                          + "Only 1 or 2 are accepted ");
 			return 2;
 		
 	}

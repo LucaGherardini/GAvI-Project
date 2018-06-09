@@ -68,13 +68,13 @@ public class Bm {
 
 		ArrayList<LinkedList<String>> expectedDocuments = getExpectedDocuments();
 
-		ArrayList<LinkedList<String>> retrivedDocuments = retrieveDocuments(queries);
+		ArrayList<LinkedList<String>> retrievedDocuments = retrieveDocuments(queries);
 
-		ArrayList<LinkedList<String>> intersect = getIntersection(expectedDocuments, retrivedDocuments);
+		ArrayList<LinkedList<String>> intersect = getIntersection(expectedDocuments, retrievedDocuments);
 
 		saveResults("resFuz.save", intersect);
 
-		ArrayList<Double> precision = getPrecision(intersect, retrivedDocuments);
+		ArrayList<Double> precision = getPrecision(intersect, retrievedDocuments);
 		ArrayList<Double> recall = getRecall(intersect, expectedDocuments);
 
 		int i=0;
@@ -236,6 +236,7 @@ public class Bm {
 					if ( expectedDocuments.get(query).get(j).equals(retrievedDocuments.get(query).get(i)) ){
 						if (!intersection.contains(expectedDocuments.get(query).get(j))){
 							intersection.add(expectedDocuments.get(query).get(j));
+							
 						}
 					}
 				}
@@ -304,11 +305,12 @@ public class Bm {
 		}
 		//For each query get intersection.size / relevants.size
 		//precision = |intersect|/|result|
-		for (int i = 0; i < retrievedDocuments.size(); i++)
+		for (int i = 0; i < retrievedDocuments.size(); i++) {
 			if (retrievedDocuments.get(i).size() != 0)
 				precision.set(i, precision.get(i)/retrievedDocuments.get(i).size());
 			else
 				precision.set(i, 0.0);
+			}
 		return precision;
 	}
 

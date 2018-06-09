@@ -10,8 +10,6 @@ import java.util.LinkedList;
 
 import org.apache.lucene.search.FuzzyQuery;
 
-import com.panayotis.gnuplot.JavaPlot;
-
 import index.Hit;
 import index.Index;
 import irModels.BM25;
@@ -28,6 +26,12 @@ public class Bm {
 	String docExpected;
 	Index generalIndex;
 	LinkedList<String> ll;
+	
+	ArrayList<LinkedList<String>> expectedDocuments = new ArrayList<LinkedList<String>>();
+	ArrayList<LinkedList<String>> retrivedDocuments = new ArrayList<LinkedList<String>>();
+	ArrayList<LinkedList<String>> intersect = new ArrayList<LinkedList<String>>();
+	ArrayList<Double> precision = new ArrayList<Double>();
+	ArrayList<Double> recall = new ArrayList<Double>();
 
 	/**
 	 * 
@@ -66,16 +70,15 @@ public class Bm {
 
 		loadIndex();
 
-		ArrayList<LinkedList<String>> expectedDocuments = getExpectedDocuments();
 
-		ArrayList<LinkedList<String>> retrievedDocuments = retrieveDocuments(queries);
-
-		ArrayList<LinkedList<String>> intersect = getIntersection(expectedDocuments, retrievedDocuments);
+		expectedDocuments = getExpectedDocuments();
+		retrivedDocuments = retrieveDocuments(queries);
+		intersect = getIntersection(expectedDocuments, retrivedDocuments);
 
 		saveResults("resFuz.save", intersect);
 
-		ArrayList<Double> precision = getPrecision(intersect, retrievedDocuments);
-		ArrayList<Double> recall = getRecall(intersect, expectedDocuments);
+		precision = getPrecision(intersect, retrivedDocuments);
+		recall = getRecall(intersect, expectedDocuments);
 
 		int i=0;
 		for (Double rec: recall)
@@ -162,9 +165,9 @@ public class Bm {
 
 				if (!line.contains("Refs") &&  !line.contains("Query") && line.length() > 0) {
 					boolean terminator = false;
-					
 					while( !terminator ){ 
 						String [] docs = line.split(" ");
+
 						for (String doc : docs) {
 							int num = Integer.parseInt(doc);
 							if (num != -1) {
@@ -174,17 +177,17 @@ public class Bm {
 								break;
 							}
 						}
+
 						if(!terminator) {
 							line = br.readLine();
 						}
 					}
-					
 					System.out.println("Documents expected for query " + query_num + ": " + rel.toString());
 					query_num++;
 					expectedDocuments.add(rel);
 				}
-				br.close();
 			}
+			br.close();
 		} catch (Exception e) {
 			System.err.println(e);
 		}			
@@ -236,7 +239,6 @@ public class Bm {
 					if ( expectedDocuments.get(query).get(j).equals(retrievedDocuments.get(query).get(i)) ){
 						if (!intersection.contains(expectedDocuments.get(query).get(j))){
 							intersection.add(expectedDocuments.get(query).get(j));
-							
 						}
 					}
 				}
@@ -259,7 +261,6 @@ public class Bm {
 				fw.append("Docs intersected for query "+(i+1)+":\n");
 				for (int j = 0; j < intersect.get(i).size(); j++) {
 					fw.append(intersect.get(i).get(j)+"\n");
-
 				}
 			}
 			fw.close();
@@ -305,12 +306,11 @@ public class Bm {
 		}
 		//For each query get intersection.size / relevants.size
 		//precision = |intersect|/|result|
-		for (int i = 0; i < retrievedDocuments.size(); i++) {
+		for (int i = 0; i < retrievedDocuments.size(); i++)
 			if (retrievedDocuments.get(i).size() != 0)
 				precision.set(i, precision.get(i)/retrievedDocuments.get(i).size());
 			else
 				precision.set(i, 0.0);
-			}
 		return precision;
 	}
 
@@ -364,34 +364,26 @@ public class Bm {
 	}
 	
 	public static void main (String[] args) {
-		/*
+		
 		Bm bench = new Bm(new FuzzyModel(), "benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
 		bench.executeBenchmark();
 		
-		ArrayList<LinkedList<String>> expectedDocuments = bench.getExpectedDocuments();
-		ArrayList<LinkedList<String>> retrivedDocuments = bench.retrieveDocuments(bench.readQueries());
-
-		ArrayList<LinkedList<String>> intersect = bench.getIntersection(expectedDocuments, retrivedDocuments);
-		ArrayList<Double> precision = bench.getPrecision(intersect, retrivedDocuments);
-		ArrayList<Double> recall = bench.getRecall(intersect, expectedDocuments);
-		
-		ArrayList<Double> e_measure = bench.getEMeasure(precision, recall, 0.5);
-		ArrayList<Double> f_measure = bench.getFMeasure(precision, recall);
+		ArrayList<Double> e_measure = bench.getEMeasure(bench.precision, bench.recall, 0.5);
+		ArrayList<Double> f_measure = bench.getFMeasure(bench.precision, bench.recall);
 		
 		bench.saveMeasure(e_measure, "emeasure.dat");
 		bench.saveMeasure(f_measure, "fmeasure.dat");
-		*/
-		JavaPlot p = new JavaPlot();
-		double [][] points = new double[10][1];
-		double value = 0.0;
-		for (int i = 0; i < 10; i++)
-			points[i][0] = value++;
 		
-		p.addPlot(points);
-		p.plot();
+		bench.saveMeasure(bench.precision, "precision.dat");
+		bench.saveMeasure(bench.recall, "recall.dat");
+		
+		System.out.println("********************************");
+		System.out.println("Intersection: "+bench.intersect);
+		System.out.println("Precision: "+bench.precision);
+		System.out.println("Recall: "+bench.recall);
+		System.out.println("********************************");
 		
 	}
-
 
 
 }

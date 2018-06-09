@@ -1,5 +1,6 @@
 package benchmark;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -8,15 +9,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import org.apache.lucene.search.FuzzyQuery;
-
 import index.Hit;
 import index.Index;
-import irModels.BM25;
-import irModels.BooleanModel;
 import irModels.FuzzyModel;
 import irModels.Model;
-import irModels.VectorSpaceModel;
+import plot.Plot;
 
 public class Bm {
 
@@ -365,6 +362,7 @@ public class Bm {
 	
 	public static void main (String[] args) {
 		
+		/*
 		Bm bench = new Bm(new FuzzyModel(), "benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
 		bench.executeBenchmark();
 		
@@ -382,6 +380,29 @@ public class Bm {
 		System.out.println("Precision: "+bench.precision);
 		System.out.println("Recall: "+bench.recall);
 		System.out.println("********************************");
+		*/
+		
+		Plot plot = Plot.plot(Plot.plotOpts().
+		        title("Hello World").
+		        legend(Plot.LegendFormat.BOTTOM)).
+		    xAxis("x", Plot.axisOpts().
+		        range(0, 5)).
+		    yAxis("y", Plot.axisOpts().
+		        range(0, 5)).
+		    series("Data", Plot.data().
+		        xy(1, 2).
+		        xy(3, 4),
+		        Plot.seriesOpts().
+		            marker(Plot.Marker.DIAMOND).
+		            markerColor(Color.GREEN).
+		            color(Color.BLACK));
+
+		try {
+			plot.save("sample_hello", "png");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 

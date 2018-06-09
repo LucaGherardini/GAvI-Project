@@ -184,7 +184,7 @@ public class Bm {
 					query_num++;
 					expectedDocuments.add(rel);
 				}
-<<<<<<< HEAD
+
 				br.close();
 			} catch (Exception e) {
 				System.err.println(e);
@@ -203,7 +203,7 @@ public class Bm {
 				indexResults = index.submitQuery(query, ll, model, true);
 				for(Hit indRes : indexResults) {
 					results.add(indRes.getDocName());
-=======
+
 			}
 			br.close();
 		} catch (Exception e) {
@@ -279,7 +279,7 @@ public class Bm {
 				fw.append("Docs intersected for query "+(i+1)+":\n");
 				for (int j = 0; j < intersect.get(i).size(); j++) {
 					fw.append(intersect.get(i).get(j)+"\n");
->>>>>>> 4d3db661321b042f55bd46861e6b1ae3d72cd569
+
 				}
 			}
 			fw.close();
@@ -410,13 +410,7 @@ public class Bm {
 		p.plot();
 		
 	}
-<<<<<<< HEAD
-	
-	
-	 
-	 
-=======
->>>>>>> 4d3db661321b042f55bd46861e6b1ae3d72cd569
+
 
 
 }

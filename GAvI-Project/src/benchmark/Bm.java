@@ -66,7 +66,6 @@ public class Bm {
 
 		loadIndex();
 
-
 		ArrayList<LinkedList<String>> expectedDocuments = getExpectedDocuments();
 
 		ArrayList<LinkedList<String>> retrivedDocuments = retrieveDocuments(queries);
@@ -163,9 +162,9 @@ public class Bm {
 
 				if (!line.contains("Refs") &&  !line.contains("Query") && line.length() > 0) {
 					boolean terminator = false;
+					
 					while( !terminator ){ 
 						String [] docs = line.split(" ");
-
 						for (String doc : docs) {
 							int num = Integer.parseInt(doc);
 							if (num != -1) {
@@ -175,37 +174,17 @@ public class Bm {
 								break;
 							}
 						}
-
 						if(!terminator) {
 							line = br.readLine();
 						}
 					}
+					
 					System.out.println("Documents expected for query " + query_num + ": " + rel.toString());
 					query_num++;
 					expectedDocuments.add(rel);
 				}
-
 				br.close();
-			} catch (Exception e) {
-				System.err.println(e);
-			}			
-			
-			ArrayList<LinkedList<String>> documentsRetrieved = new ArrayList<LinkedList<String>>();
-			LinkedList<String> results = null;
-			LinkedList<Hit> indexResults = null;
-			query_num = 1;
-			
-			for(String query : queries) {
-				results = new LinkedList<String>();
-				
-				System.out.println("*****");
-				System.out.println("Query " + query_num + " is: " + query);
-				indexResults = index.submitQuery(query, ll, model, true);
-				for(Hit indRes : indexResults) {
-					results.add(indRes.getDocName());
-
 			}
-			br.close();
 		} catch (Exception e) {
 			System.err.println(e);
 		}			

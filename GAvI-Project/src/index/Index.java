@@ -25,13 +25,11 @@ import org.apache.lucene.store.RAMDirectory;
 import irModels.Model;
 import irModels.VectorSpaceModel;
 
-/*
- * This class implements an Index. This Index allows to being manipulated by user, 
- * who decide which Documents/Directories adding/removing to it
+/**
+ * @author luca
  * 
- * @warning documents will be split following their directory, so an index contains abstract
- * directories, each of them has a path, that is the same for all documents of that directory
- * erasing a "Directory" means erasing all documents with a specific pattern in their path field
+ * This class implements an Index. This Index allows to being manipulated by user, 
+ * who decide which Documents/Directories adding/removing to it.
  * 
  */
 public class Index{
@@ -54,9 +52,9 @@ public class Index{
 		startIndex();
 	}
 	
-	/* getIndex
+	/** getIndex()
 	 * This method makes the Index class a singleton, allocating uniqueIndex as the only instance of
-	 * this class, and returning it
+	 * this class, and returning it. By default, VectorSpaceModel is the model applied to it.
 	 */
 	public static Index getIndex() {
 		if(uniqueIndex == null) {
@@ -65,6 +63,12 @@ public class Index{
 		return uniqueIndex;
 	}
 	
+	/** getIndex(Similarity sim)
+	 * This method allows to create index specifying what similarity has to be set. When constructor is called,
+	 * simUsed define the model to use for similarity.
+	 * @param sim
+	 * @return
+	 */
 	public static Index getIndex(Similarity sim) {
 		simUsed = sim;
 		if(uniqueIndex == null) {
@@ -73,8 +77,8 @@ public class Index{
 		return uniqueIndex;
 	}
 	
-	/* startIndex
-	 * A method used to allocate all tools of the Index
+	/** startIndex()
+	 * A method used to allocate all tools of the Index. To change similarity, index has to be re-initialized.
 	 */
 	private void startIndex() {
 		stdAnalyzer = new StandardAnalyzer();
@@ -97,31 +101,38 @@ public class Index{
 		}
 	}
 	
+	/** setSimilarity(Similarity sim, boolean reload)
+	 * To change similarity used by an index, this has to be re-initialized, losing its content. To prevent this,
+	 * reload can be set to true, saving content of index in a temporary Index (tempIndex) and reloading them after
+	 * re-initializing. This is done only if similarity of index is different by the passed one.
+	 */
 	public void setSimilarity(Similarity sim, boolean reload) {
-		simUsed = sim;
-		if(reload) {
-		saveIndex("tempIndex.ser");
-		}
-		resetIndex();
-		if(reload) {
-		loadIndex("tempIndex.ser");
+		if(simUsed.getClass() != sim.getClass()) {
+			simUsed = sim;
+			if(reload) {
+				saveIndex("tempIndex.ser");
+			}
+			resetIndex();
+			if(reload) {
+				loadIndex("tempIndex.ser");
+			}
 		}
 	}
 	
-	/* resetIndex
-	 * This method remove references to the previous uniqueIndex and close tools. 
-	 * Then it makes uniqueIndex to being a new Index, reallocating new tools
-	 * This is the fastest and easiest way to "clear" totally an index from its entries
+	/** resetIndex()
+	 * This method removes the previous index and closes its tools. 
+	 * Then it makes a new Index, reallocating new tools.
+	 * This is the fastest and easiest way to "clear" totally an index from its entries.
 	 */	
 	public void resetIndex() {
-		eraseIndex();
+		closeIndex();
 		startIndex();
 	}
 	
-	/* eraseIndex
-	 * This method close tools that are closable
+	/** closeIndex()
+	 * This method close tools that are closable.
 	 */
-	private void eraseIndex() {
+	private void closeIndex() {
 		if(stdAnalyzer != null){
 			stdAnalyzer.close();
 		}
@@ -141,8 +152,8 @@ public class Index{
 		}
 	}
 	
-	/* saveIndex 
-	 * This method write all documents path to the target file, as clear text
+	/** saveIndex(String saveFile)
+	 * This method write all documents path to the target file, as clear text.
 	 */
 	public void saveIndex(String saveFile) {
 		if (getSize() == 0 && !saveFile.equals("tempIndex.ser")) {
@@ -167,8 +178,8 @@ public class Index{
 		System.out.println("Saving successful to " + saveFile + "!");
 	}
 	
-	/* loadIndex
-	 * this method, specularly to saveIndex, load documents in Index by a save file that contains a list
+	/** loadIndex(String saveFile)
+	 * This method, contrary to saveIndex, load documents in Index by a save file that contains a list of them.
 	 */
 	public void loadIndex(String saveFile) {
 		System.out.println("Loading from " + saveFile);
@@ -184,15 +195,10 @@ public class Index{
 			return ;
 		}
 		
-		//System.out.println("Erasing of the previous index...");
-		//resetIndex();
-		// Call explicitly resetIndex() when loading by GUI
-		
 		String line = "";
 		try {
 			while ( (line = reader.readLine()) != null) {
 				addDocument(line);
-				//System.out.println("Loaded in index " + line);
 			}
 
 			reader.close();
@@ -205,8 +211,8 @@ public class Index{
 	}
 	
 	
-	/* addDocument
-	 * This method is used to create and to add a document to the index
+	/** addDocument(String docPath)
+	 * This method is used to create and to add a document to the index.
 	 * @param docPath is a concatenation of path and name of a document (for example "doc/Lucene.pdf")
 	 */
 	public void addDocument(String docPath) {
@@ -233,14 +239,13 @@ public class Index{
 			e.printStackTrace();
 		}
 		
-		//System.out.println("***Content read from "+ path + name + ": \n\n" + content + "\n");
 		int separatorIndex = docPath.lastIndexOf("/");
 		
 		String path = "";
 		
 		/*
-		 * Currently, relative path is used to add documents to index, so the "/" could be missing. In future, using
-		 * gui, absolute path will be always declared, erasing this problem
+		 * Relative path could be used in tests to add documents to index, so the "/" could be missing. Using
+		 * gui, absolute path will be always declared, ignoring this problem
 		 */
 		if (separatorIndex != -1) {
 			path = docPath.substring(0, separatorIndex+1);
@@ -262,19 +267,17 @@ public class Index{
 		}
 		
 		/*
-		 * This updates comReader if index was modified (in this case, yes, because a new document is added)
+		 * This updates indexReader because index has been modified (a new document has been added to it)
 		 */
 		try {
 			inReader = DirectoryReader.openIfChanged((DirectoryReader) inReader);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	
-		//System.out.println("Added to index " + path + name);
 	}
 	
-	/* getDocument
-	 * Returns a document giving corresponding index
+	/** getDocument(int index)
+	 * Returns a document giving corresponding index.
 	 */
 	public Document getDocument(int index) {
 		Document doc = null;
@@ -286,7 +289,7 @@ public class Index{
 		return doc;
 	}
 	
-	/* removeDocument
+	/** removeDocument(int index)
 	 * This method removes a document from the index, given its position into the index
 	 */
 	public void removeDocument(int index) {
@@ -298,18 +301,18 @@ public class Index{
 		}
 	}
 	
-	/* getSize
-	 * returns number of documents stored in the index
+	/** getSize()
+	 * returns number of documents stored in index
 	 */
 	public int getSize() {
 		return inWriter.numDocs();
 	}
 	
-	/* submitQuery
-	 * this method requires a string representing user query, a LinkedList of Strings containing fields
-	 * in which searching, and the Model instance used to ranking results
+	/** submitQuery(String query, LinkedList<String> fields, Model m, boolean print)
+	 * This method requires a string representing user query, a LinkedList of Strings containing fields
+	 * in which searching, the Model instance used to parse query, a boolean print to get query and results to be printed or not
 	 */
-	public LinkedList<Hit> submitQuery(String query, LinkedList<String> fields, Model m, boolean printQuery) {
+	public LinkedList<Hit> submitQuery(String query, LinkedList<String> fields, Model m, boolean print) {
 		
 		LinkedList<Hit> queryResults = new LinkedList<Hit>();
 		
@@ -323,30 +326,19 @@ public class Index{
 		TopDocs results = null;
 		ScoreDoc[] hits = null;
 		
-		if (printQuery) {
+		if (print) {
 			System.out.println("Printing query: " + q.toString() + "\n");
 		}
 		
-		/* ONLY FOR DEBUG PURPOSES */
-		/*
-		System.out.println("Printing documents in index: ");
-		for (int i = 0; i < getSize(); i++) {
-			System.out.println("Document " + i + ": " + getDocument(i).get("path") + getDocument(i).get("name"));
-		}
-		System.out.println("\n");
-		*/
-		
-		
-		/* Updating of IndexSearcher only if a request is submitted. The only way to updating a searcher, is to
-		 * creating a new searcher bounded to current reader. This is cheap if we already have a reader
-		 * available
+		/* Updating of IndexSearcher. The only way to update a searcher is to
+		 * create a new searcher on the current reader. This is cheap if we already have a reader
+		 * available (as we have)
 		 */		
 		try {
 			inSearcher = new IndexSearcher(inReader);
 			inSearcher.setSimilarity(simUsed);
 		}catch(Exception e) {
 			e.printStackTrace();
-			System.err.println("\nError updating IndexSearcher. Trying to continue...");
 		}
 		
 		try {
@@ -366,22 +358,10 @@ public class Index{
 			for (int k=0 ; k < hits.length ; k++) {
 					doc = inSearcher.doc(hits[k].doc);
 					queryResults.add(new Hit(doc.get("path"), doc.get("name"), hits[k].score));
-					//System.out.println("Document " + doc.get("path") + doc.get("name") + " with score: " + hits[k].score);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		/*
-		LinkedList<String> paths = new LinkedList<String>();		
-		for (Hit docHit : queryResults) {
-			if(!paths.contains(docHit.getDocPath())){
-				paths.add(docHit.getDocPath());
-				System.out.println("\n" + paths.getLast());
-			}
-			System.out.println("..." + docHit.getDocName());
-		}
-		*/
 		
 		return queryResults;
 	}

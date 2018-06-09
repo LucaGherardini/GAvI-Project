@@ -10,11 +10,19 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.Similarity;
 
+import gui.Main_Window;
+
 public class BM25 extends Model {
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see irModels.Model#getQueryParsed(java.lang.String, java.util.LinkedList, org.apache.lucene.analysis.standard.StandardAnalyzer)
+	 */
 	public Query getQueryParsed(String query, LinkedList<String> fields, StandardAnalyzer analyzer) {
-StandardQueryParser sqp = new StandardQueryParser(analyzer);
+		
+		int maxEdits = Main_Window.getEditdistance();
+		StandardQueryParser sqp = new StandardQueryParser(analyzer);
 		
 		Query q = null;
 		String query_parsed = "";
@@ -30,6 +38,15 @@ StandardQueryParser sqp = new StandardQueryParser(analyzer);
 		query = query.replaceAll("[()+-:]", "");
 		query = query.trim().replaceAll(" +", " ");
 		
+		String[] terms = query.split(" ");
+		
+		query = "";
+		//For each "Token", this is followed by a ~ and a value representing maxEdits
+		for (String term : terms) {
+			term = term.replaceAll("~", "") + "~" + maxEdits;
+			query += term + " ";
+		}
+		
 		//Now, parsing is make on each field, creating the final query
 		try {
 			for(String field : fields) {
@@ -42,9 +59,12 @@ StandardQueryParser sqp = new StandardQueryParser(analyzer);
 		return q;
 	}
 	
-	
+	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see irModels.Model#getSimilarity()
+	 */
 	public Similarity getSimilarity() {
-		System.out.println("Creating a BM25 Similarity");
 		return new BM25Similarity(); 	// BM25 with these default values: k1 = 1.2 b = 0.75
 										// BM25Similarity(float k1, float b)
 	}

@@ -1,21 +1,27 @@
 package irModels;
 
+
 import java.util.LinkedList;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
 
+import gui.Main_Window;
+
+
 public class VectorSpaceModel extends Model{
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see irModels.Model#getQueryParsed(java.lang.String, java.util.LinkedList, org.apache.lucene.analysis.standard.StandardAnalyzer)
+	 */
 	public Query getQueryParsed(String query, LinkedList<String> fields, StandardAnalyzer analyzer) {
 
+		int maxEdits = Main_Window.getEditdistance();
 		StandardQueryParser sqp = new StandardQueryParser(analyzer);
 		
 		Query q = null;
@@ -32,6 +38,15 @@ public class VectorSpaceModel extends Model{
 		query = query.replaceAll("[()+-:]", "");
 		query = query.trim().replaceAll(" +", " ");
 		
+		String[] terms = query.split(" ");
+		
+		query = "";
+		//For each "Token", this is followed by a ~ and a value representing maxEdits
+		for (String term : terms) {
+			term = term.replaceAll("~", "") + "~" + maxEdits;
+			query += term + " ";
+		}
+		
 		//Now, parsing is make on each field, creating the final query
 		try {
 			for(String field : fields) {
@@ -44,8 +59,12 @@ public class VectorSpaceModel extends Model{
 		return q;
 	}
 	
+	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see irModels.Model#getSimilarity()
+	 */
 	public Similarity getSimilarity() {
-		System.out.println("Creating a Vector Space Model Similarity");
 		return new ClassicSimilarity();
 	}
 

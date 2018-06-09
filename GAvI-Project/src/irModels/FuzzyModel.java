@@ -19,10 +19,13 @@ import gui.Main_Window;
 public class FuzzyModel extends Model {
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see irModels.Model#getQueryParsed(java.lang.String, java.util.LinkedList, org.apache.lucene.analysis.standard.StandardAnalyzer)
+	 */
 	public Query getQueryParsed(String query, LinkedList<String> fields, StandardAnalyzer analyzer) {
 		
 		int maxEdits = Main_Window.getEditdistance();
-		maxEdits = 2;
 		Builder b = new BooleanQuery.Builder();		
 		
 		/*
@@ -35,7 +38,7 @@ public class FuzzyModel extends Model {
 			
 		}
 		
-		//From the query parsed, i remove all special letters used by query parsed, and eventual exceeding whitespaces
+		//From the query parsed, all special letters used by query parsed are removed, and eventual exceeding white spaces are removed too
 		query = query.replaceAll("[()+-:]", "");
 		query = query.trim().replaceAll(" +", " "); // Removes first and last white spaces, and substitute multiple white spaces with only one white space
 		
@@ -48,27 +51,27 @@ public class FuzzyModel extends Model {
 			query += term + " ";
 		}
 		
-		//Query is re-parsed, this time on each field, and builded using a BooleanQuery.Builder
+		//Query is re-parsed, this time on each field, and built using a BooleanQuery.Builder
 		String query_parsed = "";
 		Query q = null;
-			try {
-				for (String field : fields) {
-					//b.add(queryParser.parse(query, field), BooleanClause.Occur.SHOULD);
-					query_parsed += queryParser.parse(query, field).toString() + " ";
-				}
-				q = queryParser.parse(query_parsed, "");
-			} catch (Exception e) {
-				e.printStackTrace();
+		try {
+			for (String field : fields) {
+				query_parsed += queryParser.parse(query, field).toString() + " ";
 			}
+			q = queryParser.parse(query_parsed, "");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
         
 		return q;
-		//return b.build();
 	}
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see irModels.Model#getSimilarity()
+	 */
 	public Similarity getSimilarity() {
-		System.out.println("Creating a Fuzzy Model Similarity");
 		return new ClassicSimilarity();
 	}
-
 }

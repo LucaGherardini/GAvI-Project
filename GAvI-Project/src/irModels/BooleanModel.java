@@ -13,6 +13,11 @@ import org.apache.lucene.search.similarities.Similarity;
 
 public class BooleanModel extends Model{
 	
+	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see irModels.Model#getQueryParsed(java.lang.String, java.util.LinkedList, org.apache.lucene.analysis.standard.StandardAnalyzer)
+	 */
 	public Query getQueryParsed(String query, LinkedList<String> fields, StandardAnalyzer analyzer) {
 		
 		StandardQueryParser queryParser = null;
@@ -38,20 +43,11 @@ public class BooleanModel extends Model{
 	}
 
 	@Override
+	/*
+	 * (non-Javadoc)
+	 * @see irModels.Model#getSimilarity()
+	 */
 	public Similarity getSimilarity() {
-		System.out.println("Creating a Boolean Model Similarity");
 		return new BooleanSimilarity();
 	}
-	
-	/*public ArrayList<String> parser(String query, boolean stemming, boolean stopWordsRemoving){
-		ArrayList<String> queryParsed = TextOperations.tokenization(query);
-		if (stemming) {
-			queryParsed = TextOperations.stemming(queryParsed);
-		}
-		if (stopWordsRemoving) {
-			queryParsed = TextOperations.removeStopWords(queryParsed);
-		}
-		return queryParsed;
-	}
-	*/
 }

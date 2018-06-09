@@ -258,8 +258,8 @@ public class Main_Window {
 	  
 				if(queryStr.isEmpty()==false) {
 					
-			 //LinkList to save Chronology
-			chronology.addFirst(queryStr);
+					//LinkList to save Chronology
+					chronology.addFirst(queryStr);
 				
 				
 				System.out.println("Query string: " + queryStr);
@@ -314,10 +314,10 @@ public class Main_Window {
 	// help for users
 		Help.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				 				    
-				JOptionPane.showMessageDialog(frame,	"Boolean Model: Using of Logic Operator (AND, OR, NOT) \"(Lucene OR Information Retrieval) AND Boolean Model\" \n"
-													+	"Fuzzy Model: More flexible than Boolean Model, using of \"~\" operator to mark tolerance on terms \"United Stat~\" \n"
-													+	"Vector Space Model: Based on a Vector rapresentation of query and documents, can be used Fuzzy and Boolean operators \n"
+				 				   
+				JOptionPane.showMessageDialog(frame,	"Boolean Model: Using of Logic Operators (AND, OR, NOT) \"(Lucene OR Information Retrieval) AND Boolean Model\" \n"
+													+	"Fuzzy Model: More flexible than Boolean Model, using of Edit Distance\n"
+													+	"Vector Space Model: Based on a Vector representation of query and documents\n"
 													+ 	"Probabilistic(BM25): Use of BM25 ranking function to retrieve documents given a query\n\n"
 													+ 	"Query composition: You can declare in which fields search (name or content) writing field name in query \"name:Salomè content:Give me Iokanaan's head\"");
 			}

@@ -1,5 +1,6 @@
 package benchmark;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -8,17 +9,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import org.apache.lucene.search.FuzzyQuery;
-
-import com.panayotis.gnuplot.JavaPlot;
-
 import index.Hit;
 import index.Index;
-import irModels.BM25;
-import irModels.BooleanModel;
 import irModels.FuzzyModel;
 import irModels.Model;
-import irModels.VectorSpaceModel;
+import plot.Plot;
+import plot.Plot.Line;
 
 public class Bm {
 
@@ -28,6 +24,12 @@ public class Bm {
 	String docExpected;
 	Index generalIndex;
 	LinkedList<String> ll;
+	
+	ArrayList<LinkedList<String>> expectedDocuments = new ArrayList<LinkedList<String>>();
+	ArrayList<LinkedList<String>> retrivedDocuments = new ArrayList<LinkedList<String>>();
+	ArrayList<LinkedList<String>> intersect = new ArrayList<LinkedList<String>>();
+	ArrayList<Double> precision = new ArrayList<Double>();
+	ArrayList<Double> recall = new ArrayList<Double>();
 
 	/**
 	 * 
@@ -66,16 +68,15 @@ public class Bm {
 
 		loadIndex();
 
-		ArrayList<LinkedList<String>> expectedDocuments = getExpectedDocuments();
 
-		ArrayList<LinkedList<String>> retrievedDocuments = retrieveDocuments(queries);
-
-		ArrayList<LinkedList<String>> intersect = getIntersection(expectedDocuments, retrievedDocuments);
+		expectedDocuments = getExpectedDocuments();
+		retrivedDocuments = retrieveDocuments(queries);
+		intersect = getIntersection(expectedDocuments, retrivedDocuments);
 
 		saveResults("resFuz.save", intersect);
 
-		ArrayList<Double> precision = getPrecision(intersect, retrievedDocuments);
-		ArrayList<Double> recall = getRecall(intersect, expectedDocuments);
+		precision = getPrecision(intersect, retrivedDocuments);
+		recall = getRecall(intersect, expectedDocuments);
 
 		int i=0;
 		for (Double rec: recall)
@@ -162,9 +163,9 @@ public class Bm {
 
 				if (!line.contains("Refs") &&  !line.contains("Query") && line.length() > 0) {
 					boolean terminator = false;
-					
 					while( !terminator ){ 
 						String [] docs = line.split(" ");
+
 						for (String doc : docs) {
 							int num = Integer.parseInt(doc);
 							if (num != -1) {
@@ -174,17 +175,17 @@ public class Bm {
 								break;
 							}
 						}
+
 						if(!terminator) {
 							line = br.readLine();
 						}
 					}
-					
 					System.out.println("Documents expected for query " + query_num + ": " + rel.toString());
 					query_num++;
 					expectedDocuments.add(rel);
 				}
-				br.close();
 			}
+			br.close();
 		} catch (Exception e) {
 			System.err.println(e);
 		}			
@@ -236,7 +237,6 @@ public class Bm {
 					if ( expectedDocuments.get(query).get(j).equals(retrievedDocuments.get(query).get(i)) ){
 						if (!intersection.contains(expectedDocuments.get(query).get(j))){
 							intersection.add(expectedDocuments.get(query).get(j));
-							
 						}
 					}
 				}
@@ -246,7 +246,7 @@ public class Bm {
 		}
 		return intersect;
 	}
-
+	
 	/**
 	 * Save intersection on a file.
 	 * @param fileName
@@ -259,7 +259,6 @@ public class Bm {
 				fw.append("Docs intersected for query "+(i+1)+":\n");
 				for (int j = 0; j < intersect.get(i).size(); j++) {
 					fw.append(intersect.get(i).get(j)+"\n");
-
 				}
 			}
 			fw.close();
@@ -284,7 +283,7 @@ public class Bm {
 		for (int i = 0; i < expectedDocuments.size(); i++)
 			if (expectedDocuments.get(i).size() != 0)
 				recall.set(i, recall.get(i)/expectedDocuments.get(i).size());
-			else 
+			else
 				recall.set(i, 0.0);
 
 		return recall;
@@ -305,15 +304,14 @@ public class Bm {
 		}
 		//For each query get intersection.size / relevants.size
 		//precision = |intersect|/|result|
-		for (int i = 0; i < retrievedDocuments.size(); i++) {
+		for (int i = 0; i < retrievedDocuments.size(); i++)
 			if (retrievedDocuments.get(i).size() != 0)
 				precision.set(i, precision.get(i)/retrievedDocuments.get(i).size());
 			else
 				precision.set(i, 0.0);
-			}
 		return precision;
 	}
-
+	
 	/**
 	 * Calculate recall
 	 * @param precision list of precision for every query
@@ -363,35 +361,177 @@ public class Bm {
 			
 	}
 	
+	/**
+	 * Get max value in a double array list
+	 * @param list
+	 * @return
+	 */
+	private static double getMax(ArrayList<Double> list) {
+		double max = 0.0;
+		if (list.size() > 0) 
+			max = list.get(0);
+		for (int i = 1; i < list.size(); i++)
+			if (max < list.get(i))
+				max = list.get(i);
+		return max;
+	}
+	
 	public static void main (String[] args) {
-		/*
+		
+		
 		Bm bench = new Bm(new FuzzyModel(), "benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
 		bench.executeBenchmark();
 		
-		ArrayList<LinkedList<String>> expectedDocuments = bench.getExpectedDocuments();
-		ArrayList<LinkedList<String>> retrivedDocuments = bench.retrieveDocuments(bench.readQueries());
-
-		ArrayList<LinkedList<String>> intersect = bench.getIntersection(expectedDocuments, retrivedDocuments);
-		ArrayList<Double> precision = bench.getPrecision(intersect, retrivedDocuments);
-		ArrayList<Double> recall = bench.getRecall(intersect, expectedDocuments);
+		ArrayList<Double> e_measure = bench.getEMeasure(bench.precision, bench.recall, 0.5);
+		ArrayList<Double> f_measure = bench.getFMeasure(bench.precision, bench.recall);
 		
-		ArrayList<Double> e_measure = bench.getEMeasure(precision, recall, 0.5);
-		ArrayList<Double> f_measure = bench.getFMeasure(precision, recall);
+		//ArrayList<ArrayList<Double>> recall = bench.getRecall();
+		//ArrayList<ArrayList<Double>> precision = bench.getPrecision();
 		
 		bench.saveMeasure(e_measure, "emeasure.dat");
 		bench.saveMeasure(f_measure, "fmeasure.dat");
+		
+		bench.saveMeasure(bench.precision, "precision.dat");
+		bench.saveMeasure(bench.recall, "recall.dat");
+		
+		System.out.println("********************************");
+		System.out.println("Intersection: "+bench.intersect);
+		System.out.println("Precision: "+bench.precision);
+		System.out.println("Recall: "+bench.recall);
+		System.out.println("********************************");
+		
+		/*
+		ArrayList<Double> num_queries = new ArrayList<>();
+		for (int i = 0; i < bench.precision.size(); i++) {
+			num_queries.add(i + 0.0);
+		}
+		
+		try {
+			
+			Plot plot = Plot.plot(Plot.plotOpts().
+					title("Precision graph").
+					width(1000).
+					height(600).
+					legend(Plot.LegendFormat.TOP)).	
+				xAxis("Query #", Plot.axisOpts().
+					range(0, num_queries.size())).
+				yAxis("Precision", Plot.axisOpts().
+					range(0, getMax(bench.precision))).series("", Plot.data().
+							xy(num_queries, bench.precision),
+							Plot.seriesOpts().
+								line(Line.NONE).
+								marker(Plot.Marker.COLUMN).
+								color(Color.BLUE).markerColor(Color.BLUE));
+			plot.save("precision", "png");
+			
+			plot = Plot.plot(Plot.plotOpts().
+					title("Recall graph").
+					width(1000).
+					height(600).
+					legend(Plot.LegendFormat.TOP)).	
+				xAxis("Query #", Plot.axisOpts().
+					range(0, num_queries.size())).
+				yAxis("Recall", Plot.axisOpts().
+					range(0, getMax(bench.recall))).series("", Plot.data().
+							xy(num_queries, bench.recall),
+							Plot.seriesOpts().
+								line(Line.NONE).
+								marker(Plot.Marker.COLUMN).
+								color(Color.BLUE).markerColor(Color.BLUE));
+			plot.save("recall", "png");
+			
+			for (int i = 0; i < recall.size(); i++) {
+				plot = Plot.plot(Plot.plotOpts().
+						title("Precision - Recall Query "+(i+1)).
+						width(1000).
+						height(600).
+						legend(Plot.LegendFormat.TOP)).	
+					xAxis("Recall", Plot.axisOpts().
+						range(0, getMax(recall.get(i)))).
+					yAxis("Precision", Plot.axisOpts().
+						range(0, getMax(precision.get(i)))).
+					series("f1", Plot.data().
+						xy(recall.get(i).get(0), precision.get(i).get(0)).
+						xy(recall.get(i).get(1), precision.get(i).get(1)).
+						xy(recall.get(i).get(2), precision.get(i).get(2)),
+						Plot.seriesOpts().
+							lineWidth(3).
+							marker(Plot.Marker.NONE).
+							color(Color.BLUE));
+				plot.save("recall-precision"+(i+1), "png");
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		*/
-		JavaPlot p = new JavaPlot();
-		double [][] points = new double[10][1];
-		double value = 0.0;
-		for (int i = 0; i < 10; i++)
-			points[i][0] = value++;
-		
-		p.addPlot(points);
-		p.plot();
-		
 	}
 
 
+	/*
 
+	public ArrayList<ArrayList<Double>> getRecall() {
+		int lvl33;
+		int lvl66;
+		int lvl100;
+		
+		ArrayList<ArrayList<Double>> recall = new ArrayList<ArrayList<Double>>();
+		
+		ArrayList<Double> temp = new ArrayList<Double>();
+		
+		for (int i = 0; i < precision.size(); i++) {
+			lvl33 = retrivedDocuments.get(i).size()*33/100; //33% of size of retrived documents
+			lvl66 = retrivedDocuments.get(i).size()*66/100; //66% of size of retrived documents
+			lvl100 = retrivedDocuments.get(i).size(); //all retrived documents
+			
+			temp.add( ( (double) getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl33).size() / (double) retrivedDocuments.get(i).size()) );
+			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl66).size() / (double) retrivedDocuments.get(i).size()) );
+			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl100).size() / (double) retrivedDocuments.get(i).size()) );
+			
+			recall.add(temp);
+			temp = new ArrayList<Double>();
+		}
+		
+		return recall;
+	}
+	
+	public ArrayList<ArrayList<Double>> getPrecision() {
+		int lvl33;
+		int lvl66;
+		int lvl100;
+		
+		ArrayList<ArrayList<Double>> precision = new ArrayList<ArrayList<Double>>();
+		
+		ArrayList<Double> temp = new ArrayList<Double>();
+		
+		for (int i = 0; i < this.precision.size(); i++) {
+			lvl33 = retrivedDocuments.get(i).size()*33/100;
+			lvl66 = retrivedDocuments.get(i).size()*66/100;
+			lvl100 = retrivedDocuments.get(i).size();
+			
+			temp.add( ( (double) getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl33).size() / (double) expectedDocuments.get(i).size()) );
+			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl66).size() / (double) expectedDocuments.get(i).size()) );
+			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl100).size() / (double) expectedDocuments.get(i).size()) );
+			
+			precision.add(temp);
+			temp = new ArrayList<Double>();
+		}
+		
+		return precision;
+	}
+	 
+	 private ArrayList<String> getIntersect(LinkedList<String> expectedDocuments, LinkedList<String> retrievedDocuments, int much){
+		ArrayList<String> intersect = new ArrayList<String>();
+
+		for (String s: expectedDocuments)
+			for (int i = 0; i < much; i++)
+				if (retrievedDocuments.get(i).equals(s))
+					intersect.add(s);
+		
+		return intersect;
+	}
+	
+	 */
+	
 }

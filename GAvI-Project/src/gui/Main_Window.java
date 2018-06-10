@@ -42,7 +42,6 @@ import java.awt.Font;
 import javax.swing.JScrollPane;
 
 
-
 public class Main_Window {
 
 	private JFrame frame = null;

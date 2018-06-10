@@ -29,7 +29,7 @@ import irModels.VectorSpaceModel;
  * @author luca
  * 
  * This class implements an Index. This Index allows to being manipulated by user, 
- * who decide which Documents/Directories adding/removing to it.
+ * who decide which Documents/Directories adding/removing.
  * 
  */
 public class Index{
@@ -52,9 +52,10 @@ public class Index{
 		startIndex();
 	}
 	
-	/** getIndex()
+	/**
 	 * This method makes the Index class a singleton, allocating uniqueIndex as the only instance of
 	 * this class, and returning it. By default, VectorSpaceModel is the model applied to it.
+	 * @return Index as a uniqueIndex
 	 */
 	public static Index getIndex() {
 		if(uniqueIndex == null) {
@@ -63,21 +64,21 @@ public class Index{
 		return uniqueIndex;
 	}
 	
-	/** getIndex(Similarity sim)
+	/**
 	 * This method allows to create index specifying what similarity has to be set. When constructor is called,
 	 * simUsed define the model to use for similarity.
-	 * @param sim
-	 * @return
+	 * @param sim is the similarity to set, not applied if uniqueIndex is yet created
+	 * @return Index 
 	 */
 	public static Index getIndex(Similarity sim) {
-		simUsed = sim;
 		if(uniqueIndex == null) {
+			simUsed = sim;
 			uniqueIndex = new Index();
 		}
 		return uniqueIndex;
 	}
 	
-	/** startIndex()
+	/**
 	 * A method used to allocate all tools of the Index. To change similarity, index has to be re-initialized.
 	 */
 	private void startIndex() {
@@ -101,10 +102,12 @@ public class Index{
 		}
 	}
 	
-	/** setSimilarity(Similarity sim, boolean reload)
+	/**
 	 * To change similarity used by an index, this has to be re-initialized, losing its content. To prevent this,
 	 * reload can be set to true, saving content of index in a temporary Index (tempIndex) and reloading them after
 	 * re-initializing. This is done only if similarity of index is different by the passed one.
+	 * @param sim is the similarity to set
+	 * @param reload is a boolean to save index in a temporary save and reload it's content after reset
 	 */
 	public void setSimilarity(Similarity sim, boolean reload) {
 		if(simUsed.getClass() != sim.getClass()) {
@@ -119,7 +122,7 @@ public class Index{
 		}
 	}
 	
-	/** resetIndex()
+	/**
 	 * This method removes the previous index and closes its tools. 
 	 * Then it makes a new Index, reallocating new tools.
 	 * This is the fastest and easiest way to "clear" totally an index from its entries.
@@ -129,7 +132,7 @@ public class Index{
 		startIndex();
 	}
 	
-	/** closeIndex()
+	/**
 	 * This method close tools that are closable.
 	 */
 	private void closeIndex() {
@@ -152,8 +155,9 @@ public class Index{
 		}
 	}
 	
-	/** saveIndex(String saveFile)
+	/**
 	 * This method write all documents path to the target file, as clear text.
+	 * @param saveFile is the path of the saveFile (plain text) to load (each line is the path to the document)
 	 */
 	public void saveIndex(String saveFile) {
 		if (getSize() == 0 && !saveFile.equals("tempIndex.ser")) {
@@ -178,8 +182,10 @@ public class Index{
 		System.out.println("Saving successful to " + saveFile + "!");
 	}
 	
-	/** loadIndex(String saveFile)
+	/**
 	 * This method, contrary to saveIndex, load documents in Index by a save file that contains a list of them.
+	 * It doesn't overwrite index content, only adds documents to index.
+	 * @param saveFile is the file containing documents to be loaded.
 	 */
 	public void loadIndex(String saveFile) {
 		System.out.println("Loading from " + saveFile);
@@ -211,7 +217,7 @@ public class Index{
 	}
 	
 	
-	/** addDocument(String docPath)
+	/**
 	 * This method is used to create and to add a document to the index.
 	 * @param docPath is a concatenation of path and name of a document (for example "doc/Lucene.pdf")
 	 */
@@ -276,8 +282,10 @@ public class Index{
 		}
 	}
 	
-	/** getDocument(int index)
+	/**
 	 * Returns a document giving corresponding index.
+	 * @param index of the document to return
+	 * @return document object from index
 	 */
 	public Document getDocument(int index) {
 		Document doc = null;
@@ -289,8 +297,9 @@ public class Index{
 		return doc;
 	}
 	
-	/** removeDocument(int index)
+	/**
 	 * This method removes a document from the index, given its position into the index
+	 * @param index is index of document to remove
 	 */
 	public void removeDocument(int index) {
 		try {
@@ -301,16 +310,22 @@ public class Index{
 		}
 	}
 	
-	/** getSize()
-	 * returns number of documents stored in index
+	/**
+	 * Returns the number of documents stored in index.
+	 * @return size of the index
 	 */
 	public int getSize() {
 		return inWriter.numDocs();
 	}
 	
-	/** submitQuery(String query, LinkedList<String> fields, Model m, boolean print)
+	/**
 	 * This method requires a string representing user query, a LinkedList of Strings containing fields
 	 * in which searching, the Model instance used to parse query, a boolean print to get query and results to be printed or not
+	 * @param query is the query String
+	 * @param fields are fields on which search
+	 * @param m is the model to use for parsing query
+	 * @param print allows query and results printing
+	 * @return a list of "Hit", where Hit is a custom class that contains a document and its score for that query	 
 	 */
 	public LinkedList<Hit> submitQuery(String query, LinkedList<String> fields, Model m, boolean print) {
 		

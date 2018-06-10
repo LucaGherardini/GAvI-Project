@@ -333,11 +333,13 @@ public class Main_Window {
 		Help.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				 				   
-				JOptionPane.showMessageDialog(frame,	"Boolean Model: Using of Logic Operators (AND, OR, NOT) \"(Lucene OR Information Retrieval) AND Boolean Model\" \n"
-													+	"Fuzzy Model: More flexible than Boolean Model, using of Edit Distance\n"
-													+	"Vector Space Model: Based on a Vector representation of query and documents\n"
+				JOptionPane.showMessageDialog(frame,	"Boolean Model: Using of Logic Operators (AND, OR, NOT), boosts, ... (\"(Lucene OR (Information Retrieval)^1.5) AND Boolean Model\") \" \n"
+													+	"Fuzzy Model: More flexible than Boolean Model (N.B. Edit distance is used activating \"Edit Distance\"\n"
+													+	"Vector Space Model: Based on a Vector representation of query and documents, very elastic on natural language queries. Ranking based on tf-idf\n"
 													+ 	"Probabilistic(BM25): Use of BM25 ranking function to retrieve documents given a query\n\n"
-													+ 	"Query composition: You can declare in which fields search (name or content) writing field name in query \"name:Salomè content:Give me Iokanaan's head\"");
+													+ 	"Query composition: You can declare in which fields searching (name or content) writing field name in query\n"
+													+   "\"name:Salomè content:Give me Iokanaan's head\" --> Salomè (Oscar Wilde) \n"
+													+   "Use of WildCards is allowed, but not as first characters (Lucene parsing)");
 			}
 		});
 		

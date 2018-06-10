@@ -4,12 +4,12 @@
 
 # Structure 
 
-#### doc: a place for presentation/documentation files, developed in LaTex, docgen tool and/or PPT/PDF format
+#### doc: a place for documentation files
 
 #### media: where all media files (logo, screenshots, ...) are stored
 
-#### src: where source files will be stored
+#### src: where source files are be stored
 
-#### other: this folder is intended to contain all that not fit other categories
+#### other: this folder is intended to contain all that not fit other categories (generically, some text files for debug)
 
 N.B.: all of the above folders/categories could contain sub-folders/sub-categories (for example packages to split java source files)

@@ -380,8 +380,19 @@ public class Main_Window {
 	//remove files selected 
 	remove.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
+				
+				
+				for(int i=0;i<tableModel.getRowCount();i++) {
+					
+				for(int j=0;j<generalIndex.getSize();j++) {
+					
+				if(generalIndex.getDocument(j).get("name").equals(fileTable.getValueAt(fileTable.getSelectedRow(), 0))==true) {
+					generalIndex.removeDocument(j);
+				}
+				
+	}
+				}
 				tableModel.removeRow(fileTable.getSelectedRow());
-				//generalIndex.removeDocument(fileTable.getSelectedRow());
 			}
 	});
 		

@@ -91,9 +91,9 @@ public class Main_Window {
 		frame = new JFrame();
 		
 		//frame.getContentPane().setBackground(Color.gray);
-		try {
-			frame.setContentPane(new JLabel(new ImageIcon(ImageIO.read(new File("media/icons/wallpaper.png")))));
-		} catch (IOException e) {};
+		Dimension screenResolution = Toolkit.getDefaultToolkit().getScreenSize();
+		ImageIcon wallpaper  = new ImageIcon(new ImageIcon("media/icons/wallpaper.png").getImage().getScaledInstance(screenResolution.width, screenResolution.height, 0));
+		frame.setContentPane(new JLabel(wallpaper));;
 		frame.setSize(1200, 800);
 		frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -178,9 +178,7 @@ public class Main_Window {
 		//table to view files adding
 		fileTable = new JTable();
 		fileTable.setBounds(753, 183, 359, 540);
-		DefaultTableModel tableModel=(DefaultTableModel) fileTable.getModel();	
-		//scrollPane= new JScrollPane(fileTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		//fileTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		DefaultTableModel tableModel=(DefaultTableModel) fileTable.getModel();
 		frame.getContentPane().add(fileTable);
 		
 		//box of button to optimizations
@@ -231,20 +229,17 @@ public class Main_Window {
 		//prova
 		JFrame waitPane=new JFrame("Please Wait --->  Benchmark is working...");
 		waitPane.setSize(400,100);
-		Dimension screenSize = Toolkit.getDefaultToolkit ( ).getScreenSize ( );
+		Dimension screenSize = Toolkit.getDefaultToolkit ( ).getScreenSize();
 
 		waitPane.setLocation ( ( screenSize.width / 2 ) - ( waitPane.getWidth ( ) / 2 ), (screenSize.height / 2 ) - ( waitPane.getHeight ( ) / 2 ) );
 		waitPane.getContentPane().setLayout(null);
-		//waitPane.setVisible(true);
 		waitPane.setAlwaysOnTop(true);
 		waitPane.setEnabled(false);
 		
 		
 		JLabel lblBenchemarkIsWorking = new JLabel("Benchmark is working...");
-		//lblBenchemarkIsWorking.setFont(new Font("Verdana", Font.PLAIN, 15));
 		lblBenchemarkIsWorking.setBounds(89, 23, 205, 27);
 		waitPane.getContentPane().add(lblBenchemarkIsWorking);
-		System.out.println("Benchmark is working...");
 					
 		//frame Chronology
 		JFrame ChronoPane=new JFrame("Chronology");

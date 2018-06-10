@@ -90,14 +90,14 @@ public class Main_Window {
 		
 		frame = new JFrame();
 		
-<<<<<<< HEAD
+
 		frame.getContentPane().setBackground(Color.GRAY);
-=======
+
 		//frame.getContentPane().setBackground(Color.gray);
 		try {
 			frame.setContentPane(new JLabel(new ImageIcon(ImageIO.read(new File("media/icons/wallpaper.png")))));
 		} catch (IOException e) {};
->>>>>>> 8323826812acdc1fa1afeed277cf996ec836dce6
+
 		frame.setSize(1200, 800);
 		frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -248,11 +248,11 @@ public class Main_Window {
 		//lblBenchemarkIsWorking.setFont(new Font("Verdana", Font.PLAIN, 15));
 		lblBenchemarkIsWorking.setBounds(89, 23, 205, 27);
 		waitPane.getContentPane().add(lblBenchemarkIsWorking);
-<<<<<<< HEAD
+
 		//System.out.println("Benchemark is working ....");
-=======
+
 		System.out.println("Benchmark is working...");
->>>>>>> 8323826812acdc1fa1afeed277cf996ec836dce6
+
 					
 		//frame Chronology
 		JFrame ChronoPane=new JFrame("Chronology");

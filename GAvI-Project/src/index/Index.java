@@ -7,6 +7,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
+
+import javax.swing.table.DefaultTableModel;
+
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -258,6 +261,7 @@ public class Index{
 		}
 		
 		String name = docPath.substring(separatorIndex+1, docPath.length());
+		
 		/*
 		 * Document properties are stored into Document type.
 		 * @warning path field is not intended to be used for queries
@@ -266,19 +270,29 @@ public class Index{
 		doc.add(new TextField("name", name, Field.Store.YES));
 		doc.add(new TextField("content", content, Field.Store.YES));
 		
-		try {
-			inWriter.addDocument(doc);
-		} catch (IOException e) {
-			e.printStackTrace();
+		boolean inIndex = false;
+		for(int i=0; i<getSize(); i++) {
+			if( (getDocument(i).get("path")+getDocument(i).get("name")).equals(path+name)){
+				inIndex=true;
+				break;
+			}
 		}
-		
-		/*
-		 * This updates indexReader because index has been modified (a new document has been added to it)
-		 */
-		try {
-			inReader = DirectoryReader.openIfChanged((DirectoryReader) inReader);
-		} catch (IOException e) {
-			e.printStackTrace();
+		// If inIndex is false, means that the file is not in index, so it is added to index
+		if(!inIndex) {
+			try {
+				inWriter.addDocument(doc);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+				
+			/*
+			 * This updates indexReader because index has been modified (a new document has been added to it)
+			 */
+			try {
+				inReader = DirectoryReader.openIfChanged((DirectoryReader) inReader);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	

@@ -11,8 +11,6 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import com.sun.prism.Image;
-
 public class Paint_Graphics  extends JFrame{
 	
 	/**

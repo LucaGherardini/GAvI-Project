@@ -347,33 +347,30 @@ public class Main_Window {
 				fileC.showOpenDialog(frame);
 				
 							
-				File filesSelected[] = fileC.getSelectedFiles();   			
-				LinkedList<String> paths = new LinkedList<String>();
+				File filesSelected[] = fileC.getSelectedFiles();
 				
 				for (File doc : filesSelected) {
 					
 					if(doc.isDirectory()) {
 						subfolders(doc,tableModel);
-				        }
-				        												
+				    }
+				        						
+					// Check that file is not yet in index
 					if(doc.getAbsolutePath().endsWith(".txt")) {
-					generalIndex.addDocument(doc.getAbsolutePath());
-					int separatorIndex = doc.getPath().lastIndexOf(File.separator);
-					String path = "";
-					if (separatorIndex != -1) {
-						path = doc.getPath().substring(0, separatorIndex+1);
-					}
+						boolean inIndex = false;
+						for(int i=0; i<generalIndex.getSize(); i++) {
+							if( (generalIndex.getDocument(i).get("path")+generalIndex.getDocument(i).get("name")).equals(doc.getAbsolutePath())){
+								inIndex=true;
+								break;
+							}
+						}
+						// If inIndex is false, means that the file is not in index, so it is added to index and table
+						if(!inIndex) {
+							generalIndex.addDocument(doc.getAbsolutePath());
 										
-					if(!paths.contains(path)){
-						paths.add(path);
-						tableModel.setRowCount(tableModel.getRowCount()+1);
-						tableModel.setValueAt(path, tableModel.getRowCount()-1, 0);
-						
-						
-					}
-					tableModel.setRowCount(tableModel.getRowCount()+1);
-					tableModel.setValueAt("..." + doc.getPath().substring(separatorIndex+1, doc.getPath().length()), tableModel.getRowCount()-1, 0);
-					
+							tableModel.setRowCount(tableModel.getRowCount()+1);
+							tableModel.setValueAt(doc.getPath(), tableModel.getRowCount()-1, 0);
+						}
 					}
 					
 				}
@@ -390,7 +387,7 @@ public class Main_Window {
 					
 				for(int j=0;j<generalIndex.getSize();j++) {
 					
-				if(generalIndex.getDocument(j).get("name").equals(fileTable.getValueAt(fileTable.getSelectedRow(), 0))==true) {
+				if( (generalIndex.getDocument(j).get("path")+generalIndex.getDocument(j).get("name")).equals(fileTable.getValueAt(fileTable.getSelectedRow(), 0))) {
 					generalIndex.removeDocument(j);
 				}
 				

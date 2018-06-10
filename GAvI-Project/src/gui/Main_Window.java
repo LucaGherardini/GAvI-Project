@@ -105,6 +105,7 @@ public class Main_Window {
 		
 		// label Project's name
 		JLabel title = new JLabel("GOOD SEARCH");
+		title.setForeground(Color.WHITE);
 		title.setFont(new Font("Verdana", Font.BOLD, 19));
 		title.setBounds(173, 113, 192, 25);
 		frame.getContentPane().add(title);
@@ -210,13 +211,15 @@ public class Main_Window {
 		
 		//some label to define tables
 		JLabel lblResults = new JLabel("RESULTS");
+		lblResults.setForeground(Color.WHITE);
 		lblResults.setFont(new Font("Verdana", Font.BOLD, 17));
-		lblResults.setBounds(70, 204, 108, 14);
+		lblResults.setBounds((418)/2+20, 204, 108, 14);
 		frame.getContentPane().add(lblResults);
 		
 		JLabel lblDocumnets = new JLabel("Documents");
+		lblDocumnets.setForeground(Color.WHITE);
 		lblDocumnets.setFont(new Font("Verdana", Font.BOLD, 17));
-		lblDocumnets.setBounds(753, 147, 156, 25);
+		lblDocumnets.setBounds(753+ 359/2 -45, 147, 156, 25);
 		frame.getContentPane().add(lblDocumnets);
 		
 		//button chronology

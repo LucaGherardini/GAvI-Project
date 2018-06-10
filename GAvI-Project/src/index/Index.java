@@ -270,29 +270,19 @@ public class Index{
 		doc.add(new TextField("name", name, Field.Store.YES));
 		doc.add(new TextField("content", content, Field.Store.YES));
 		
-		boolean inIndex = false;
-		for(int i=0; i<getSize(); i++) {
-			if( (getDocument(i).get("path")+getDocument(i).get("name")).equals(path+name)){
-				inIndex=true;
-				break;
-			}
+		try {
+			inWriter.addDocument(doc);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		// If inIndex is false, means that the file is not in index, so it is added to index
-		if(!inIndex) {
-			try {
-				inWriter.addDocument(doc);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
 				
-			/*
-			 * This updates indexReader because index has been modified (a new document has been added to it)
-			 */
-			try {
-				inReader = DirectoryReader.openIfChanged((DirectoryReader) inReader);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		/*
+		 * This updates indexReader because index has been modified (a new document has been added to it)
+		 */
+		try {
+			inReader = DirectoryReader.openIfChanged((DirectoryReader) inReader);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	

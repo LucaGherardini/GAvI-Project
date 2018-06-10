@@ -396,9 +396,7 @@ public class Main_Window {
 	// Delete All Row in the table "Documents"
 	delete.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
-			for(int i=0;i<generalIndex.getSize();i++) {
-				generalIndex.removeDocument(i);
-			}
+			generalIndex.resetIndex();
 			tableModel.setRowCount(0);
 			}
 		});
@@ -449,7 +447,6 @@ public class Main_Window {
 				File file[]=fileC.getSelectedFiles();
 				if(file.length==1) {
 			       System.out.println(file[0].getAbsolutePath());
-			       generalIndex.loadIndex(file[0].getAbsolutePath());
 			       
 			       BufferedReader reader = null;
 					
@@ -465,6 +462,7 @@ public class Main_Window {
 					
 					int i=0;
 					try {
+						File f = null;
 						while((line = reader.readLine()) != null) {
 							tableModel.setRowCount(i+1);
 							content = line;
@@ -472,6 +470,8 @@ public class Main_Window {
 							tableModel.setValueAt(content, i, 0);
 							i++;
 							content="";
+							f = new File(line);
+							checkFile(f, tableModel);
 						}
 					}catch(Exception e) {
 						e.printStackTrace();
@@ -487,7 +487,7 @@ public class Main_Window {
 		
 	});
 	
-	//Save index on tempIndex.ser
+	//Save index
 	btnSaveIndex.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			
@@ -505,14 +505,7 @@ public class Main_Window {
 			    
 			    try {
 					fileToSave.createNewFile();
-					generalIndex.saveIndex(fileToSave.getAbsolutePath());
-					
-					/*PrintWriter p=new PrintWriter(fileToSave);
-					for(int i=0;tableModel.getRowCount()>i;i++) {
-					p.print(tableModel.getValueAt(i, 0));
-					p.println("\n");}
-					p.close();*/
-					
+					generalIndex.saveIndex(fileToSave.getAbsolutePath());					
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -610,65 +603,39 @@ public class Main_Window {
 	public void subfolders (File Directory,DefaultTableModel tableModel) {
 		
 		File files[];
-		LinkedList<String> paths = new LinkedList<String>();
-								
+		
 		files=Directory.listFiles();
 		
-				for (File f : files) {
-								if(f.isDirectory())	{
-									int reply = JOptionPane.showConfirmDialog(null,"Do you want add all subfolders of :  "+ f.getPath() + "?", "Attention", JOptionPane.YES_NO_OPTION);
-							        if (reply == JOptionPane.YES_OPTION) {
-							         this.subfolders(f, tableModel);
-									
-								}
-								}
-					if(f.getAbsolutePath().endsWith(".txt")) {
-						generalIndex.addDocument(f.getAbsolutePath());
-						int separatorIndex = f.getPath().lastIndexOf(File.separator);
-						String path = "";
-						if (separatorIndex != -1) {
-							path = f.getPath().substring(0, separatorIndex+1);
-							
-							}
-						if(!paths.contains(path)){
-							paths.add(path);
-							tableModel.setRowCount(tableModel.getRowCount()+1);
-							tableModel.setValueAt(path, tableModel.getRowCount()-1, 0);
-							
-							//System.out.println("\n" + paths.getLast());
-							
-							}
-						tableModel.setRowCount(tableModel.getRowCount()+1);
-						tableModel.setValueAt("..." + f.getPath().substring(separatorIndex+1, f.getPath().length()), tableModel.getRowCount()-1, 0);
-						
+			for (File f : files) {
+				if(f.isDirectory())	{
+					int reply = JOptionPane.showConfirmDialog(null,"Do you want add all subfolders of :  "+ f.getPath() + "?", "Attention", JOptionPane.YES_NO_OPTION);
+				    if (reply == JOptionPane.YES_OPTION) {
+				    	this.subfolders(f, tableModel);
 					}
-					
+				}
+				if(f.getAbsolutePath().endsWith(".txt")) {
+					checkFile(f, tableModel);
+				}
 			}
-					 
 				
 			if(Directory.getAbsolutePath().endsWith(".txt")) {
-			int separatorIndex = Directory.getPath().lastIndexOf(File.separator);
-			String path = "";
-			if (separatorIndex != -1) {
-				path = Directory.getPath().substring(0, separatorIndex+1);
+				checkFile(Directory, tableModel);
+			}			
+	}
+	
+	public void checkFile(File f, DefaultTableModel tableModel) {
+		boolean inIndex = false;
+		for(int i=0; i<generalIndex.getSize(); i++) {
+			if( (generalIndex.getDocument(i).get("path")+generalIndex.getDocument(i).get("name")).equals(f.getAbsolutePath())){
+				inIndex=true;
+				break;
 			}
-			
-			
-			if(!paths.contains(path)){
-				paths.add(path);
-				tableModel.setRowCount(tableModel.getRowCount()+1);
-				tableModel.setValueAt(path, tableModel.getRowCount()-1, 0);
-				
-				//System.out.println("\n" + paths.getLast());
-				
-			}
-			tableModel.setRowCount(tableModel.getRowCount()+1);
-			tableModel.setValueAt("..." + Directory.getPath().substring(separatorIndex+1, Directory.getPath().length()), tableModel.getRowCount()-1, 0);
-			
 		}
-		
-		
-		
-		
+		// If inIndex is false, means that the file is not in index, so it is added to index
+		if(!inIndex) {
+			generalIndex.addDocument(f.getAbsolutePath());
+			tableModel.setRowCount(tableModel.getRowCount()+1);
+			tableModel.setValueAt(f.getAbsolutePath(), tableModel.getRowCount()-1, 0);
+		}
 	}
 }

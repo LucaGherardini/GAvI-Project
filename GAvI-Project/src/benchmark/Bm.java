@@ -211,7 +211,7 @@ public class Bm {
 				results.add(indRes.getDocName().substring(0, indRes.getDocName().lastIndexOf(".")));
 			}
 			System.out.println("Results for query " + query_num + ": " + results.toString());
-			System.out.println("*****");
+			System.out.print("******************************************\n");
 			query_num++;
 			documentsRetrieved.add(results);
 		}

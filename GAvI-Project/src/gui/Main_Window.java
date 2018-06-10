@@ -89,7 +89,7 @@ public class Main_Window {
 		
 		frame = new JFrame();
 		
-		frame.getContentPane().setBackground(Color.gray);
+		frame.getContentPane().setBackground(Color.GRAY);
 		frame.setSize(1200, 800);
 		frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -240,7 +240,7 @@ public class Main_Window {
 		lblBenchemarkIsWorking.setFont(new Font("Verdana", Font.PLAIN, 15));
 		lblBenchemarkIsWorking.setBounds(89, 23, 205, 27);
 		waitPane.getContentPane().add(lblBenchemarkIsWorking);
-		System.out.println("Benchemark is working ....");
+		//System.out.println("Benchemark is working ....");
 					
 		//frame Chronology
 		JFrame ChronoPane=new JFrame("Chronology");
@@ -570,6 +570,12 @@ public class Main_Window {
 					}	
 					
 					waitPane.setVisible(false);
+					int reply1 =JOptionPane.showConfirmDialog(null,"Do you want show the resultes of Benchmark?", "Attention", JOptionPane.YES_NO_OPTION);
+					
+					
+					if(reply1==JOptionPane.YES_OPTION) {
+						// Grafici
+					}
 				
 			}
 			

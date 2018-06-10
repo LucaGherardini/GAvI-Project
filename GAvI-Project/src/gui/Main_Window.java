@@ -267,8 +267,7 @@ public class Main_Window {
 					
 					editdistance=checkEditDistance(editDistanceText.getText());
 					System.out.println(editdistance);
-				}
-				else {
+				}else {
 					editdistance=0;
 				}
 	  
@@ -573,7 +572,7 @@ public class Main_Window {
 					}	
 					
 					waitPane.setVisible(false);
-					int reply1 =JOptionPane.showConfirmDialog(null,"Do you want show the resultes of Benchmark?", "Attention", JOptionPane.YES_NO_OPTION);
+					int reply1 =JOptionPane.showConfirmDialog(null,"Do you want to see the results of Benchmark?", "Attention", JOptionPane.YES_NO_OPTION);
 					
 					
 					if(reply1==JOptionPane.YES_OPTION) {

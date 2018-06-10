@@ -65,6 +65,7 @@ public class VectorSpaceModel extends Model{
 	 * @see irModels.Model#getSimilarity()
 	 */
 	public Similarity getSimilarity() {
+		//Classic similarity is tf-idf similarity
 		return new ClassicSimilarity();
 	}
 

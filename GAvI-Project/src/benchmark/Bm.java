@@ -13,6 +13,7 @@ import index.Hit;
 import index.Index;
 import irModels.FuzzyModel;
 import irModels.Model;
+import irModels.VectorSpaceModel;
 import plot.Plot;
 import plot.Plot.Line;
 
@@ -44,7 +45,8 @@ public class Bm {
 		this.queryFile = queryFile;
 		this.docExpected = docExpected;
 
-		this.generalIndex = Index.getIndex(model.getSimilarity());
+		this.generalIndex = Index.getIndex();
+		this.generalIndex.setSimilarity(model.getSimilarity(), false);
 
 		ll = new LinkedList<String>();
 		ll.add("name");

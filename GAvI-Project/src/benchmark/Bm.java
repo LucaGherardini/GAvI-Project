@@ -52,12 +52,11 @@ public class Bm {
 	}
 
 	/**
-	 * This is the main method. 
-	 * This method perform the benchmark.
+	 * This method performs the LISA benchmark.
 	 * Documents are added in the index.
-	 * Array with expected documents is created. (Documents that should be retrived)
- 	 * Array with retrived documents is created. (Documents that are retrived)
- 	 * Array with intersection between expected and retrived documents is created. (For calculating precision and recall)
+	 * Array with expected documents is created. (Documents that should be retrieved)
+ 	 * Array with retrieved documents is created. (Documents that are retrieved)
+ 	 * Array with intersection between expected and retrieved documents is created. (For calculating precision and recall)
 	 */
 	public void executeBenchmark() {
 
@@ -89,7 +88,7 @@ public class Bm {
 
 	/**
 	 * This method read query from lisa.que
-	 * Queries are divide each other with a '#', so every query ends up with that. 
+	 * Queries are split with '#', so every query ends up with that terminator. 
 	 * @return list of query
 	 */
 	public ArrayList<String> readQueries() {
@@ -126,7 +125,7 @@ public class Bm {
 	}
 
 	/**
-	 * Load documents to retrival in to the index.
+	 * Load documents to retrieve into the index.
 	 * Read every line of file (a line = a document) and add it to the index
 	 */
 	private void loadIndex(){
@@ -194,7 +193,7 @@ public class Bm {
 	}
 
 	/**
-	 * This method retrive documents, so it performs benchmark.
+	 * This method retrieve documents, passing queries from benchmark.
 	 * @param queries list of queries
 	 * @return
 	 */
@@ -220,10 +219,10 @@ public class Bm {
 	}
 
 	/**
-	 * Do intersection beetwen expected documents and retrived documents.
+	 * Do intersection between expected documents and retrieved documents.
 	 * @param expectedDocuments
 	 * @param retrievedDocuments
-	 * @return list of interesction
+	 * @return list of intersection
 	 */
 	private ArrayList<LinkedList<String>> getIntersection(ArrayList<LinkedList<String>> expectedDocuments, ArrayList<LinkedList<String>> retrievedDocuments){
 		ArrayList<LinkedList<String>> intersect = new ArrayList<LinkedList<String>>();
@@ -313,7 +312,7 @@ public class Bm {
 	}
 	
 	/**
-	 * Calculate recall
+	 * Calculate F-measure
 	 * @param precision list of precision for every query
 	 * @param recall list of recall for every query
 	 * @return f-measure
@@ -345,7 +344,7 @@ public class Bm {
 	
 	/**
 	 * Save measure (f or e) on a file. 
-	 * @param measure mesure to save
+	 * @param measure measure to save
 	 * @param fileName file name
 	 */
 	public void saveMeasure(ArrayList<Double> measure, String fileName) {
@@ -400,8 +399,10 @@ public class Bm {
 		System.out.println("Recall: "+bench.recall);
 		System.out.println("********************************");
 		
-		/*
-		ArrayList<Double> num_queries = new ArrayList<>();
+		
+		ArrayList<Double> num_queries = new ArrayList<Double>();
+		
+		
 		for (int i = 0; i < bench.precision.size(); i++) {
 			num_queries.add(i + 0.0);
 		}
@@ -440,20 +441,20 @@ public class Bm {
 								color(Color.BLUE).markerColor(Color.BLUE));
 			plot.save("recall", "png");
 			
-			for (int i = 0; i < recall.size(); i++) {
+			for (int i = 0; i < bench.recall.size(); i++) {
 				plot = Plot.plot(Plot.plotOpts().
 						title("Precision - Recall Query "+(i+1)).
 						width(1000).
 						height(600).
 						legend(Plot.LegendFormat.TOP)).	
 					xAxis("Recall", Plot.axisOpts().
-						range(0, getMax(recall.get(i)))).
+						range(0, getMax(bench.recall))).
 					yAxis("Precision", Plot.axisOpts().
-						range(0, getMax(precision.get(i)))).
+						range(0, getMax(bench.precision))).
 					series("f1", Plot.data().
-						xy(recall.get(i).get(0), precision.get(i).get(0)).
-						xy(recall.get(i).get(1), precision.get(i).get(1)).
-						xy(recall.get(i).get(2), precision.get(i).get(2)),
+						xy(bench.recall.get(i), bench.precision.get(i)).
+						xy(bench.recall.get(i), bench.precision.get(i)).
+						xy(bench.recall.get(i), bench.precision.get(i)),
 						Plot.seriesOpts().
 							lineWidth(3).
 							marker(Plot.Marker.NONE).
@@ -465,11 +466,11 @@ public class Bm {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		*/
+		//
 	}
 
 
-	/*
+	
 
 	public ArrayList<ArrayList<Double>> getRecall() {
 		int lvl33;
@@ -532,6 +533,6 @@ public class Bm {
 		return intersect;
 	}
 	
-	 */
+	 //
 	
 }

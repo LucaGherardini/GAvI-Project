@@ -220,23 +220,27 @@ public class Main_Window {
 		frame.getContentPane().add(btnChronology);
 		
 		JButton btnBenchmark = new JButton("Benchmark");
-		btnBenchmark.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				int reply =JOptionPane.showConfirmDialog(null,"Do you want launch Lisa's Benchmark ?", "Attention", JOptionPane.YES_NO_OPTION);
-				//aggiungi il file nella tabella documenti
-				
-				if(reply==JOptionPane.YES_OPTION) {
-					
-					//Bm benchmark=new Bm(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
-				}
-				
-			}
-		});
 		btnBenchmark.setBounds(542, 10, 130, 23);
 		frame.getContentPane().add(btnBenchmark);
 		
 	
+		//prova
+		JFrame waitPane=new JFrame("Plase Wait --->  Benchemark is working ....");
+		waitPane.setSize(400,100);
+		Dimension screenSize = Toolkit.getDefaultToolkit ( ).getScreenSize ( );
+
+		waitPane.setLocation ( ( screenSize.width / 2 ) - ( waitPane.getWidth ( ) / 2 ), (screenSize.height / 2 ) - ( waitPane.getHeight ( ) / 2 ) );
+		waitPane.getContentPane().setLayout(null);
+		//waitPane.setVisible(true);
+		waitPane.setAlwaysOnTop(true);
+		waitPane.setEnabled(false);
 		
+		
+		JLabel lblBenchemarkIsWorking = new JLabel("Benchemark is working ....");
+		lblBenchemarkIsWorking.setFont(new Font("Verdana", Font.PLAIN, 15));
+		lblBenchemarkIsWorking.setBounds(89, 23, 205, 27);
+		waitPane.getContentPane().add(lblBenchemarkIsWorking);
+		System.out.println("Benchemark is working ....");
 					
 		//frame Chronology
 		JFrame ChronoPane=new JFrame("Chronology");
@@ -437,7 +441,7 @@ public class Main_Window {
 			
 			JFileChooser fileC=new JFileChooser();
 			
-			fileC.setMultiSelectionEnabled(false);
+			fileC.setMultiSelectionEnabled(true);
 			fileC.setDialogTitle("Choose the file to load ");
 			fileC.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			fileC.showOpenDialog(frame);
@@ -530,12 +534,16 @@ public class Main_Window {
 	btnBenchmark.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
 			int reply =JOptionPane.showConfirmDialog(null,"Do you want launch Lisa's Benchmark ?", "Attention", JOptionPane.YES_NO_OPTION);
-			//aggiungi il file nella tabella documenti
+			
 			
 			if(reply==JOptionPane.YES_OPTION) {
 				
+				
+				waitPane.setVisible(true);
+				
 				 Model modelUsed=null;
 				 Bm benchmark=null;
+				 
 					if(modelbox.getSelectedItem()=="Boolean Model") {
 						System.out.println("Boolean");
 						modelUsed = new BooleanModel();
@@ -565,6 +573,7 @@ public class Main_Window {
 						 benchmark.executeBenchmark();
 					}	
 					
+					waitPane.setVisible(false);
 				
 			}
 			

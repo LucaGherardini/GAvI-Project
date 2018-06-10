@@ -6,6 +6,7 @@ import java.awt.Insets;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 import benchmark.Bm;
@@ -421,13 +422,15 @@ public class Main_Window {
 	//load index
 	btnloadIndex.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
-			FileReader fileReader=null;
+			
 			JFileChooser fileC=new JFileChooser();
-			fileC.setMultiSelectionEnabled(true);
+			
+			fileC.setMultiSelectionEnabled(false);
+			fileC.setDialogTitle("Choose the file to load ");
 			fileC.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			fileC.showOpenDialog(frame);
-			fileC.getSelectedFile();
-			BufferedReader buffer = null;
+			
+			
 			
 			int reply =JOptionPane.showConfirmDialog(null,"Do you want load :"+ fileC.getSelectedFile()+ "?", "Attention", JOptionPane.YES_NO_OPTION);
 			//aggiungi il file nella tabella documenti
@@ -480,8 +483,11 @@ public class Main_Window {
 		public void actionPerformed(ActionEvent e) {
 			
 			JFileChooser fileSave = new JFileChooser();
+			
 			 fileSave.setDialogTitle("Specify a file to save");   
-			 
+			 FileNameExtensionFilter filter = new FileNameExtensionFilter("Text File","txt");
+	        fileSave.setFileFilter(filter);
+	        
 			int userSelection =  fileSave.showSaveDialog(frame);
 			
 			if (userSelection == JFileChooser.APPROVE_OPTION) {

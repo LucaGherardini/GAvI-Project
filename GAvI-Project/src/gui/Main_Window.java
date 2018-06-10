@@ -544,6 +544,7 @@ public class Main_Window {
 						System.out.println("Fuzzy");
 						modelUsed = new FuzzyModel();
 						 benchmark=new Bm(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
+						 
 						 benchmark.executeBenchmark();
 					}	
 					

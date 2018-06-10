@@ -381,6 +381,7 @@ public class Main_Window {
 	remove.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
 				tableModel.removeRow(fileTable.getSelectedRow());
+				//generalIndex.removeDocument(fileTable.getSelectedRow());
 			}
 	});
 		

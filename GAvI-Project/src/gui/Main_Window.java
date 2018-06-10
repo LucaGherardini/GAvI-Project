@@ -317,7 +317,7 @@ public class Main_Window {
 				LinkedList<Hit> results = generalIndex.submitQuery(queryStr, fields, modelUsed, false);
 				if (results != null) {
 					for(Hit result : results) {
-						resultsModel.addRow(new Object[] {result.getDocPath()+result.getDocName(), result.getScore()});
+						resultsModel.addRow(new Object[] {result.getDocName(), result.getScore()});
 					}
 				}
 			}
@@ -400,8 +400,14 @@ public class Main_Window {
 	// Delete All Row in the table "Documents"
 	delete.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
+			int reply =JOptionPane.showConfirmDialog(null,"Do you want reset all indices?", "Attention", JOptionPane.YES_NO_OPTION);
+			
+			
+			if(reply==JOptionPane.YES_OPTION) {
+			
 			generalIndex.resetIndex();
 			tableModel.setRowCount(0);
+			}
 			}
 		});
 	

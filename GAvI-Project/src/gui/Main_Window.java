@@ -90,10 +90,16 @@ public class Main_Window {
 		
 		frame = new JFrame();
 		
+
+		frame.getContentPane().setBackground(Color.GRAY);
+
 		//frame.getContentPane().setBackground(Color.gray);
 		Dimension screenResolution = Toolkit.getDefaultToolkit().getScreenSize();
 		ImageIcon wallpaper  = new ImageIcon(new ImageIcon("media/icons/wallpaper.png").getImage().getScaledInstance(screenResolution.width, screenResolution.height, 0));
 		frame.setContentPane(new JLabel(wallpaper));;
+		try {
+			frame.setContentPane(new JLabel(new ImageIcon(ImageIO.read(new File("media/icons/wallpaper.png")))));
+		} catch (IOException e) {};
 		frame.setSize(1200, 800);
 		frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -240,6 +246,10 @@ public class Main_Window {
 		JLabel lblBenchemarkIsWorking = new JLabel("Benchmark is working...");
 		lblBenchemarkIsWorking.setBounds(89, 23, 205, 27);
 		waitPane.getContentPane().add(lblBenchemarkIsWorking);
+		//System.out.println("Benchemark is working ....");
+
+		System.out.println("Benchmark is working...");
+
 					
 		//frame Chronology
 		JFrame ChronoPane=new JFrame("Chronology");
@@ -569,6 +579,12 @@ public class Main_Window {
 					}	
 					
 					waitPane.setVisible(false);
+					int reply1 =JOptionPane.showConfirmDialog(null,"Do you want show the resultes of Benchmark?", "Attention", JOptionPane.YES_NO_OPTION);
+					
+					
+					if(reply1==JOptionPane.YES_OPTION) {
+						// Grafici
+					}
 				
 			}
 			

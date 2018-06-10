@@ -19,13 +19,13 @@ public class Paint_Graphics  extends JFrame{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	public Paint_Graphics() {
+	
+	public Paint_Graphics(String pathGraphic) {
 		//super("Test Panel");
 		this.setSize(800,800);
 
 		try { 
-		File file = new File("C:\\Users\\Utente\\Desktop\\screenshot","Cattura.PNG"); 
+		File file = new File(pathGraphic); 
 		BufferedImage image = ImageIO.read(file);
 		JLabel label = new JLabel(new ImageIcon(image));
 		JScrollPane pane = new JScrollPane(label);
@@ -41,7 +41,7 @@ public class Paint_Graphics  extends JFrame{
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		new  Paint_Graphics();
+		new  Paint_Graphics("C:\\Users\\Utente\\Desktop\\screenshot\\Cattura.PNG");
 	}
 
 }

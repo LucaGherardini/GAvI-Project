@@ -1,0 +1,15 @@
+Il caricamento dei documenti nell’indice sfrutta il metodo già creato nella classe che implementa il modello.
+I documenti di LISA inizialmente si presentano in un unico file, sono stati suddivisi in file singoli per poter effettuare il benchmark.
+
+Le query vengono parsate ed eseguite dal modello selezionato. Come per i documenti, le query si presentavano in un unico file che è stato suddiviso.
+
+I grafici che vengono effettuati sono sulla precision per i livelli standard (0.33, 0.66, 1.0) per ogni query, la R precision, la AVG precision e la recall per ogni query.
+
+Abbiamo scelto di mostrare all’utente solo la AVG-Precision per ogni livello standard, la R-precision per i valori di R = 5, 10, 15 che sono, grossomodo, i primi risultati osservati dagli utenti e la recall per ogni query.
+
+Le conclusioni osservabili dai dati del benchmark sono che il nostro sistema recupera quasi sempre tutti i risultati anche se, a volte, ne recupera anche molti non rilevanti.
+
+//Da mettere al posto del link a gnuplot
+http://yuriy-g.github.io/simple-java-plot/
+
+//Nella slide con le conclusioni inserire immagini recall.png e r-precision10.png

@@ -9,21 +9,28 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import org.apache.lucene.benchmark.byTask.Benchmark;
+
 import index.Hit;
 import index.Index;
+import irModels.FuzzyModel;
 import irModels.Model;
+import irModels.VectorSpaceModel;
 import plot.Plot;
 import plot.Plot.Line;
+import sun.applet.Main;
 
 public class IRBenchmark {
 
-	Model model;
-	String fileDocumentsPaths;
-	String queryFile;
-	String docExpected;
-	Index generalIndex;
-	LinkedList<String> ll;
+	//Attributi
+	Model model;	//Model on which execute benchmark
+	String fileDocumentsPaths;	//in this file, every line is a path of a document on which execute query
+	String queryFile;	//File LISA.QUE
+	String docExpected;	//File LISA.REL
+	Index generalIndex; //Index
+	LinkedList<String> ll; //List where to search (name, content)
 	
+	//Filled whene called executeBenchmark
 	ArrayList<LinkedList<String>> expectedDocuments = new ArrayList<LinkedList<String>>();
 	ArrayList<LinkedList<String>> retrivedDocuments = new ArrayList<LinkedList<String>>();
 	ArrayList<LinkedList<String>> intersect = new ArrayList<LinkedList<String>>();
@@ -71,7 +78,7 @@ public class IRBenchmark {
 		expectedDocuments = getExpectedDocuments();
 		retrivedDocuments = retrieveDocuments(queries);
 		intersect = getIntersection(expectedDocuments, retrivedDocuments);
-
+		
 		saveResults("resFuz.save", intersect);
 
 		precision = getPrecision(intersect, retrivedDocuments);
@@ -288,7 +295,6 @@ public class IRBenchmark {
 		return recall;
 	}
 
-
 	/**
 	 * Calculate precision
 	 * @param intersect intersection beetwen expected and retrived documents
@@ -312,30 +318,19 @@ public class IRBenchmark {
 	}
 
 	/**
-	 * Get recall for standard levels
+	 * Get recall standard levels
 	 * @return
 	 */
-	public ArrayList<ArrayList<Double>> getRecall() {
+	private ArrayList<Double> getRecallLevel() {
 		int lvl33;
 		int lvl66;
 		int lvl100;
 		
-		ArrayList<ArrayList<Double>> recall = new ArrayList<ArrayList<Double>>();
+		ArrayList<Double> recall = new ArrayList<Double>();
 		
-		ArrayList<Double> temp = new ArrayList<Double>();
-		
-		for (int i = 0; i < precision.size(); i++) {
-			lvl33 = retrivedDocuments.get(i).size()*33/100; //33% of size of retrived documents
-			lvl66 = retrivedDocuments.get(i).size()*66/100; //66% of size of retrived documents
-			lvl100 = retrivedDocuments.get(i).size(); //all retrived documents
-			
-			temp.add( ( (double) getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl33).size() / (double)lvl33 ) );
-			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl66).size() / (double) lvl66) );
-			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl100).size() / (double) lvl100) );
-			
-			recall.add(temp);
-			temp = new ArrayList<Double>();
-		}
+			recall.add(0.33);
+			recall.add(0.66);
+			recall.add(1.0);
 		
 		return recall;
 	}
@@ -345,6 +340,7 @@ public class IRBenchmark {
 	 * @return
 	 */
 	public ArrayList<ArrayList<Double>> getPrecision() {
+		int lvl0;
 		int lvl33;
 		int lvl66;
 		int lvl100;
@@ -354,13 +350,14 @@ public class IRBenchmark {
 		ArrayList<Double> temp = new ArrayList<Double>();
 		
 		for (int i = 0; i < this.precision.size(); i++) {
+			lvl0 = 0;
 			lvl33 = retrivedDocuments.get(i).size()*33/100;
 			lvl66 = retrivedDocuments.get(i).size()*66/100;
 			lvl100 = retrivedDocuments.get(i).size();
 			
-			temp.add( ( (double) getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl33).size() / (double) expectedDocuments.get(i).size()) );
-			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl66).size() / (double) expectedDocuments.get(i).size()) );
-			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl100).size() / (double) expectedDocuments.get(i).size()) );
+			temp.add( ( (double) getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl33).size() / (double) lvl33 ));
+			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl66).size() / (double) lvl66) );
+			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl100).size() / (double) lvl100 ) );
 			
 			precision.add(temp);
 			temp = new ArrayList<Double>();
@@ -368,7 +365,44 @@ public class IRBenchmark {
 		
 		return precision;
 	}
-	 
+
+	/**
+	 * Calculate R-Precision
+	 * @param level level R for R-Precision
+	 * @return value of r-precision for every query
+	 */
+	public ArrayList<Double> getRPrecision(int level) {
+		ArrayList<Double> rprec = new ArrayList<>();
+		
+		for (int i = 0; i < this.precision.size(); i++) {
+			int intersect = getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), level).size();
+			rprec.add( (double) intersect / (double) level );
+		}
+		
+		return rprec;
+	}
+	
+	/**
+	 * Get Average precision
+	 * @param precision precision by getPrecision()
+	 * @return avgprecision for every standard level
+	 */
+	public ArrayList<Double> getAvgPrecision(ArrayList<ArrayList<Double>> precision) {
+		ArrayList<Double> avgPrecision = new ArrayList<Double>();
+		ArrayList<Double> recallLevel = getRecallLevel();
+		double tmp = 0.0;
+		
+		for (int j = 0; j < recallLevel.size(); j++) {
+			for (int i = 0; i < this.precision.size(); i++) {
+				tmp += ( (double) precision.get(i).get(j) / (double) this.precision.size() );
+			}
+			avgPrecision.add(tmp);
+			tmp = 0;
+		}
+		
+		return avgPrecision;		
+	}
+	
 	/**
 	 * do intersection between two lists
 	 * @param expectedDocuments
@@ -440,10 +474,19 @@ public class IRBenchmark {
 	 * Procedure to do graph of benchmark
 	 */
 	public void doGraph() {
-		ArrayList<ArrayList<Double>> recall = getRecall();
+		
+		ArrayList<Double> recallLevel = getRecallLevel(); //recallLevel (0.33, 0.66, 1.0)
 		ArrayList<ArrayList<Double>> precision = getPrecision();
 		
+		//R-Precision for different values of R
+		ArrayList<Double> rprecision5 = getRPrecision(5);
+		ArrayList<Double> rprecision10 = getRPrecision(10);
+		ArrayList<Double> rprecision15 = getRPrecision(15);
+		
+		//Array range(0,num_queries) for plot these numbers
 		ArrayList<Double> num_queries = new ArrayList<Double>();
+		
+		ArrayList<Double> avgPrecision = getAvgPrecision(precision);
 		
 		for (int i = 0; i < this.precision.size(); i++) {
 			num_queries.add(i + 0.0);
@@ -451,6 +494,7 @@ public class IRBenchmark {
 		
 		try {
 			
+			//Precision
 			Plot plot = Plot.plot(Plot.plotOpts().
 					title("Precision graph").
 					width(1000).
@@ -468,6 +512,7 @@ public class IRBenchmark {
 								color(Color.BLUE).markerColor(Color.BLUE));
 			plot.save("benchmark/lisa/results/precision", "png");
 			
+			//Recall
 			plot = Plot.plot(Plot.plotOpts().
 					title("Recall graph").
 					width(1000).
@@ -485,9 +530,77 @@ public class IRBenchmark {
 								color(Color.BLUE).markerColor(Color.BLUE));
 			plot.save("benchmark/lisa/results/recall", "png");
 			
+			//R-Precision 5
+			plot = Plot.plot(Plot.plotOpts().
+					title("R-Precision 5").
+					width(1000).
+					height(600).
+					legend(Plot.LegendFormat.TOP)).	
+				xAxis("Query #", Plot.axisOpts().
+					format(Plot.AxisFormat.NUMBER_INT).
+					range(0, num_queries.size())).
+				yAxis("Precision", Plot.axisOpts().
+					range(0, getMax(rprecision5))).series(".", Plot.data().
+							xy(num_queries, rprecision5),
+							Plot.seriesOpts().
+								line(Line.NONE).
+								marker(Plot.Marker.COLUMN).
+								color(Color.BLUE).markerColor(Color.BLUE));
+			plot.save("benchmark/lisa/results/rprecision5", "png");
+			//R-Precision 10
+			plot = Plot.plot(Plot.plotOpts().
+					title("R-Precision 10").
+					width(1000).
+					height(600).
+					legend(Plot.LegendFormat.TOP)).	
+				xAxis("Query #", Plot.axisOpts().
+					format(Plot.AxisFormat.NUMBER_INT).
+					range(0, num_queries.size())).
+				yAxis("Precision", Plot.axisOpts().
+					range(0, getMax(rprecision10))).series(".", Plot.data().
+							xy(num_queries, rprecision10),
+							Plot.seriesOpts().
+								line(Line.NONE).
+								marker(Plot.Marker.COLUMN).
+								color(Color.BLUE).markerColor(Color.BLUE));
+			plot.save("benchmark/lisa/results/rprecision10", "png");
+			//R-Precision 15
+			plot = Plot.plot(Plot.plotOpts().
+					title("R-Precision 15").
+					width(1000).
+					height(600).
+					legend(Plot.LegendFormat.TOP)).	
+				xAxis("Query #", Plot.axisOpts().
+					format(Plot.AxisFormat.NUMBER_INT).
+					range(0, num_queries.size())).
+				yAxis("Precision", Plot.axisOpts().
+					range(0, getMax(rprecision15))).series(".", Plot.data().
+							xy(num_queries, rprecision15),
+							Plot.seriesOpts().
+								line(Line.NONE).
+								marker(Plot.Marker.COLUMN).
+								color(Color.BLUE).markerColor(Color.BLUE));
+			plot.save("benchmark/lisa/results/rprecision15", "png");
+			
+			//Avg Precision
+			plot = Plot.plot(Plot.plotOpts().
+					title("Avg Precision").
+					width(1000).
+					height(600).
+					legend(Plot.LegendFormat.TOP)).	
+				xAxis("Recall Level", Plot.axisOpts().
+					range(0, 1)).
+				yAxis("Avg Precision", Plot.axisOpts().
+					range(0, getMax(avgPrecision))).series(".", Plot.data().
+							xy(recallLevel, avgPrecision),
+							Plot.seriesOpts().
+								line(Line.NONE).
+								marker(Plot.Marker.COLUMN).
+								color(Color.BLUE).markerColor(Color.BLUE));
+			plot.save("benchmark/lisa/results/avgprecision", "png");
+			
+			//Recall Level/Precision
 			for (int i = 0; i < this.recall.size(); i++) {
-				
-				sortRecPrec(recall.get(i), precision.get(i));
 				
 				plot = Plot.plot(Plot.plotOpts().
 						title("Precision - Recall Query "+(i+1)).
@@ -495,13 +608,13 @@ public class IRBenchmark {
 						height(600).
 						legend(Plot.LegendFormat.NONE)).	
 					xAxis("Recall", Plot.axisOpts().
-						range(getMin(recall.get(i)), getMax(recall.get(i)))).
+						range(0.33, 1)).
 					yAxis("Precision", Plot.axisOpts().
 						range(0, getMax(precision.get(i)))).
 					series(".", Plot.data().
-						xy(recall.get(i).get(0), precision.get(i).get(0)).
-						xy(recall.get(i).get(1), precision.get(i).get(1)).
-						xy(recall.get(i).get(2), precision.get(i).get(2)),
+						xy(recallLevel.get(2), precision.get(i).get(2)).
+						xy(recallLevel.get(1), precision.get(i).get(1)).
+						xy(recallLevel.get(0), precision.get(i).get(0)),
 						Plot.seriesOpts().
 							lineWidth(3).
 							marker(Plot.Marker.CIRCLE).
@@ -545,30 +658,5 @@ public class IRBenchmark {
 				min = list.get(i);
 		return min;
 	}
-	
-	/**
-	 * Sort recall by ascending and sort precision for consistency
-	 * @param recall
-	 * @param precision
-	 */
-	private static void sortRecPrec(ArrayList<Double> recall, ArrayList<Double> precision) {
-		double tmp;
-		boolean scambio = true;
-		
-		while (scambio) {
-			scambio = false;
-			for (int i = 0; i < recall.size()-1; i++ ) {
-				if ( recall.get(i) > recall.get(i+1) ) {
-					tmp = recall.get(i);
-					recall.set(i, recall.get(i+1));
-					recall.set(i+1, tmp);
-					tmp = precision.get(i);
-					precision.set(i, precision.get(i+1));
-					precision.set(i+1, tmp);
-					scambio = true;
-				}
-			}
-		}
-	}
-		
+			
 }

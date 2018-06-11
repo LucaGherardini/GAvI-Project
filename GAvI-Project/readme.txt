@@ -1,7 +1,7 @@
 Good Search:
 
 ---REQUIREMENTS
-GNUPlot for plotting of statistics about benchmark ---> http://www.gnuplot.info/download.html
+No requirements, both lucene libraries, both external libraries, are linked in jar file, so it is completely stand alone
 
 
 ---HOW TO USE

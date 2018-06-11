@@ -15,7 +15,7 @@ import irModels.Model;
 import plot.Plot;
 import plot.Plot.Line;
 
-public class Bm {
+public class IRBenchmark {
 
 	Model model;
 	String fileDocumentsPaths;
@@ -37,7 +37,7 @@ public class Bm {
 	 * @param queryFile this is lisa.que file
 	 * @param docExpected in this file, for every query, there is a list of relevant documents for it
 	 */
-	public Bm(Model model, String fileDocumentsPaths, String queryFile, String docExpected) {
+	public IRBenchmark(Model model, String fileDocumentsPaths, String queryFile, String docExpected) {
 		this.model = model;
 		this.fileDocumentsPaths = fileDocumentsPaths;
 		this.queryFile = queryFile;

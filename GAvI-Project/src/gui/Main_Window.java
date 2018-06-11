@@ -9,7 +9,7 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
-import benchmark.Bm;
+import benchmark.IRBenchmark;
 import index.Hit;
 import index.Index;
 import irModels.BM25;
@@ -545,33 +545,33 @@ public class Main_Window {
 				waitPane.setVisible(true);
 				
 				 Model modelUsed=null;
-				 Bm benchmark=null;
+				 IRBenchmark benchmark=null;
 				 
 					if(modelbox.getSelectedItem()=="Boolean Model") {
 						System.out.println("Boolean");
 						modelUsed = new BooleanModel();
-						 benchmark=new Bm(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
+						 benchmark=new IRBenchmark(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
 						 benchmark.executeBenchmark();
 					}
 					
 					if(modelbox.getSelectedItem()=="Vector Space Model") {
 						System.out.println("Vector Space");
 						modelUsed = new VectorSpaceModel();
-						 benchmark=new Bm(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
+						 benchmark=new IRBenchmark(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
 						 benchmark.executeBenchmark();
 					}
 					
 					if(modelbox.getSelectedItem()=="Probabilistic(BM25) Model") {
 						System.out.println("Probabilistic(BM25)");
 						modelUsed = new BM25();
-						 benchmark=new Bm(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
+						 benchmark=new IRBenchmark(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
 						 benchmark.executeBenchmark();
 					}
 					
 					if(modelbox.getSelectedItem()=="Fuzzy Model") {
 						System.out.println("Fuzzy");
 						modelUsed = new FuzzyModel();
-						 benchmark=new Bm(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
+						 benchmark=new IRBenchmark(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
 						 
 						 benchmark.executeBenchmark();
 					}	

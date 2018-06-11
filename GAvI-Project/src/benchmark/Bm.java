@@ -11,9 +11,7 @@ import java.util.LinkedList;
 
 import index.Hit;
 import index.Index;
-import irModels.FuzzyModel;
 import irModels.Model;
-import irModels.VectorSpaceModel;
 import plot.Plot;
 import plot.Plot.Line;
 
@@ -312,6 +310,82 @@ public class Bm {
 				precision.set(i, 0.0);
 		return precision;
 	}
+
+	/**
+	 * Get recall for standard levels
+	 * @return
+	 */
+	public ArrayList<ArrayList<Double>> getRecall() {
+		int lvl33;
+		int lvl66;
+		int lvl100;
+		
+		ArrayList<ArrayList<Double>> recall = new ArrayList<ArrayList<Double>>();
+		
+		ArrayList<Double> temp = new ArrayList<Double>();
+		
+		for (int i = 0; i < precision.size(); i++) {
+			lvl33 = retrivedDocuments.get(i).size()*33/100; //33% of size of retrived documents
+			lvl66 = retrivedDocuments.get(i).size()*66/100; //66% of size of retrived documents
+			lvl100 = retrivedDocuments.get(i).size(); //all retrived documents
+			
+			temp.add( ( (double) getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl33).size() / (double)lvl33 ) );
+			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl66).size() / (double) lvl66) );
+			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl100).size() / (double) lvl100) );
+			
+			recall.add(temp);
+			temp = new ArrayList<Double>();
+		}
+		
+		return recall;
+	}
+	
+	/**
+	 * Get precision for standard levels
+	 * @return
+	 */
+	public ArrayList<ArrayList<Double>> getPrecision() {
+		int lvl33;
+		int lvl66;
+		int lvl100;
+		
+		ArrayList<ArrayList<Double>> precision = new ArrayList<ArrayList<Double>>();
+		
+		ArrayList<Double> temp = new ArrayList<Double>();
+		
+		for (int i = 0; i < this.precision.size(); i++) {
+			lvl33 = retrivedDocuments.get(i).size()*33/100;
+			lvl66 = retrivedDocuments.get(i).size()*66/100;
+			lvl100 = retrivedDocuments.get(i).size();
+			
+			temp.add( ( (double) getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl33).size() / (double) expectedDocuments.get(i).size()) );
+			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl66).size() / (double) expectedDocuments.get(i).size()) );
+			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl100).size() / (double) expectedDocuments.get(i).size()) );
+			
+			precision.add(temp);
+			temp = new ArrayList<Double>();
+		}
+		
+		return precision;
+	}
+	 
+	/**
+	 * do intersection between two lists
+	 * @param expectedDocuments
+	 * @param retrievedDocuments
+	 * @param much how much element of retrivedDocuments it reads
+	 * @return
+	 */
+	private ArrayList<String> getIntersect(LinkedList<String> expectedDocuments, LinkedList<String> retrievedDocuments, int much){
+		ArrayList<String> intersect = new ArrayList<String>();
+	
+		for (String s: expectedDocuments)
+			for (int i = 0; i < much; i++)
+				if (retrievedDocuments.get(i).equals(s))
+					intersect.add(s);
+		
+		return intersect;
+	}
 	
 	/**
 	 * Calculate F-measure
@@ -363,6 +437,86 @@ public class Bm {
 	}
 	
 	/**
+	 * Procedure to do graph of benchmark
+	 */
+	public void doGraph() {
+		ArrayList<ArrayList<Double>> recall = getRecall();
+		ArrayList<ArrayList<Double>> precision = getPrecision();
+		
+		ArrayList<Double> num_queries = new ArrayList<Double>();
+		
+		for (int i = 0; i < this.precision.size(); i++) {
+			num_queries.add(i + 0.0);
+		}
+		
+		try {
+			
+			Plot plot = Plot.plot(Plot.plotOpts().
+					title("Precision graph").
+					width(1000).
+					height(600).
+					legend(Plot.LegendFormat.TOP)).	
+				xAxis("Query #", Plot.axisOpts().
+					format(Plot.AxisFormat.NUMBER_INT).
+					range(0, num_queries.size())).
+				yAxis("Precision", Plot.axisOpts().
+					range(0, getMax(this.precision))).series(".", Plot.data().
+							xy(num_queries, this.precision),
+							Plot.seriesOpts().
+								line(Line.NONE).
+								marker(Plot.Marker.COLUMN).
+								color(Color.BLUE).markerColor(Color.BLUE));
+			plot.save("benchmark/lisa/results/precision", "png");
+			
+			plot = Plot.plot(Plot.plotOpts().
+					title("Recall graph").
+					width(1000).
+					height(600).
+					legend(Plot.LegendFormat.TOP)).	
+				xAxis("Query #", Plot.axisOpts().
+					format(Plot.AxisFormat.NUMBER_INT).
+					range(0, num_queries.size())).
+				yAxis("Recall", Plot.axisOpts().
+					range(0, getMax(this.recall))).series(".", Plot.data().
+							xy(num_queries, this.recall),
+							Plot.seriesOpts().
+								line(Line.NONE).
+								marker(Plot.Marker.COLUMN).
+								color(Color.BLUE).markerColor(Color.BLUE));
+			plot.save("benchmark/lisa/results/recall", "png");
+			
+			for (int i = 0; i < this.recall.size(); i++) {
+				
+				sortRecPrec(recall.get(i), precision.get(i));
+				
+				plot = Plot.plot(Plot.plotOpts().
+						title("Precision - Recall Query "+(i+1)).
+						width(1000).
+						height(600).
+						legend(Plot.LegendFormat.NONE)).	
+					xAxis("Recall", Plot.axisOpts().
+						range(getMin(recall.get(i)), getMax(recall.get(i)))).
+					yAxis("Precision", Plot.axisOpts().
+						range(0, getMax(precision.get(i)))).
+					series(".", Plot.data().
+						xy(recall.get(i).get(0), precision.get(i).get(0)).
+						xy(recall.get(i).get(1), precision.get(i).get(1)).
+						xy(recall.get(i).get(2), precision.get(i).get(2)),
+						Plot.seriesOpts().
+							lineWidth(3).
+							marker(Plot.Marker.CIRCLE).
+							color(Color.BLUE));
+				plot.save("benchmark/lisa/results/recall-precision"+(i+1), "png");
+			}
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/**
 	 * Get max value in a double array list
 	 * @param list
 	 * @return
@@ -377,164 +531,44 @@ public class Bm {
 		return max;
 	}
 	
-	public static void main (String[] args) {
+	/**
+	 * Get min value in a double array list
+	 * @param list
+	 * @return
+	 */
+	private static double getMin(ArrayList<Double> list) {
+		double min = 0.0;
+		if (list.size() > 0) 
+			min = list.get(0);
+		for (int i = 1; i < list.size(); i++)
+			if (min > list.get(i))
+				min = list.get(i);
+		return min;
+	}
+	
+	/**
+	 * Sort recall by ascending and sort precision for consistency
+	 * @param recall
+	 * @param precision
+	 */
+	private static void sortRecPrec(ArrayList<Double> recall, ArrayList<Double> precision) {
+		double tmp;
+		boolean scambio = true;
 		
-		
-		Bm bench = new Bm(new FuzzyModel(), "benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
-		bench.executeBenchmark();
-		
-		ArrayList<Double> e_measure = bench.getEMeasure(bench.precision, bench.recall, 0.5);
-		ArrayList<Double> f_measure = bench.getFMeasure(bench.precision, bench.recall);
-		
-		//ArrayList<ArrayList<Double>> recall = bench.getRecall();
-		//ArrayList<ArrayList<Double>> precision = bench.getPrecision();
-		
-		bench.saveMeasure(e_measure, "emeasure.dat");
-		bench.saveMeasure(f_measure, "fmeasure.dat");
-		
-		bench.saveMeasure(bench.precision, "precision.dat");
-		bench.saveMeasure(bench.recall, "recall.dat");
-		
-		System.out.println("********************************");
-		System.out.println("Intersection: "+bench.intersect);
-		System.out.println("Precision: "+bench.precision);
-		System.out.println("Recall: "+bench.recall);
-		System.out.println("********************************");
-		
-		
-		ArrayList<Double> num_queries = new ArrayList<Double>();
-		
-		
-		for (int i = 0; i < bench.precision.size(); i++) {
-			num_queries.add(i + 0.0);
-		}
-		
-		try {
-			
-			Plot plot = Plot.plot(Plot.plotOpts().
-					title("Precision graph").
-					width(1000).
-					height(600).
-					legend(Plot.LegendFormat.TOP)).	
-				xAxis("Query #", Plot.axisOpts().
-					range(0, num_queries.size())).
-				yAxis("Precision", Plot.axisOpts().
-					range(0, getMax(bench.precision))).series("", Plot.data().
-							xy(num_queries, bench.precision),
-							Plot.seriesOpts().
-								line(Line.NONE).
-								marker(Plot.Marker.COLUMN).
-								color(Color.BLUE).markerColor(Color.BLUE));
-			plot.save("precision", "png");
-			
-			plot = Plot.plot(Plot.plotOpts().
-					title("Recall graph").
-					width(1000).
-					height(600).
-					legend(Plot.LegendFormat.TOP)).	
-				xAxis("Query #", Plot.axisOpts().
-					range(0, num_queries.size())).
-				yAxis("Recall", Plot.axisOpts().
-					range(0, getMax(bench.recall))).series("", Plot.data().
-							xy(num_queries, bench.recall),
-							Plot.seriesOpts().
-								line(Line.NONE).
-								marker(Plot.Marker.COLUMN).
-								color(Color.BLUE).markerColor(Color.BLUE));
-			plot.save("recall", "png");
-			
-			for (int i = 0; i < bench.recall.size(); i++) {
-				plot = Plot.plot(Plot.plotOpts().
-						title("Precision - Recall Query "+(i+1)).
-						width(1000).
-						height(600).
-						legend(Plot.LegendFormat.TOP)).	
-					xAxis("Recall", Plot.axisOpts().
-						range(0, getMax(bench.recall))).
-					yAxis("Precision", Plot.axisOpts().
-						range(0, getMax(bench.precision))).
-					series("f1", Plot.data().
-						xy(bench.recall.get(i), bench.precision.get(i)).
-						xy(bench.recall.get(i), bench.precision.get(i)).
-						xy(bench.recall.get(i), bench.precision.get(i)),
-						Plot.seriesOpts().
-							lineWidth(3).
-							marker(Plot.Marker.NONE).
-							color(Color.BLUE));
-				plot.save("recall-precision"+(i+1), "png");
+		while (scambio) {
+			scambio = false;
+			for (int i = 0; i < recall.size()-1; i++ ) {
+				if ( recall.get(i) > recall.get(i+1) ) {
+					tmp = recall.get(i);
+					recall.set(i, recall.get(i+1));
+					recall.set(i+1, tmp);
+					tmp = precision.get(i);
+					precision.set(i, precision.get(i+1));
+					precision.set(i+1, tmp);
+					scambio = true;
+				}
 			}
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		//
 	}
-
-
-	
-
-	public ArrayList<ArrayList<Double>> getRecall() {
-		int lvl33;
-		int lvl66;
-		int lvl100;
 		
-		ArrayList<ArrayList<Double>> recall = new ArrayList<ArrayList<Double>>();
-		
-		ArrayList<Double> temp = new ArrayList<Double>();
-		
-		for (int i = 0; i < precision.size(); i++) {
-			lvl33 = retrivedDocuments.get(i).size()*33/100; //33% of size of retrived documents
-			lvl66 = retrivedDocuments.get(i).size()*66/100; //66% of size of retrived documents
-			lvl100 = retrivedDocuments.get(i).size(); //all retrived documents
-			
-			temp.add( ( (double) getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl33).size() / (double) retrivedDocuments.get(i).size()) );
-			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl66).size() / (double) retrivedDocuments.get(i).size()) );
-			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl100).size() / (double) retrivedDocuments.get(i).size()) );
-			
-			recall.add(temp);
-			temp = new ArrayList<Double>();
-		}
-		
-		return recall;
-	}
-	
-	public ArrayList<ArrayList<Double>> getPrecision() {
-		int lvl33;
-		int lvl66;
-		int lvl100;
-		
-		ArrayList<ArrayList<Double>> precision = new ArrayList<ArrayList<Double>>();
-		
-		ArrayList<Double> temp = new ArrayList<Double>();
-		
-		for (int i = 0; i < this.precision.size(); i++) {
-			lvl33 = retrivedDocuments.get(i).size()*33/100;
-			lvl66 = retrivedDocuments.get(i).size()*66/100;
-			lvl100 = retrivedDocuments.get(i).size();
-			
-			temp.add( ( (double) getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl33).size() / (double) expectedDocuments.get(i).size()) );
-			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl66).size() / (double) expectedDocuments.get(i).size()) );
-			temp.add( ((double)getIntersect(expectedDocuments.get(i), retrivedDocuments.get(i), lvl100).size() / (double) expectedDocuments.get(i).size()) );
-			
-			precision.add(temp);
-			temp = new ArrayList<Double>();
-		}
-		
-		return precision;
-	}
-	 
-	 private ArrayList<String> getIntersect(LinkedList<String> expectedDocuments, LinkedList<String> retrievedDocuments, int much){
-		ArrayList<String> intersect = new ArrayList<String>();
-
-		for (String s: expectedDocuments)
-			for (int i = 0; i < much; i++)
-				if (retrievedDocuments.get(i).equals(s))
-					intersect.add(s);
-		
-		return intersect;
-	}
-	
-	 //
-	
 }

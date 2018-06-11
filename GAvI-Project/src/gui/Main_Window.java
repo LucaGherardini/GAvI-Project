@@ -470,12 +470,7 @@ public class Main_Window {
 					try {
 						File f = null;
 						while((line = reader.readLine()) != null) {
-							tableModel.setRowCount(i+1);
-							content = line;
-							System.out.println(content);
-							tableModel.setValueAt(content, i, 0);
-							i++;
-							content="";
+							System.out.println("Loading " + line);
 							f = new File(line);
 							checkFile(f, tableModel);
 						}

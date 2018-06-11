@@ -243,7 +243,7 @@ public class Index{
 				content += line + "\n";
 			}
 		}catch(Exception e) {
-			e.printStackTrace();
+			System.out.println("End of file");
 		}
 		
 		int separatorIndex = docPath.lastIndexOf("/");

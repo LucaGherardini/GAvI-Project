@@ -9,6 +9,7 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
+import Image.Paint_Graphics;
 import benchmark.IRBenchmark;
 import index.Hit;
 import index.Index;
@@ -20,7 +21,6 @@ import irModels.VectorSpaceModel;
 //import com.sun.scenario.effect.Filterable;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
@@ -364,20 +365,7 @@ public class Main_Window {
 				        						
 					// Check that file is not yet in index
 					if(doc.getAbsolutePath().endsWith(".txt")) {
-						boolean inIndex = false;
-						for(int i=0; i<generalIndex.getSize(); i++) {
-							if( (generalIndex.getDocument(i).get("path")+generalIndex.getDocument(i).get("name")).equals(doc.getAbsolutePath())){
-								inIndex=true;
-								break;
-							}
-						}
-						// If inIndex is false, means that the file is not in index, so it is added to index and table
-						if(!inIndex) {
-							generalIndex.addDocument(doc.getAbsolutePath());
-										
-							tableModel.setRowCount(tableModel.getRowCount()+1);
-							tableModel.setValueAt(doc.getPath(), tableModel.getRowCount()-1, 0);
-						}
+						checkFile(doc, tableModel);
 					}
 					
 				}
@@ -407,7 +395,7 @@ public class Main_Window {
 	// Delete All Row in the table "Documents"
 	delete.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
-			int reply =JOptionPane.showConfirmDialog(null,"Do you want reset all indices?", "Attention", JOptionPane.YES_NO_OPTION);
+			int reply =JOptionPane.showConfirmDialog(null,"Do you want to reset all indices?", "Attention", JOptionPane.YES_NO_OPTION);
 			
 			
 			if(reply==JOptionPane.YES_OPTION) {
@@ -447,16 +435,17 @@ public class Main_Window {
 	btnloadIndex.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
 			
-			JFileChooser fileC=new JFileChooser();
-			
+			JFileChooser fileC=new JFileChooser();			
 			fileC.setMultiSelectionEnabled(true);
-			fileC.setDialogTitle("Choose the file to load ");
+			fileC.setDialogTitle("Choose files to load ");
 			fileC.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			fileC.showOpenDialog(frame);
 			
+			if(fileC.getSelectedFile() == null) {
+				return ;
+			}
 			
-			
-			int reply =JOptionPane.showConfirmDialog(null,"Do you want load :"+ fileC.getSelectedFile()+ "?", "Attention", JOptionPane.YES_NO_OPTION);
+			int reply =JOptionPane.showConfirmDialog(null,"Do you want to load :"+ fileC.getSelectedFile()+ "?", "Attention", JOptionPane.YES_NO_OPTION);
 			//aggiungi il file nella tabella documenti
 			
 			if(reply==JOptionPane.YES_OPTION) {
@@ -524,7 +513,6 @@ public class Main_Window {
 					fileToSave.createNewFile();
 					generalIndex.saveIndex(fileToSave.getAbsolutePath());					
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			    
@@ -536,54 +524,65 @@ public class Main_Window {
 	// Benchmark
 	btnBenchmark.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent arg0) {
-			int reply =JOptionPane.showConfirmDialog(null,"Do you want launch Lisa's Benchmark ?", "Attention", JOptionPane.YES_NO_OPTION);
+			int reply =JOptionPane.showConfirmDialog(null,"Do you want to launch LISA Benchmark?", "Attention", JOptionPane.YES_NO_OPTION);
 			
 			
 			if(reply==JOptionPane.YES_OPTION) {
 				
+				// Before loading docs of benchmark, index is erased
+				generalIndex.resetIndex();
 				
 				waitPane.setVisible(true);
 				
-				 Model modelUsed=null;
-				 IRBenchmark benchmark=null;
+				Model modelUsed=null;
+				IRBenchmark benchmark=null;
 				 
-					if(modelbox.getSelectedItem()=="Boolean Model") {
-						System.out.println("Boolean");
-						modelUsed = new BooleanModel();
-						 benchmark=new IRBenchmark(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
-						 benchmark.executeBenchmark();
-					}
+				if(modelbox.getSelectedItem()=="Boolean Model") {
+					System.out.println("Boolean");
+					modelUsed = new BooleanModel();
+				}
 					
-					if(modelbox.getSelectedItem()=="Vector Space Model") {
-						System.out.println("Vector Space");
-						modelUsed = new VectorSpaceModel();
-						 benchmark=new IRBenchmark(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
-						 benchmark.executeBenchmark();
-					}
+				if(modelbox.getSelectedItem()=="Vector Space Model") {
+					System.out.println("Vector Space");
+					modelUsed = new VectorSpaceModel();
+				}
 					
-					if(modelbox.getSelectedItem()=="Probabilistic(BM25) Model") {
-						System.out.println("Probabilistic(BM25)");
-						modelUsed = new BM25();
-						 benchmark=new IRBenchmark(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
-						 benchmark.executeBenchmark();
-					}
+				if(modelbox.getSelectedItem()=="Probabilistic(BM25) Model") {
+					System.out.println("Probabilistic(BM25)");
+					modelUsed = new BM25();
+				}
 					
-					if(modelbox.getSelectedItem()=="Fuzzy Model") {
-						System.out.println("Fuzzy");
-						modelUsed = new FuzzyModel();
-						 benchmark=new IRBenchmark(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
-						 
-						 benchmark.executeBenchmark();
-					}	
+				if(modelbox.getSelectedItem()=="Fuzzy Model") {
+					System.out.println("Fuzzy");
+					modelUsed = new FuzzyModel();
+				}	
 					
-					waitPane.setVisible(false);
-					int reply1 =JOptionPane.showConfirmDialog(null,"Do you want to see the results of Benchmark?", "Attention", JOptionPane.YES_NO_OPTION);
+				benchmark=new IRBenchmark(modelUsed,"benchmarkDocs.ser", "benchmark/lisa/LISA.QUE", "benchmark/lisa/LISA.REL");
+				benchmark.executeBenchmark();
+					
+				waitPane.setVisible(false);
+				int reply1 =JOptionPane.showConfirmDialog(null,"Do you want to see the results of Benchmark?", "Attention", JOptionPane.YES_NO_OPTION);
 					
 					
 					if(reply1==JOptionPane.YES_OPTION) {
 						// Grafici
+						System.out.println("Starting plotting...");
+						waitPane.setVisible(true);
+						
+						benchmark.doGraph();
+						
+						waitPane.setVisible(false);
+						
+						File files[];
+						File Directory = new File("benchmark/lisa/results/");
+						
+						files=Directory.listFiles();
+						Arrays.sort(files);
+						Paint_Graphics.paint(files);
+
 					}
-				
+				//After benchmark, index is erased
+				generalIndex.resetIndex();
 			}
 			
 		}
@@ -638,17 +637,16 @@ public class Main_Window {
 				if(f.isDirectory())	{
 					int reply = JOptionPane.showConfirmDialog(null,"Do you want add all subfolders of :  "+ f.getPath() + "?", "Attention", JOptionPane.YES_NO_OPTION);
 				    if (reply == JOptionPane.YES_OPTION) {
-				    	this.subfolders(f, tableModel);
+				    	subfolders(f, tableModel);
 					}
-				}
-				if(f.getAbsolutePath().endsWith(".txt")) {
+				}else if(f.getAbsolutePath().endsWith(".txt")) {
 					checkFile(f, tableModel);
 				}
 			}
 				
 			if(Directory.getAbsolutePath().endsWith(".txt")) {
 				checkFile(Directory, tableModel);
-			}			
+			}
 	}
 	
 	public void checkFile(File f, DefaultTableModel tableModel) {

@@ -5,25 +5,39 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 public class Paint_Graphics  extends JFrame{
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	
+	public static void paint(File[] pathGraphic) {
+		int index = 0;
+		while(index < pathGraphic.length) {
+			Paint_Graphics Graph = new Paint_Graphics(pathGraphic[index].getAbsolutePath());
+			int reply1 =JOptionPane.showConfirmDialog(null,"Do you want to see next graph? ("+(index+1)+" of "+pathGraphic.length+")", "Attention", JOptionPane.YES_NO_OPTION);
+			if(reply1==JOptionPane.YES_OPTION) {
+				Graph.setVisible(false);
+				index++;
+				continue;
+			}else {
+				Graph.setVisible(false);
+				break;
+			}
+		}
+	}
 	
 	public Paint_Graphics(String pathGraphic) {
 		//super("Test Panel");
 		Dimension screenResolution = Toolkit.getDefaultToolkit().getScreenSize();
-		this.setSize(screenResolution.width/2, screenResolution.height/2);
+		this.setSize(screenResolution.width, screenResolution.height);
 
 		try { 
 			File file = new File(pathGraphic); 

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import org.apache.lucene.benchmark.byTask.Benchmark;
+//import org.apache.lucene.benchmark.byTask.Benchmark;
 
 import index.Hit;
 import index.Index;
@@ -18,7 +18,7 @@ import irModels.Model;
 import irModels.VectorSpaceModel;
 import plot.Plot;
 import plot.Plot.Line;
-import sun.applet.Main;
+//import sun.applet.Main;
 
 public class IRBenchmark {
 
@@ -30,7 +30,7 @@ public class IRBenchmark {
 	Index generalIndex; //Index
 	LinkedList<String> ll; //List where to search (name, content)
 	
-	//Filled whene called executeBenchmark
+	//Filled when executeBenchmark is called
 	ArrayList<LinkedList<String>> expectedDocuments = new ArrayList<LinkedList<String>>();
 	ArrayList<LinkedList<String>> retrivedDocuments = new ArrayList<LinkedList<String>>();
 	ArrayList<LinkedList<String>> intersect = new ArrayList<LinkedList<String>>();
@@ -66,7 +66,7 @@ public class IRBenchmark {
  	 * Array with intersection between expected and retrieved documents is created. (For calculating precision and recall)
 	 */
 	public void executeBenchmark() {
-
+		
 		//Reading queries from file
 		ArrayList<String> queries = readQueries();
 
@@ -95,8 +95,8 @@ public class IRBenchmark {
 
 	/**
 	 * This method read query from lisa.que
-	 * Queries are split with '#', so every query ends up with that terminator. 
-	 * @return list of query
+	 * Queries are split with '#', so each query ends up with that terminator. 
+	 * @return list of queries
 	 */
 	public ArrayList<String> readQueries() {
 
@@ -202,7 +202,7 @@ public class IRBenchmark {
 	/**
 	 * This method retrieve documents, passing queries from benchmark.
 	 * @param queries list of queries
-	 * @return
+	 * @return documents retrieved for each query
 	 */
 	private ArrayList<LinkedList<String>> retrieveDocuments(ArrayList<String> queries){
 		ArrayList<LinkedList<String>> documentsRetrieved = new ArrayList<LinkedList<String>>();
@@ -322,22 +322,18 @@ public class IRBenchmark {
 	 * @return
 	 */
 	private ArrayList<Double> getRecallLevel() {
-		int lvl33;
-		int lvl66;
-		int lvl100;
-		
 		ArrayList<Double> recall = new ArrayList<Double>();
 		
-			recall.add(0.33);
-			recall.add(0.66);
-			recall.add(1.0);
+		recall.add(0.33);
+		recall.add(0.66);
+		recall.add(1.0);
 		
 		return recall;
 	}
 	
 	/**
 	 * Get precision for standard levels
-	 * @return
+	 * @return Precision
 	 */
 	public ArrayList<ArrayList<Double>> getPrecision() {
 		int lvl0;
@@ -368,7 +364,7 @@ public class IRBenchmark {
 
 	/**
 	 * Calculate R-Precision
-	 * @param level level R for R-Precision
+	 * @param level R for R-Precision
 	 * @return value of r-precision for every query
 	 */
 	public ArrayList<Double> getRPrecision(int level) {
@@ -407,8 +403,8 @@ public class IRBenchmark {
 	 * do intersection between two lists
 	 * @param expectedDocuments
 	 * @param retrievedDocuments
-	 * @param much how much element of retrivedDocuments it reads
-	 * @return
+	 * @param much how much element of retrivedDocuments are read
+	 * @return new list made by intersection
 	 */
 	private ArrayList<String> getIntersect(LinkedList<String> expectedDocuments, LinkedList<String> retrievedDocuments, int much){
 		ArrayList<String> intersect = new ArrayList<String>();
@@ -494,6 +490,7 @@ public class IRBenchmark {
 		
 		try {
 			
+			System.out.println("Plotting precision graph");
 			//Precision
 			Plot plot = Plot.plot(Plot.plotOpts().
 					title("Precision graph").
@@ -512,6 +509,7 @@ public class IRBenchmark {
 								color(Color.BLUE).markerColor(Color.BLUE));
 			plot.save("benchmark/lisa/results/precision", "png");
 			
+			System.out.println("Plotting recall graph");
 			//Recall
 			plot = Plot.plot(Plot.plotOpts().
 					title("Recall graph").
@@ -530,6 +528,7 @@ public class IRBenchmark {
 								color(Color.BLUE).markerColor(Color.BLUE));
 			plot.save("benchmark/lisa/results/recall", "png");
 			
+			System.out.println("Plotting R-Precision (5)");
 			//R-Precision 5
 			plot = Plot.plot(Plot.plotOpts().
 					title("R-Precision 5").
@@ -547,6 +546,8 @@ public class IRBenchmark {
 								marker(Plot.Marker.COLUMN).
 								color(Color.BLUE).markerColor(Color.BLUE));
 			plot.save("benchmark/lisa/results/rprecision5", "png");
+			
+			System.out.println("Plotting R-Precision (10)");
 			//R-Precision 10
 			plot = Plot.plot(Plot.plotOpts().
 					title("R-Precision 10").
@@ -564,6 +565,8 @@ public class IRBenchmark {
 								marker(Plot.Marker.COLUMN).
 								color(Color.BLUE).markerColor(Color.BLUE));
 			plot.save("benchmark/lisa/results/rprecision10", "png");
+			
+			System.out.println("Plotting R-Precision (15)");
 			//R-Precision 15
 			plot = Plot.plot(Plot.plotOpts().
 					title("R-Precision 15").
@@ -582,6 +585,7 @@ public class IRBenchmark {
 								color(Color.BLUE).markerColor(Color.BLUE));
 			plot.save("benchmark/lisa/results/rprecision15", "png");
 			
+			System.out.println("Plotting Avg Precision");
 			//Avg Precision
 			plot = Plot.plot(Plot.plotOpts().
 					title("Avg Precision").
@@ -599,6 +603,7 @@ public class IRBenchmark {
 								color(Color.BLUE).markerColor(Color.BLUE));
 			plot.save("benchmark/lisa/results/avgprecision", "png");
 			
+			System.out.println("Plotting Recall/Precision for each query");
 			//Recall Level/Precision
 			for (int i = 0; i < this.recall.size(); i++) {
 				
@@ -623,10 +628,9 @@ public class IRBenchmark {
 			}
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		System.out.println("Plotting finished");
 	}
 	
 	/**

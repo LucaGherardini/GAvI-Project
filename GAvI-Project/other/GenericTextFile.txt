@@ -1,5 +1,3 @@
-This file is made to test capability of Fuzzy Model to retrieve a document without a precise query.
-
 From wikipedia:
 
 Central Park is an urban park in Manhattan, New York City, U.S. state of New York. 

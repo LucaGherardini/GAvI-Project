@@ -8,8 +8,8 @@
 
 #### media: where all media files (logo, screenshots, ...) are stored
 
-#### src: where source files are be stored
+#### src: where source files are stored
 
-#### other: this folder is intended to contain all that not fit other categories (generically, some text files for debug)
+#### other: this folder is intended to contain all the files which don't fit other categories (i.e. text files for debug)
 
 N.B.: all of the above folders/categories could contain sub-folders/sub-categories (for example packages to split java source files)

@@ -1,15 +1,32 @@
-# GAvI-Project
+# GAvI-Project (Good Search)
 
-## This is the project for the exam of Advanced Management of the Information (GAvI in italian)
+This is the project for the exam of Advanced Management of the Information (GAvI in italian). The scope is building a textual search engine through Lucene library (https://lucene.apache.org/). 
 
-# Structure 
+## Requirements
 
-#### doc: a place for documentation files
+Lucene library
 
-#### media: where all media files (logo, screenshots, ...) are stored
+## How to use it
 
-#### src: where source files are stored
+JAR file (GoodSearch.jar) is executable giving the command:
 
-#### other: this folder is intended to contain all the files which don't fit other categories (i.e. text files for debug)
+	java -jar GoodSearch.jar 
+in the command line.
+Reference to "HELP" button in GUI to get advises on query formulation.
 
-N.B.: all of the above folders/categories could contain sub-folders/sub-categories (for example packages to split java source files)
+## Documentation
+Documentation is available in "doc" folder, readable opening index.html file using an internet browser
+
+## Benchmark 
+Using benchmark button in GUI will start a benchmark test on GoodSearch, using selected IR Model. This will produce some plot files, contained under 
+
+    benchmark/lisa/Results
+
+## Media
+All media files (logo, screenshots, ...) of the project have been stored inside this folder.
+
+## Src
+Folder containing the source code (refer to documentation to know how to compile it on your own)
+
+## Other
+This folder is intended to contain all the files which don't fit other categories (i.e. text files for debug)
